@@ -32,6 +32,16 @@ export function useBeamUxEntryClearBody(options?: MutationOpts<import("../Splice
     });
 }
 
+export function useBeamUxEntryMakeEditable(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").EntryMakeEditableOutputData>) {
+    return useMutation({
+        mutationFn: async (vars: MutationVars) => {
+            const res = await api.post(route('beam-ux-entry.make-editable'), vars.body);
+            return res.data.data as import("../Splicewire/Beam/Ux/Data").EntryMakeEditableOutputData;
+        },
+        ...options,
+    });
+}
+
 export function useBeamUxEntryPublish(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").EntryPublicationData>) {
     return useMutation({
         mutationFn: async (vars: MutationVars) => {

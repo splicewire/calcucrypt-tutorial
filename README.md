@@ -64,8 +64,8 @@ prototype module and route tokens. The package's static wiring audit is availabl
 
 ## Exposing a model in the admin — drop one annotated Data class
 
-A model shows up in the Frame admin by dropping **one** `#[ParticleResource]`-annotated Data class into
-`app/Data/`. That is the whole declaration — no second declaration, no `registerClass()` in a provider,
+An existing model with its table and authorization policy shows up in the Frame admin by dropping
+**one** `#[ParticleResource]`-annotated Data class into `app/Data/`. That is the whole declaration — no second declaration, no `registerClass()` in a provider,
 no handler-map entry. Beam's boot-time attributed discovery scans `app/Data` (config
 `frame.discover_paths`), reflects the attribute into the admin manifest, and the resource appears at
 `/frame/manifest` with its editor route wired.
@@ -76,18 +76,22 @@ model, nav placement (`group` / `section` / `navOrder` / `icon`), and route iden
 ```php
 #[ParticleResource(
     key: 'sitemap',
-    model: SitemapRecord::class,
+    backing: SitemapRecord::class,
     label: 'Sitemap',           // a non-empty label marks the resource FRAMED (navigable + editable)
     group: 'Site',
     section: 'links',
     navOrder: 99,
-    routeName: 'frame.resources.sitemap',
 )]
 class SitemapData extends Data { /* … Column-annotated fields … */ }
 ```
 
-See `app/Data/SitemapData.php` for the worked example (the editable sitemap resource). Adding your own
-resource is the same one-file move: annotate a Data class, drop it in `app/Data/`, done.
+See `app/Data/SitemapData.php` for the editable sitemap declaration. This registers the resource in
+Frame; a REST API is an explicit host decision using `Particle::mount()` inside the chosen middleware.
+The attribute does not create the model, table or policy and does not mount that REST exposure.
+
+For a complete declaration-to-API example, follow [Service requests](docs/examples/service-request.md):
+a model/table/policy, separate read and input Data, authenticated create/list/show, generated routes
+and response types, and a cookie-free TypeScript client on a fresh localhost fixture.
 
 ## Checks
 

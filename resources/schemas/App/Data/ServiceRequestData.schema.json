@@ -1,0 +1,22 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "ServiceRequestData",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "title": {
+            "type": "string"
+        },
+        "status": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "title",
+        "status"
+    ],
+    "$id": "ServiceRequestData"
+}

@@ -4,6 +4,7 @@
     "packageManager": "pnpm@9.15.3",
     "type": "module",
     "scripts": {
+        "example:service-request": "node scripts/service-request-client.mjs",
         "build": "pnpm run types:check && vite build",
         "build:ssr": "pnpm run types:check && vite build && vite build --ssr",
         "dev": "composer types:generate && vite",

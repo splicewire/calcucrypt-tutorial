@@ -8,13 +8,20 @@ export type RouteMap = Record<string, string>;
 
 /** AUTO-GENERATED — the tenant route-name map. */
 export const defaults: RouteMap = {
+    'beam-docs.search': 'beam/docs/search',
     'beam-ux-entry.body': 'beam-ux-entries/{id}/body',
     'beam-ux-entry.clear-body': 'beam-ux-entries/{id}/clear-body',
+    'beam-ux-entry.make-editable': 'beam-ux-entries/make-editable',
     'beam-ux-entry.publish': 'beam-ux-entries/{id}/publish',
     'beam-ux-entry.restore': 'beam-ux-entries/{id}/restore',
     'beam-ux-entry.save-body': 'beam-ux-entries/{id}/save-body',
     'beam-ux-entry.save-draft': 'beam-ux-entries/{id}/save-draft',
     'beam-ux-entry.versions': 'beam-ux-entries/{id}/versions',
+    'invitations.redeem': 'invitations/{id}/redeem',
+    'service-requests.index': 'api/service-requests',
+    'service-requests.show': 'api/service-requests/{id}',
+    'service-requests.store': 'api/service-requests',
+    'teams.store': 'teams/create',
     'users.login-as': 'users/{id}/login-as',
 };
 

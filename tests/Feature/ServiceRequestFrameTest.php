@@ -19,7 +19,7 @@ class ServiceRequestFrameTest extends TestCase
 
     public function test_the_manifest_and_form_expose_the_declared_create_list_and_detail(): void
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->teamMember()->create());
         $manifest = $this->getJson('/frame/manifest')->assertOk();
         $context = $manifest->json('contexts.service-requests');
         $this->assertTrue($context['can']['create']);
@@ -34,30 +34,32 @@ class ServiceRequestFrameTest extends TestCase
             ->assertJsonPath('properties.title.maxLength', 200)
             ->assertJsonPath('properties.status.enum', ['open', 'closed'])
             ->assertJsonPath('properties.status.default', 'open')
-            ->assertJsonMissingPath('properties.id')->assertJsonMissingPath('properties.user_id');
+            ->assertJsonMissingPath('properties.id')->assertJsonMissingPath('properties.user_id')
+            ->assertJsonMissingPath('properties.userId')->assertJsonMissingPath('properties.team_id')
+            ->assertJsonMissingPath('properties.teamId');
         $this->get('/service-requests')->assertOk();
         $this->get('/service-requests/new')->assertOk();
         $this->get('/service-desk')->assertOk();
     }
 
-    public function test_frame_preserves_ownership_and_refuses_unsupported_writes(): void
+    public function test_frame_preserves_team_and_creator_and_refuses_unsupported_writes(): void
     {
-        $owner = User::factory()->create();
-        $other = User::factory()->create();
+        $owner = User::factory()->teamMember()->create();
+        $other = User::factory()->teamMember()->create();
         $this->actingAs($owner);
         $this->postJson('/frame/resources/service-requests', [])->assertUnprocessable();
         $this->assertDatabaseCount('service_requests', 0);
-        $id = $this->postJson('/frame/resources/service-requests', ['title' => 'Private request', 'user_id' => $other->id])
+        $id = $this->postJson('/frame/resources/service-requests', ['title' => 'Team request', 'user_id' => $other->id])
             ->assertOk()->assertJsonPath('data.status', 'open')->json('data.id');
         $this->assertDatabaseHas('service_requests', ['id' => $id, 'user_id' => $owner->id]);
         $this->getJson('/frame/resources/service-requests')->assertOk()->assertJsonPath('data.0.id', $id);
-        $this->getJson('/frame/resources/service-requests/records/'.$id)->assertOk()->assertJsonPath('data.title', 'Private request');
+        $this->getJson('/frame/resources/service-requests/records/'.$id)->assertOk()->assertJsonPath('data.title', 'Team request');
         $this->putJson('/frame/resources/service-requests/records/'.$id, ['title' => 'Changed'])->assertForbidden();
         $this->deleteJson('/frame/resources/service-requests/records/'.$id)->assertForbidden();
         $this->actingAs($other);
         $this->getJson('/frame/resources/service-requests')->assertOk()->assertJsonCount(0, 'data');
         $this->getJson('/frame/resources/service-requests/records/'.$id)->assertNotFound();
-        $this->assertDatabaseHas('service_requests', ['id' => $id, 'title' => 'Private request', 'user_id' => $owner->id]);
+        $this->assertDatabaseHas('service_requests', ['id' => $id, 'title' => 'Team request', 'user_id' => $owner->id]);
     }
 
     public function test_guests_meet_the_authentication_boundary(): void

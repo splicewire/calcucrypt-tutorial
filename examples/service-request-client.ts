@@ -92,21 +92,46 @@ assert.equal(
     'Invalid input must persist no row',
 );
 await request('service-requests.index', 'GET', undefined, 401);
-const others = await request<ServiceRequestData[]>(
+const shared = await request<ServiceRequestData[]>(
     'service-requests.index',
     'GET',
     otherToken,
     200,
 );
-assert.ok(others.every((row) => row.id !== created.id));
+assert.ok(shared.some((row) => row.id === created.id));
+assert.deepEqual(
+    await request<ServiceRequestData>(
+        'service-requests.show',
+        'GET',
+        otherToken,
+        200,
+        undefined,
+        created.id,
+    ),
+    created,
+);
+const outsiderToken = process.env.SERVICE_REQUEST_OUTSIDER_TOKEN;
+const teamlessToken = process.env.SERVICE_REQUEST_TEAMLESS_TOKEN;
+assert.ok(outsiderToken && teamlessToken);
+const outsiders = await request<ServiceRequestData[]>(
+    'service-requests.index',
+    'GET',
+    outsiderToken,
+    200,
+);
+assert.ok(outsiders.every((row) => row.id !== created.id));
 await request(
     'service-requests.show',
     'GET',
-    otherToken,
+    outsiderToken,
     404,
     undefined,
     created.id,
 );
+await request('service-requests.index', 'GET', teamlessToken, 403);
+await request('service-requests.store', 'POST', teamlessToken, 403, {
+    title: 'Refused teamless request',
+});
 const attempted = await request<ServiceRequestData>(
     'service-requests.store',
     'POST',
@@ -114,8 +139,10 @@ const attempted = await request<ServiceRequestData>(
     201,
     {
         title: 'Ownership attempt',
-        user_id: ownerId,
-        userId: ownerId,
+        user_id: process.env.SERVICE_REQUEST_OUTSIDER_ID,
+        userId: process.env.SERVICE_REQUEST_OUTSIDER_ID,
+        team_id: Number(process.env.SERVICE_REQUEST_OUTSIDER_TEAM_ID),
+        teamId: Number(process.env.SERVICE_REQUEST_OUTSIDER_TEAM_ID),
     },
 );
 const otherRows = await request<ServiceRequestData[]>(
@@ -129,9 +156,24 @@ await request(
     'service-requests.show',
     'GET',
     ownerToken,
-    404,
+    200,
     undefined,
     attempted.id,
+);
+const outsideCreated = await request<ServiceRequestData>(
+    'service-requests.store',
+    'POST',
+    outsiderToken,
+    201,
+    { title: 'Team B only' },
+);
+await request(
+    'service-requests.show',
+    'GET',
+    ownerToken,
+    404,
+    undefined,
+    outsideCreated.id,
 );
 console.log(
     JSON.stringify(

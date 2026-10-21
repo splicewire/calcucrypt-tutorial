@@ -1,5 +1,11 @@
 # Create a team and invite a local teammate
 
+> Historical checkpoint: this chapter and its commands describe starter
+> `35cbc40e6ca6bea295ba7cad36cd0a0d3e1624bb` with Beam UI
+> `0991bf37cb66ed948a863b86050e3dc1890e61d6`. Check out that starter commit for the original
+> creator-only behavior and client. For current team-shared requests, follow the explicit
+> [shared queue continuation](service-desk-team-requests.md); latest source requires team membership.
+
 This continuation uses the shipped team form, roster and signed invitation flow. Start from a new
 clone of the exact starter candidate and the accepted Beam UI candidate supplied for this checkpoint
 (`0991bf37cb66ed948a863b86050e3dc1890e61d6`). Follow [fresh setup and the explicit UI overlay](service-request.md)

@@ -1,5 +1,11 @@
 # Service requests: declared API, typed client and resource UI
 
+> Historical checkpoint: this chapter and its commands describe starter
+> `35cbc40e6ca6bea295ba7cad36cd0a0d3e1624bb` with Beam UI
+> `0991bf37cb66ed948a863b86050e3dc1890e61d6`. Check out that starter commit for the original
+> creator-only behavior and client. For current team-shared requests, follow the explicit
+> [shared queue continuation](service-desk-team-requests.md); latest source requires team membership.
+
 This example creates, lists and reads a service-desk request. The completed implementation ships in
 this starter. It uses Beam's generic resource controller and Eloquent backing, with per-user ownership.
 The UI continuation below adds the existing Frame create/list/read-only-detail experience.
@@ -18,7 +24,7 @@ through handoff, and use its guarded teardown. Do not use helpers that copy an o
 ```bash
 git clone /absolute/path/to/candidate /absolute/path/to/new-service-desk
 cd /absolute/path/to/new-service-desk
-git checkout <candidate-commit>
+git checkout 35cbc40e6ca6bea295ba7cad36cd0a0d3e1624bb
 XDEBUG_MODE=off herd composer install --no-scripts --no-interaction --prefer-dist
 pnpm install --frozen-lockfile
 ```

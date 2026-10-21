@@ -1,9 +1,11 @@
 <?php
 
-// Local tutorial fixture only: two new actors/tokens, written privately rather than printed.
+// Local tutorial actors/tokens, written privately rather than printed.
 
 use App\Models\User;
 use Illuminate\Contracts\Console\Kernel;
+use Splicewire\Beam\Accounts\Enums\Role;
+use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 
 require __DIR__.'/../vendor/autoload.php';
 $app = require __DIR__.'/../bootstrap/app.php';
@@ -22,10 +24,11 @@ if (! is_string($output) || file_exists($output)
     exit(1);
 }
 
-$team = in_array('--team', array_slice($argv, 2), true);
+$shared = in_array('--shared', array_slice($argv, 2), true);
+$team = $shared || in_array('--team', array_slice($argv, 2), true);
 $browser = $team || in_array('--browser', array_slice($argv, 2), true);
 $actors = [];
-foreach (['owner', 'other'] as $name) {
+foreach (($team ? ['owner', 'other', 'outsider', 'teamless'] : ['owner', 'other']) as $name) {
     $password = bin2hex(random_bytes(20));
     $user = User::factory()->create([
         'name' => 'Service desk '.$name,
@@ -38,6 +41,20 @@ foreach (['owner', 'other'] as $name) {
     }
 }
 
+if ($shared) {
+    $provisioner = app(TeamProvisioner::class);
+    $owner = User::findOrFail($actors['owner']['id']);
+    $member = User::findOrFail($actors['other']['id']);
+    $teamA = $provisioner->createTeamFor($owner, 'Service desk A');
+    $provisioner->addMember($member, $teamA, Role::Member);
+    $member->switchTeam($teamA);
+    $outsider = User::findOrFail($actors['outsider']['id']);
+    $teamB = $provisioner->createTeamFor($outsider, 'Service desk B');
+    $actors['owner']['teamId'] = $teamA->id;
+    $actors['other']['teamId'] = $teamA->id;
+    $actors['outsider']['teamId'] = $teamB->id;
+}
+
 // Create exclusively with private permissions; never expose credentials in the public directory.
 $oldMask = umask(0077);
 $file = fopen($output, 'x');
@@ -47,4 +64,4 @@ if ($file === false) {
 }
 fwrite($file, json_encode($actors, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT)."\n");
 fclose($file);
-echo "Created two tutorial actors; credentials written to the requested private file.\n";
+echo "Created tutorial actors; credentials written to the requested private file.\n";

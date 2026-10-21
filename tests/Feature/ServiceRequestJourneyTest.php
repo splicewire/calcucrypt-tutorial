@@ -13,7 +13,7 @@ class ServiceRequestJourneyTest extends TestCase
 
     public function test_an_actor_creates_lists_and_reads_the_declared_request(): void
     {
-        $actor = User::factory()->create();
+        $actor = User::factory()->teamMember()->create();
         Sanctum::actingAs($actor);
 
         $created = $this->postJson('/api/service-requests', ['title' => 'Restore email delivery', 'status' => 'open'])
@@ -29,7 +29,7 @@ class ServiceRequestJourneyTest extends TestCase
 
     public function test_invalid_input_is_rejected_without_persisting_a_row(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->teamMember()->create());
 
         foreach ([[], ['title' => ''], ['title' => str_repeat('x', 201)], ['title' => 'Fix email', 'status' => 'pending']] as $body) {
             $this->postJson('/api/service-requests', $body)->assertUnprocessable();
@@ -45,12 +45,12 @@ class ServiceRequestJourneyTest extends TestCase
         $this->assertDatabaseCount('service_requests', 0);
     }
 
-    public function test_another_actor_cannot_read_a_request_or_forge_its_owner(): void
+    public function test_an_actor_on_another_team_cannot_read_or_forge_ownership(): void
     {
-        $owner = User::factory()->create();
-        $other = User::factory()->create();
+        $owner = User::factory()->teamMember()->create();
+        $other = User::factory()->teamMember()->create();
         Sanctum::actingAs($owner);
-        $id = $this->postJson('/api/service-requests', ['title' => 'Private request'])->assertCreated()->json('data.id');
+        $id = $this->postJson('/api/service-requests', ['title' => 'Team request'])->assertCreated()->json('data.id');
 
         Sanctum::actingAs($other);
         $this->getJson('/api/service-requests')->assertOk()->assertJsonCount(0, 'data');
@@ -68,7 +68,7 @@ class ServiceRequestJourneyTest extends TestCase
 
     public function test_update_and_delete_are_not_exposed(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->teamMember()->create());
         $id = $this->postJson('/api/service-requests', ['title' => 'Read or create only'])->assertCreated()->json('data.id');
         $this->patchJson('/api/service-requests/'.$id, ['title' => 'Changed'])->assertMethodNotAllowed();
         $this->deleteJson('/api/service-requests/'.$id)->assertMethodNotAllowed();

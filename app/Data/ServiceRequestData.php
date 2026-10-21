@@ -4,6 +4,7 @@ namespace App\Data;
 
 use App\Models\ServiceRequest;
 use App\Models\User;
+use App\Support\ServiceRequestTeam;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Schemastud\Frame\Attributes\Column;
@@ -43,12 +44,18 @@ class ServiceRequestData extends BeamData
      */
     public static function scope(Builder $query): Builder
     {
-        return $query->where('user_id', Auth::id());
+        $actor = Auth::user();
+        $team = $actor instanceof User ? ServiceRequestTeam::forUser($actor) : null;
+
+        return $team === null ? $query->whereRaw('1 = 0') : $query->where('team_id', $team->getKey());
     }
 
     public static function prepare(ServiceRequest $record, ServiceRequestInputData $input, User $actor): void
     {
         if (! $record->exists) {
+            $team = ServiceRequestTeam::forUser($actor);
+            abort_if($team === null, 403, 'Select a team with an active membership.');
+            $record->team_id = (int) $team->getKey();
             $record->user_id = (string) $actor->getAuthIdentifier();
         }
     }

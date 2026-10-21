@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int $id
+ * @property int|null $team_id
  * @property string $user_id
  * @property string $title
  * @property string $status

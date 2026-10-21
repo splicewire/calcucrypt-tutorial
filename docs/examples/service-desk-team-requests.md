@@ -164,3 +164,8 @@ scratch retention/teardown for private actors, capture and fixtures.
 
 Continue with [existing Theme entitlement access](service-desk-entitlements.md) to distinguish
 selected-team queue membership from User-level feature reach, using a separate fresh local fixture.
+
+## Continue with tenant storage
+
+Team-scoped rows are the boundary proved here. The optional [two-tenant storage branch](service-desk-tenancy.md)
+uses a separate Tower fixture to teach PostgreSQL schema isolation and request cleanup.

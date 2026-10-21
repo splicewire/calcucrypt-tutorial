@@ -183,7 +183,7 @@ Compare request/pin/fact/effect rows around every refusal. Existing authenticate
 surface stays closed; approval does not add general editing or a membership bypass.
 
 ```bash
-XDEBUG_MODE=off herd php artisan test --filter='ServiceRequestApprovalTest|ServiceRequestTeamTest|ServiceRequestJourneyTest|ServiceRequestFrameTest|OperatorInspectionTest|SharedThemePropsTest'
+XDEBUG_MODE=off herd php artisan test --filter='ServiceRequestApprovalTest|ServiceRequestTeamTest|ServiceRequestJourneyTest|ServiceRequestFrameTest|OperatorInspectionTest|ThemeSharedPropTest'
 XDEBUG_MODE=off pnpm types:check
 XDEBUG_MODE=off pnpm exec tsc --project tsconfig.service-request.json
 XDEBUG_MODE=off pnpm build

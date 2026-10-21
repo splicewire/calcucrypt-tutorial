@@ -49,7 +49,7 @@ an owned namespace so Frame points to the candidate. It changes only installed l
 
 ```bash
 mkdir "$UI_BUILD_TOOLS"
-(cd "$UI_BUILD_TOOLS" && printf '{"private":true,"packageManager":"pnpm@9.15.3","dependencies":{"tsup":"8.5.1","typescript":"5.9.3"}}\n' > package.json && pnpm install)
+(cd "$UI_BUILD_TOOLS" && printf '{"private":true,"packageManager":"pnpm@9.15.3","dependencies":{"tsup":"8.5.1","typescript":"5.9.3","zustand":"5.0.14"}}\n' > package.json && pnpm install)
 node examples/prepare-read-schema-ui.mjs
 (cd "$FRAME_JS_ROOT" && npm run build --workspace frame)
 (cd "$BEAM_UI_ROOT" && npm run build --workspace beam-inertia)

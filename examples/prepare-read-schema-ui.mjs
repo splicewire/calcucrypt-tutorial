@@ -16,14 +16,14 @@ for (const root of [frame, beam]) {
     const dest = join(root, 'node_modules');
     mkdirSync(dest);
     for (const name of readdirSync(join(host, 'node_modules'))) {
-        if (name.startsWith('.') || ['tsup', 'typescript', '@schemastud'].includes(name)) continue;
+        if (name.startsWith('.') || ['tsup', 'typescript', 'zustand', '@schemastud'].includes(name)) continue;
         symlinkSync(join(host, 'node_modules', name), join(dest, name));
     }
     mkdirSync(join(dest, '@schemastud'));
     for (const name of readdirSync(join(host, 'node_modules/@schemastud'))) {
         symlinkSync(name === 'frame' ? join(frame, 'frame') : join(host, 'node_modules/@schemastud', name), join(dest, '@schemastud', name));
     }
-    for (const name of ['tsup', 'typescript', '.bin']) symlinkSync(join(tools, 'node_modules', name), join(dest, name));
+    for (const name of ['tsup', 'typescript', 'zustand', '.bin']) symlinkSync(join(tools, 'node_modules', name), join(dest, name));
 }
 for (const [name, target] of [['@schemastud/frame', join(frame, 'frame')], ['@splicewire/beam-inertia', join(beam, 'beam-inertia')]]) {
     const installed = join(host, 'node_modules', name);

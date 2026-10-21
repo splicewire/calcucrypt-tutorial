@@ -4,7 +4,7 @@ The shared service-desk checkpoint isolates rows by the selected team and live m
 It does not initialize a separate schema or database for that team.
 
 For the next optional learning branch, use the Tower starter's
-[two-tenant service-request reference](https://github.com/splicewire/laravel-tower-starter/tree/03718057fa05e54e2f442c5cd6bdb6289f208873/examples/service-desk-tenancy).
+[two-tenant service-request reference](https://github.com/splicewire/laravel-tower-starter/tree/fbda3ede8da365487a8f84b1ee58fa36b0016321/examples/service-desk-tenancy).
 This is a local review checkpoint; remote publication is deferred. In a workspace checkout,
 the same guide is `~/Workspaces/laravel/starters/laravel-tower-starter/examples/service-desk-tenancy/README.md`
 after checking out that candidate, or the exact isolated worktree supplied with the handoff.

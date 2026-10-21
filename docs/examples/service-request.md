@@ -3,7 +3,8 @@
 This example creates, lists and reads a service-desk request. The completed implementation ships in
 this starter. It uses Beam's generic resource controller and Eloquent backing, with per-user ownership.
 The UI continuation below adds the existing Frame create/list/read-only-detail experience.
-Tenancy, teams, editing, deletion and release/git authoring are outside this example.
+Continue with [team creation and local invitation](service-desk-team.md) after this resource journey.
+Tenancy, editing, deletion and release/git authoring are outside this example.
 
 ## Prerequisites and fresh setup
 

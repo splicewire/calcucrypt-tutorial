@@ -22,12 +22,14 @@ if (! is_string($output) || file_exists($output)
     exit(1);
 }
 
-$browser = in_array('--browser', array_slice($argv, 2), true);
+$team = in_array('--team', array_slice($argv, 2), true);
+$browser = $team || in_array('--browser', array_slice($argv, 2), true);
 $actors = [];
 foreach (['owner', 'other'] as $name) {
     $password = bin2hex(random_bytes(20));
     $user = User::factory()->create([
         'name' => 'Service desk '.$name,
+        ...($team ? ['email' => $name.'@service-desk.example.test'] : []),
         ...($browser ? ['password' => $password, 'email_verified_at' => now()] : []),
     ]);
     $actors[$name] = ['id' => $user->id, 'token' => $user->createToken('service-request-example')->plainTextToken];

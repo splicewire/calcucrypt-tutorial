@@ -30,6 +30,7 @@ class AccountNavIaInvariantsTest extends TestCase
     {
         parent::setUp();
 
+        $this->withoutVite();
         Artisan::call('splicewire:beam:ux:seed-nav');
     }
 
@@ -106,6 +107,21 @@ class AccountNavIaInvariantsTest extends TestCase
 
         $this->assertNotContains('/operator', $hrefs);
         $this->assertContains('/dashboard', $hrefs);
+    }
+
+    public function test_teamless_and_joined_users_can_discover_team_creation_from_the_account_rail(): void
+    {
+        foreach ([User::factory()->create(), User::factory()->teamMember()->create()] as $user) {
+            $this->assertContains('/teams/create', $this->accountHrefs($user));
+            $this->actingAs($user)->get('/teams/create')->assertOk();
+        }
+    }
+
+    public function test_guests_cannot_open_or_submit_team_creation(): void
+    {
+        $this->get('/teams/create')->assertRedirect('/login');
+        $this->postJson('/teams/create', ['name' => 'Guest team'])->assertUnauthorized();
+        $this->assertDatabaseMissing('beam_teams', ['name' => 'Guest team']);
     }
 
     public function test_an_account_row_that_joins_no_mounted_route_throws_rather_than_vanishing(): void

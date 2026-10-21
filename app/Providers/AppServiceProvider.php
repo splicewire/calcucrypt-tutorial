@@ -53,6 +53,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        // Creating a team is open to authenticated users, including users without a team.
+        $this->app->booted(function (): void {
+            $this->app['router']->getRoutes()->getByName('teams.create')
+                ?->defaults(\Splicewire\Beam\Authorization\SeatGate::OPEN_TO_MEMBERS, true);
+        });
         $this->registerServiceDeskNavigation();
         $this->registerAuthoringGates();
         $this->registerResourcePolicies();

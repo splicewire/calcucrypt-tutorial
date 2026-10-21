@@ -53,6 +53,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        \App\Workflows\ServiceRequestApproval::register();
         // Creating a team is open to authenticated users, including users without a team.
         $this->app->booted(function (): void {
             $this->app->make(\Illuminate\Routing\Router::class)->getRoutes()->getByName('teams.create')

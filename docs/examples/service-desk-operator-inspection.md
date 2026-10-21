@@ -155,3 +155,6 @@ These focused checks complement actual browser, socket and SQLite observations; 
 full-suite claim. Full configured PHPStan retains two unrelated schema-token migration errors.
 Stop this listener/browser, release proof capacity and record guarded scratch retention/teardown.
 No owner environment, PostgreSQL proof stores, mail delivery, publication or deployment is needed.
+
+Continue with [request approval](service-desk-approval.md) to apply one versioned approval decision
+through the existing declared resource action, separately from open/closed status.

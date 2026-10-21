@@ -173,3 +173,6 @@ uses a separate Tower fixture to teach PostgreSQL schema isolation and request c
 For a separate read-only operator journey, follow
 [existing Operator Teams inspection](service-desk-operator-inspection.md). It uses explicit operator
 authority in a new private host.
+
+Continue with [request approval](service-desk-approval.md) to apply one versioned approval decision
+through the existing declared resource action, separately from open/closed status.

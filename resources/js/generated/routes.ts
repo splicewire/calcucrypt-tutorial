@@ -18,6 +18,7 @@ export const defaults: RouteMap = {
     'beam-ux-entry.save-draft': 'beam-ux-entries/{id}/save-draft',
     'beam-ux-entry.versions': 'beam-ux-entries/{id}/versions',
     'invitations.redeem': 'invitations/{id}/redeem',
+    'service-requests.approve': 'service-requests/{id}/approve',
     'service-requests.index': 'api/service-requests',
     'service-requests.show': 'api/service-requests/{id}',
     'service-requests.store': 'api/service-requests',

@@ -36,7 +36,14 @@ class ServiceRequestData extends BeamData
         public string $title,
         #[Column('badge', label: 'Status', sort: 1)]
         public string $status,
+        #[Column('badge', label: 'Approval', sort: 2)]
+        public string $approvalState,
     ) {}
+
+    public static function project(ServiceRequest $record): self
+    {
+        return new self($record->id, $record->title, $record->status, $record->approval_state);
+    }
 
     /**
      * @param  Builder<ServiceRequest>  $query

@@ -11,6 +11,16 @@ type QueryOpts<T> = Omit<Partial<UseQueryOptions<T, Error, T>>, 'queryKey' | 'qu
 type MutationVars = { params?: Record<string, string | number>; body?: unknown };
 type MutationOpts<T> = Omit<Partial<UseMutationOptions<T, Error, MutationVars>>, 'mutationFn'>;
 
+export function useServiceRequestsApprove(options?: MutationOpts<import("../Splicewire/Beam/Workflows/Data").WorkflowTransitionAttemptData>) {
+    return useMutation({
+        mutationFn: async (vars: MutationVars) => {
+            const res = await api.post(route('service-requests.approve', vars.params ?? {}), vars.body);
+            return res.data.data as import("../Splicewire/Beam/Workflows/Data").WorkflowTransitionAttemptData;
+        },
+        ...options,
+    });
+}
+
 export function useServiceRequestsIndex(options?: QueryOpts<import("../App/Data").ServiceRequestData[]>) {
     return useQuery({
         queryKey: ['service-requests.index'],

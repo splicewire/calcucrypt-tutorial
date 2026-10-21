@@ -13,3 +13,4 @@ export type EntryPublicationData = import("./Splicewire/Beam/Ux/Data").EntryPubl
 export type InvitationAcceptedData = import("./Splicewire/Beam/Accounts/Data").InvitationAcceptedData;
 export type ServiceRequestData = import("./App/Data").ServiceRequestData;
 export type TeamData = import("./Splicewire/Beam/Accounts/Data").TeamData;
+export type WorkflowTransitionAttemptData = import("./Splicewire/Beam/Workflows/Data").WorkflowTransitionAttemptData;

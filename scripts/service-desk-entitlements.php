@@ -90,15 +90,22 @@ if ($mode === 'setup') {
     if (! is_file($file) || is_link($file)) {
         refuse();
     }
-    $state = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
+    try {
+        $state = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException) {
+        refuse();
+    }
     if (($state['schema'] ?? null) !== 'entitlement-guide/v1'
         || ($state['root'] ?? null) !== realpath(base_path())
         || ($state['database'] ?? null) !== realpath($database)) {
         refuse();
     }
-    $root = BeamUxEntry::query()->whereKey($state['siteRootId'])->where('namespace', 'realms')->where('slug', 'site')->where('realm', 'site')->sole();
+    $root = BeamUxEntry::query()->whereKey($state['siteRootId'])->where('namespace', 'realms')->where('slug', 'site')->where('realm', 'site')->first();
     $teamA = Team::query()->whereKey($state['teamA'])->where('name', 'Entitlement tutorial A')
-        ->where('user_id', $state['actors']['owner']['id'])->sole();
+        ->where('user_id', $state['actors']['owner']['id'])->first();
+    if ($root === null || $teamA === null) {
+        refuse();
+    }
     foreach ($state['actors'] as $name => $actor) {
         if (! User::query()->whereKey($actor['id'])->where('email', $name.'@entitlement-guide.example.test')->exists()) {
             refuse();

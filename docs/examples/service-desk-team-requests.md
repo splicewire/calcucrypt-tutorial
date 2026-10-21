@@ -169,3 +169,7 @@ selected-team queue membership from User-level feature reach, using a separate f
 
 Team-scoped rows are the boundary proved here. The optional [two-tenant storage branch](service-desk-tenancy.md)
 uses a separate Tower fixture to teach PostgreSQL schema isolation and request cleanup.
+
+For a separate read-only operator journey, follow
+[existing Operator Teams inspection](service-desk-operator-inspection.md). It uses explicit operator
+authority in a new private host.

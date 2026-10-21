@@ -186,3 +186,7 @@ staff/plan examples, determine this locked host's behavior.
 
 Continue with [resource content branding](service-desk-branding.md) to save a token through the
 existing editor and inspect its local publication and scoped light/dark resource effect.
+
+For a separate read-only operator journey, follow
+[existing Operator Teams inspection](service-desk-operator-inspection.md). It uses explicit operator
+authority in a new private host.

@@ -89,9 +89,10 @@ See `app/Data/SitemapData.php` for the editable sitemap declaration. This regist
 Frame; a REST API is an explicit host decision using `Particle::mount()` inside the chosen middleware.
 The attribute does not create the model, table or policy and does not mount that REST exposure.
 
-For a complete declaration-to-API example, follow [Service requests](docs/examples/service-request.md):
+For a complete declared API and resource UI example, follow [Service requests](docs/examples/service-request.md):
 a model/table/policy, separate read and input Data, authenticated create/list/show, generated routes
-and response types, and a cookie-free TypeScript client on a fresh localhost fixture.
+and response types, a cookie-free TypeScript client, and schema-driven create/list/read-only-detail
+with automatic list return on a fresh localhost fixture.
 
 ## Checks
 

@@ -7,10 +7,25 @@
             "type": "integer"
         },
         "title": {
-            "type": "string"
+            "type": "string",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 0,
+                    "label": "Title"
+                }
+            }
         },
         "status": {
-            "type": "string"
+            "type": "string",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "widget": "badge",
+                    "sort": 1,
+                    "label": "Status"
+                }
+            }
         }
     },
     "required": [

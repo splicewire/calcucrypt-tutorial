@@ -2,11 +2,13 @@
 
 namespace App\Data;
 
+use Schemastud\DataSchemas\Attributes\Title;
 use Spatie\LaravelData\Attributes\Validation\In;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Splicewire\Beam\Data\BeamData;
 use Splicewire\Beam\Write\Contracts\MapsToModelAttributes;
 
+#[Title('Service request')]
 class ServiceRequestInputData extends BeamData implements MapsToModelAttributes
 {
     public function __construct(

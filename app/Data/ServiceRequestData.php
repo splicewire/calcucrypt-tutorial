@@ -6,6 +6,7 @@ use App\Models\ServiceRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Schemastud\Frame\Attributes\Column;
 use Splicewire\Beam\Data\BeamData;
 use Splicewire\Beam\Particle\Attributes\ParticleResource;
 
@@ -15,12 +16,24 @@ use Splicewire\Beam\Particle\Attributes\ParticleResource;
     data: ServiceRequestData::class,
     input: ServiceRequestInputData::class,
     publicRead: null,
+    label: 'Service requests',
+    singularLabel: 'Service request',
+    form: 'bare',
+    editData: ServiceRequestInputData::class,
+    section: 'service-desk',
+    icon: 'Inbox',
+    navOrder: 10,
+    editable: false,
+    deletable: false,
+    showable: true,
 )]
 class ServiceRequestData extends BeamData
 {
     public function __construct(
         public int $id,
+        #[Column(label: 'Title', sort: 0)]
         public string $title,
+        #[Column('badge', label: 'Status', sort: 1)]
         public string $status,
     ) {}
 

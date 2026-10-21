@@ -53,9 +53,28 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->registerServiceDeskNavigation();
         $this->registerAuthoringGates();
         $this->registerResourcePolicies();
         $this->registerDoctorAudits();
+    }
+
+    protected function registerServiceDeskNavigation(): void
+    {
+        $this->app->make(\Splicewire\Beam\Nav\NavSectionRegistry::class)->register(
+            new \Splicewire\Beam\Nav\NavSection(
+                key: 'service-desk',
+                realm: 'tenant',
+                label: 'Service desk',
+                icon: 'Inbox',
+                href: '/service-desk',
+                order: 20,
+                entitlement: null,
+                permission: null,
+                audience: \Splicewire\Beam\Nav\NavAudience::Product,
+            ),
+            by: 'app',
+        );
     }
 
     /**

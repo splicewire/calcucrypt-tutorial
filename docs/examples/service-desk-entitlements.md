@@ -28,7 +28,7 @@ let env = readFileSync('.env.example', 'utf8');
 const values = {
     APP_ENV: 'local', APP_URL: 'http://127.0.0.1:46280', DB_CONNECTION: 'sqlite', DB_DATABASE: database,
     CACHE_STORE: 'array', SESSION_DRIVER: 'file', QUEUE_CONNECTION: 'sync',
-    MAIL_MAILER: 'log', FILESYSTEM_DISK: 'local', LOG_CHANNEL: 'single',
+    MAIL_MAILER: 'log', FILESYSTEM_DISK: 'local', LOG_CHANNEL: 'single', ACCOUNT_SEED_DEMO_USERS: 'false',
 };
 for (const [key, value] of Object.entries(values)) {
     const line = new RegExp(`^#?\\s*${key}=.*$`, 'm');
@@ -43,6 +43,8 @@ XDEBUG_MODE=off herd php artisan splicewire:beam:install --no-interaction
 XDEBUG_MODE=off herd php artisan db:seed --class='Splicewire\Beam\Ux\Seeders\ThemeSeeder'
 ```
 
+This fixture disables the package's optional demo-user seeding with ACCOUNT_SEED_DEMO_USERS=false,
+so setup can require empty users/teams before provisioning its private actors.
 Theme seeding is explicit: this locked install does not otherwise guarantee the `theme/default`
 entry. It seeds this fixture only. No --force or owner configuration is needed.
 

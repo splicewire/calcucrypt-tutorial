@@ -47,11 +47,12 @@ XDEBUG_MODE=off herd php artisan splicewire:beam:install --no-interaction
 ```
 
 The installer migrates/seeds only this new SQLite file. Do not use --force or copy an owner .env.
-For the browser, use the unchanged explicit Beam UI candidate
-`0991bf37cb66ed948a863b86050e3dc1890e61d6`. Follow only the
+For the browser, use the explicit Beam UI candidate
+`ec097daba3c1ace1c482c07467b3eb71bc0ec729`. Follow only the
 [isolated package build/overlay recipe](service-request.md#build-the-explicit-local-ui-candidate)
 with a fresh Beam clone and pinned build tools; use this chapter's **current starter** as
-SERVICE_DESK_ROOT. That build recipe is shared with the historical chapter; it does not require
+SERVICE_DESK_ROOT. Use the Beam checkpoint above, which adds successful team-transition cache resets to the earlier
+UI. That build recipe is shared with the historical chapter; it does not require
 checking the starter back to the old private-row commit. Then regenerate and build this fixture:
 
 ```bash
@@ -88,7 +89,8 @@ fixture's log; no external delivery transport is used. Registration stays closed
    request: owner/other still see only A. A role on B grants no authority over A.
 5. Sign in as teamless. The service-request list/create navigation is absent. The persistent account
    **Create a team** path remains usable. Direct JSON list/create calls are 403. Direct resource console
-   behavior is the stock denied/unavailable route state, measured in proof; this chapter does not add
+   renders the stock “No surface here” state (HTTP200, no form or Save), with the same account
+   recovery link; this chapter does not add
    a custom empty screen. Use Create a team to recover rather than assuming a team was provisioned.
 
 Team authority is a fresh query through the explicit actor's memberships and current_team_id. A
@@ -111,6 +113,11 @@ are excluded even for their creator. **There is no automatic transfer or backfil
 creator's current team. Do not migrate a live site for this tutorial. Test the transition on a fresh
 disposable copy or new fixture; transferring old private requests requires a separate explicit decision.
 Creator deletion retains the pre-existing user FK behavior; no account-deletion journey is added.
+
+The packaged create-team and invitation-accept adapters reset affected Frame manifest, record/list
+and facet caches only after successful transitions. This prevents the prior teamless manifest from
+hiding newly reachable resources in the same browser session. Failure preserves cached state;
+unrelated queries remain intact. No manual refresh is part of the ordinary create/join journey.
 
 The read response remains id/title/status, and the generated request schema still exposes only
 title/status. Run the actual generator and inspect its ran/skipped/failed summary. Generated response

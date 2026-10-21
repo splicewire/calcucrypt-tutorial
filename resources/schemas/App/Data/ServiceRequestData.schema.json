@@ -26,12 +26,24 @@
                     "label": "Status"
                 }
             }
+        },
+        "approvalState": {
+            "type": "string",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "widget": "badge",
+                    "sort": 2,
+                    "label": "Approval"
+                }
+            }
         }
     },
     "required": [
         "id",
         "title",
-        "status"
+        "status",
+        "approvalState"
     ],
     "$id": "ServiceRequestData"
 }

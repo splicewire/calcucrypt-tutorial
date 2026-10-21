@@ -183,3 +183,6 @@ For the installed sources, read [DefaultEntitlementResolver](../../vendor/splice
 beam-ux EntryBodyShowOp/EntryBodySaveOp enforce it; `HandleInertiaRequests` exposes resolved UI props.
 The packaged ThemeEditor consumes these body operations. These source seams, rather than historical
 staff/plan examples, determine this locked host's behavior.
+
+Continue with [resource content branding](service-desk-branding.md) to save a token through the
+existing editor and inspect its local publication and scoped light/dark resource effect.

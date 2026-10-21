@@ -100,6 +100,8 @@ for the historical account onboarding checkpoint. Continue with the current
 authority, creator attribution, outsider denial and migration of the application contract.
 Then inspect [existing Theme entitlements](docs/examples/service-desk-entitlements.md) with
 a guarded local grant/revoke fixture and the separate role/feature boundaries.
+Continue to [resource content branding](docs/examples/service-desk-branding.md) with the existing
+Theme editor and a scoped host token mapping.
 
 ## Checks
 

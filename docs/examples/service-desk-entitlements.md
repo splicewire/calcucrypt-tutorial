@@ -174,10 +174,11 @@ are not a new policy or entitlement-key design. The account shell's **Free** chi
 text, not evidence of a billing subscription. This host has no installed PHP commerce/tenancy
 adoption from following this guide.
 
-For the installed sources, read `vendor/splicewire/laravel-beam-accounts/src/Entitlements/DefaultEntitlementResolver.php`,
-`EntitlementComposer.php` in that directory, `Sharing/AccessGrants.php` and `Enums/Role.php` in the
-same package. The generic contract is
-`vendor/rushing/laravel-permission-cascade/src/Contracts/EntitlementResolver.php`.
+For the installed sources, read [DefaultEntitlementResolver](../../vendor/splicewire/laravel-beam-accounts/src/Entitlements/DefaultEntitlementResolver.php),
+[EntitlementComposer](../../vendor/splicewire/laravel-beam-accounts/src/Entitlements/EntitlementComposer.php),
+[AccessGrants](../../vendor/splicewire/laravel-beam-accounts/src/Sharing/AccessGrants.php) and
+[Role](../../vendor/splicewire/laravel-beam-accounts/src/Enums/Role.php). The generic contract is
+[EntitlementResolver](../../vendor/rushing/laravel-permission-cascade/src/Contracts/EntitlementResolver.php).
 `AppServiceProvider` aliases ux.author to entitlement:ux.author. The existing account route and
 beam-ux EntryBodyShowOp/EntryBodySaveOp enforce it; `HandleInertiaRequests` exposes resolved UI props.
 The packaged ThemeEditor consumes these body operations. These source seams, rather than historical

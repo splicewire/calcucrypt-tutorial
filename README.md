@@ -93,6 +93,7 @@ For a complete declared API and resource UI example, follow [Service requests](d
 a model/table/policy, separate read and input Data, authenticated create/list/show, generated routes
 and response types, a cookie-free TypeScript client, and schema-driven create/list/read-only-detail
 with automatic list return on a fresh localhost fixture.
+
 Follow the [local team creation and invitation guide](docs/examples/service-desk-team.md)
 to put two existing tutorial accounts onto a team with Owner and Member authority.
 

@@ -68,7 +68,7 @@ Inspect only this fixture's SQLite database: `beam_teams`, `beam_memberships`, `
 raw mail or signed links. A refused invite/role mutation must leave these rows unchanged.
 
 An anonymous JSON POST to `/teams/create` returns 401; the browser form redirects to login. Member
-POST `/beam/accounts/invitations` and PUT `/beam/accounts/members/{membership-id}/role` return 403.
+POST `/beam/accounts/invitations` and PUT `/beam/accounts/members/{member-user-id}/role` return 403.
 A wrong-account JSON POST to `/invitations/{token}/redeem` returns 403; repeating it after acceptance
 returns 410. Use session CSRF for direct browser requests. No denial should create another membership.
 

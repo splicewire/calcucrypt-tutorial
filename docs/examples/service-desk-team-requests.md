@@ -161,3 +161,6 @@ Tests use an independent in-memory database, including migration round-trip/priv
 and live membership removal. Full suite health is not implied; the two known unrelated migration
 PHPStan errors remain disclosed. Stop only your server, release capacity and use existing guarded
 scratch retention/teardown for private actors, capture and fixtures.
+
+Continue with [existing Theme entitlement access](service-desk-entitlements.md) to distinguish
+selected-team queue membership from User-level feature reach, using a separate fresh local fixture.

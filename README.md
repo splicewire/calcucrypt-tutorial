@@ -98,6 +98,8 @@ Follow the [local team creation and invitation guide](docs/examples/service-desk
 for the historical account onboarding checkpoint. Continue with the current
 [shared team queue](docs/examples/service-desk-team-requests.md), including live membership
 authority, creator attribution, outsider denial and migration of the application contract.
+Then inspect [existing Theme entitlements](docs/examples/service-desk-entitlements.md) with
+a guarded local grant/revoke fixture and the separate role/feature boundaries.
 
 ## Checks
 

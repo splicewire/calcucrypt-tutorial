@@ -1,10 +1,11 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "title": "ServiceRequestData",
+    "title": "Service request",
     "properties": {
         "id": {
-            "type": "integer"
+            "type": "integer",
+            "title": "ID"
         },
         "title": {
             "type": "string",
@@ -29,6 +30,7 @@
         },
         "approvalState": {
             "type": "string",
+            "title": "Approval",
             "x-stud-widget-contexts": {
                 "list-column": {
                     "participates": true,

@@ -1,5 +1,8 @@
 # Service requests: declared API, typed client and resource UI
 
+The current paired [read-schema continuation](service-desk-read-schema.md) adds explicit read detail
+without extending the write input. Use its package overlay for that outcome.
+
 > Historical checkpoint: this chapter and its commands describe starter
 > `35cbc40e6ca6bea295ba7cad36cd0a0d3e1624bb` with Beam UI
 > `0991bf37cb66ed948a863b86050e3dc1890e61d6`. Check out that starter commit for the original

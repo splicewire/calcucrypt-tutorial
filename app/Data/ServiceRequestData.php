@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Support\ServiceRequestTeam;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Schemastud\DataSchemas\Attributes\Title;
 use Schemastud\Frame\Attributes\Column;
 use Splicewire\Beam\Data\BeamData;
 use Splicewire\Beam\Particle\Attributes\ParticleResource;
@@ -28,15 +29,18 @@ use Splicewire\Beam\Particle\Attributes\ParticleResource;
     deletable: false,
     showable: true,
 )]
+#[Title('Service request')]
 class ServiceRequestData extends BeamData
 {
     public function __construct(
+        #[Title('ID')]
         public int $id,
         #[Column(label: 'Title', sort: 0)]
         public string $title,
         #[Column('badge', label: 'Status', sort: 1)]
         public string $status,
         #[Column('badge', label: 'Approval', sort: 2)]
+        #[Title('Approval')]
         public string $approvalState,
     ) {}
 

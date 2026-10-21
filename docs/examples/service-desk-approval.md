@@ -1,5 +1,9 @@
 # Approve a shared service request through a declared action
 
+For the paired read-schema candidates and visible disabled ID/Approval detail, continue with
+[write/read schema purpose](service-desk-read-schema.md). This chapter retains its historical
+locked-package setup and list/history proof; the continuation supplies the current package overlay.
+
 Continue from [shared team requests](service-desk-team-requests.md) with the supplied current starter
 checkpoint and unchanged Beam UI `ec097daba3c1ace1c482c07467b3eb71bc0ec729`. A Member creates a request;
 a selected-team Owner or Admin approves it. The existing Frame action, confirmation, notice and refetch

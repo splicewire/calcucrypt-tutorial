@@ -70,7 +70,8 @@ tenancy, team switcher or permission-management UI.
 `resources/js/service-desk-theme.tsx` reads existing `page.props.theme.site` and supplies light/dark
 accent variables inside a wrapper. `resources/js/app.tsx` appends that wrapper only for frame/console
 through the supported Inertia layout option, preserving the packaged layout chain and console.
-`resources/css/app.css` maps those scoped variables to shadcn primary/primary-foreground; missing
+`resources/css/app.css` maps those scoped variables to shadcn primary/primary-foreground and rebinds the Tailwind color
+aliases in that same scope; missing
 shared values fall back to the host's existing light/dark defaults. The wrapper adds no layout box.
 
 This is a host component-library token mapping, the second layer of the existing branding pattern.

@@ -186,6 +186,9 @@
     display: contents;
     --primary: var(--desk-accent, oklch(0.205 0 0));
     --primary-foreground: var(--desk-accent-foreground, oklch(0.985 0 0));
+    /* Tailwind's generated utilities read these aliases; rebind them in this scope. */
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
 }
 
 .dark .service-desk-theme {

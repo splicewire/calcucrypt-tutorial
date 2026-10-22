@@ -47,6 +47,6 @@ final class ExternalRequestBacking extends CollectionBacking implements Declares
 
     public function filterVocabulary(): FilterVocabulary
     {
-        return FilterVocabulary::of(DeclaredFacet::set('status', inline: [['value' => 'open', 'label' => 'Open'], ['value' => 'closed', 'label' => 'Closed']]));
+        return FilterVocabulary::of(DeclaredFacet::exact('status', inline: [['value' => 'open', 'label' => 'Open'], ['value' => 'closed', 'label' => 'Closed']]));
     }
 }

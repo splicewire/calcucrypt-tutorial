@@ -1,5 +1,10 @@
 # Approve a shared service request through a declared action
 
+Current authoring compatibility: follow [Theme draft/Release adoption](service-desk-releases.md)
+for the selected package pair and fresh/upgrade setup. Theme **Save draft** keeps published tokens
+unchanged; explicit **Publish** releases the saved version (or requests review). Earlier slice proof
+and candidate identities remain historical. This chapter's resource/access behavior is unchanged.
+
 For the paired read-schema candidates and visible disabled ID/Approval detail, continue with
 [write/read schema purpose](service-desk-read-schema.md). This chapter retains its historical
 locked-package setup and list/history proof; the continuation supplies the current package overlay.

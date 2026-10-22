@@ -75,8 +75,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ⚠️ **Not a bespoke theme UI, deliberately.** `theme-entries-and-authoring`'s PRD closed Part A §5
     // with the ruling that the theme editor is Frame's form on the `ParticleResource` — so the page
     // body is `@splicewire/beam-ux`'s own `<ThemeEditor>`, which is `useEntryBody` →
-    // `RegionInspector`'s `form` body (the REAL `@schemastud/seam` SchemaForm) → `useSaveEntryBody`
-    // over the SAME `body` / `save-body` operations mounted above. The fields are generated from the
+    // `RegionInspector`'s `form` body (the REAL `@schemastud/seam` SchemaForm) → Save draft and
+    // explicit Publish through the SAME entry operations and fixed-version Release service mounted above. The fields are generated from the
     // server's schema (`EntryBodyEnvelope::schemaFor()` answers a theme entry with `ThemeSchemas`'
     // `{canvas, site}`), so adding a token in PHP adds a field here with no frontend change.
     //

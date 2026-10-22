@@ -1,5 +1,10 @@
 # Create with a write schema and inspect the declared read projection
 
+Current authoring compatibility: follow [Theme draft/Release adoption](service-desk-releases.md)
+for the selected package pair and fresh/upgrade setup. Theme **Save draft** keeps published tokens
+unchanged; explicit **Publish** releases the saved version (or requests review). Earlier slice proof
+and candidate identities remain historical. This chapter's resource/access behavior is unchanged.
+
 Continue the [approval journey](service-desk-approval.md) with the paired PHP Frame, JS Frame and
 Beam UI candidates supplied with this starter. The input remains Title/Status. Noneditable detail
 now displays disabled ID/Title/Status/Approval fields, using the read DTO and response projection.

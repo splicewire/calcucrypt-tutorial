@@ -1,5 +1,10 @@
 # Read a service-backed external request source
 
+Current authoring compatibility: follow [Theme draft/Release adoption](service-desk-releases.md)
+for the selected package pair and fresh/upgrade setup. Theme **Save draft** keeps published tokens
+unchanged; explicit **Publish** releases the saved version (or requests review). Earlier slice proof
+and candidate identities remain historical. This chapter's resource/access behavior is unchanged.
+
 This chapter adds **External requests** beside the local service desk. It demonstrates the actual
 Laravel HTTP transport against a deterministic local GET-only service. It is a teaching fixture, not
 an integration with a production helpdesk provider. No local external-request model, migration, shadow,

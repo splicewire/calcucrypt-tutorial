@@ -1,5 +1,10 @@
 # Save a Theme token and brand the request content
 
+Current authoring compatibility: follow [Theme draft/Release adoption](service-desk-releases.md)
+for the selected package pair and fresh/upgrade setup. Theme **Save draft** keeps published tokens
+unchanged; explicit **Publish** releases the saved version (or requests review). Earlier slice proof
+and candidate identities remain historical. This chapter's resource/access behavior is unchanged.
+
 Continue from [existing Theme entitlement access](service-desk-entitlements.md) at the current
 starter candidate, with unchanged Beam UI `ec097daba3c1ace1c482c07467b3eb71bc0ec729`.
 The starter maps published Theme accents into the existing Frame console's **content controls**.
@@ -46,7 +51,7 @@ The CSS mirror is not an imported runtime stylesheet. Page re-requests fetch the
 2. In account navigation open **Theme**. The existing **Theme tokens** editor displays Canvas theme
    and Site theme, supplied by the server's schema. In **Site theme**, change **Accent** to `#7c3aed`.
    Keep Accent foreground white; this purple/white pair is legible. Do not change Canvas theme's
-   separate Accent. Use the native color field, then the existing **Save** button; wait for **Saved.**
+   separate Accent. Use the native color field, then **Save draft**. Published controls stay unchanged. Click **Publish** and wait for the Release to show Published (or complete required independent review).
 3. Re-request Service requests (ordinary navigation or a page reload). **New service request** now
    uses purple with white text. Open New: the normal Save button uses the same pair. Create another
    request, inspect its list return and read-only detail. Detail inherits the same scoped primary
@@ -79,13 +84,14 @@ It does not style each button, fork Frame/SchemaForm, deep-import a private page
 resolver/save path or recolor every widget. Changes to this adapter's source CSS/JS need the usual
 initial type/build; changes to its stored token values need only a page re-request.
 
-## Inspect what Save actually published
+## Inspect draft versus explicit publication
 
 Keep safe before/after snapshots of the actual body via EntryBodyEnvelope, resolved Theme, this
 Theme entry's published_version, publication head and ordered versions, and its codec mirror.
-The existing save-body operation is immediate **local content publication**: it writes the working
-body, records/reuses a version, moves the published pin, and mirrors the published source. For a
-changed token, expect a new version and matching head/publication pin. Inspect actual IDs and
+ThemeEditor uses save-draft to advance the working head while leaving the published pin/mirror
+unchanged. Explicit Publish uses a server-owned fixed-version Release of one. After publication,
+expect its selected version at the publication pin and its body at the mirror. The older save-body
+API retains its existing immediate-publication contract for other callers. Inspect actual IDs and
 stored values; HTTP200 or an enabled Save alone does not establish this result.
 
 The form omits the shell namespace; it must survive untouched, as must canvas when editing site.

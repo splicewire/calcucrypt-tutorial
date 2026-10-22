@@ -1,5 +1,10 @@
 # Inspect your team's committed approval usage
 
+Current authoring compatibility: follow [Theme draft/Release adoption](service-desk-releases.md)
+for the selected package pair and fresh/upgrade setup. Theme **Save draft** keeps published tokens
+unchanged; explicit **Publish** releases the saved version (or requests review). Earlier slice proof
+and candidate identities remain historical. This chapter's resource/access behavior is unchanged.
+
 Continue the [paired read-schema guide](service-desk-read-schema.md) on a new private host at the
 supplied current starter checkpoint. Approval usage is a read-only projection of existing committed
 workflow facts. No commerce package, extra ledger, migration or payment provider is needed.

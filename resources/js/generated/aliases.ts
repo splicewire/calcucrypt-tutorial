@@ -8,11 +8,15 @@
 export type ApprovalUsageData = import("./App/Data").ApprovalUsageData;
 export type AuthUserData = import("./Splicewire/Beam/Accounts/Data").AuthUserData;
 export type BeamUxEntryBodyData = import("./Splicewire/Beam/Ux/Data").BeamUxEntryBodyData;
+export type BeamUxEntryBodyInputData = import("./Splicewire/Beam/Ux/Data").BeamUxEntryBodyInputData;
 export type DocsSearchResultsData = import("./Splicewire/Beam/Docs/Data").DocsSearchResultsData;
 export type EntryMakeEditableOutputData = import("./Splicewire/Beam/Ux/Data").EntryMakeEditableOutputData;
 export type EntryPublicationData = import("./Splicewire/Beam/Ux/Data").EntryPublicationData;
+export type EntrySourceData = import("./Splicewire/Beam/Ux/Data").EntrySourceData;
 export type ExternalRequestData = import("./App/Data").ExternalRequestData;
 export type InvitationAcceptedData = import("./Splicewire/Beam/Accounts/Data").InvitationAcceptedData;
+export type PageEntryRefData = import("./Splicewire/Beam/Ux/Data").PageEntryRefData;
+export type ReleaseData = import("./Splicewire/Beam/Ux/Data").ReleaseData;
 export type ServiceRequestData = import("./App/Data").ServiceRequestData;
 export type TeamData = import("./Splicewire/Beam/Accounts/Data").TeamData;
 export type WorkflowTransitionAttemptData = import("./Splicewire/Beam/Workflows/Data").WorkflowTransitionAttemptData;

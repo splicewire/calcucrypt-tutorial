@@ -1,5 +1,10 @@
 # Inspect existing Theme access with local entitlements
 
+Current authoring compatibility: follow [Theme draft/Release adoption](service-desk-releases.md)
+for the selected package pair and fresh/upgrade setup. Theme **Save draft** keeps published tokens
+unchanged; explicit **Publish** releases the saved version (or requests review). Earlier slice proof
+and candidate identities remain historical. This chapter's resource/access behavior is unchanged.
+
 Continue from the [shared team queue](service-desk-team-requests.md). This chapter uses the current
 starter candidate and unchanged Beam UI `ec097daba3c1ace1c482c07467b3eb71bc0ec729`.
 It reproduces access to the shipped Theme editor, through a disposable administrative CLI fixture.

@@ -1,5 +1,10 @@
 # Inspect teams through the existing Operator surface
 
+Current authoring compatibility: follow [Theme draft/Release adoption](service-desk-releases.md)
+for the selected package pair and fresh/upgrade setup. Theme **Save draft** keeps published tokens
+unchanged; explicit **Publish** releases the saved version (or requests review). Earlier slice proof
+and candidate identities remain historical. This chapter's resource/access behavior is unchanged.
+
 Continue from the [shared request queue](service-desk-team-requests.md). Use the supplied current
 starter checkpoint and unchanged Beam UI `ec097daba3c1ace1c482c07467b3eb71bc0ec729`.
 This walkthrough reads host-wide team metadata through the shipped Operator → People → Teams UI.

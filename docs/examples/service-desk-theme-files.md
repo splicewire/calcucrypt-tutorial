@@ -57,3 +57,9 @@ Member/diagnostics-only/revoked authors and direct publishers without edit canno
 reconcile. Active/unknown tenancy, noncentral placement, unsafe paths and unsupported codecs refuse.
 No Git executable is required for comparison/import. Whole-Release Commit now remains separate.
 Broader batch reconciliation, arbitrary CSS/codecs and existing-file overwrite remain unimplemented.
+
+If Publish overlaps a local writer under SQLite, its earlier workflow read can prevent lock
+upgrade. A recognized busy/locked statement after confirmed rollback returns409 with Reload and
+explicit retry guidance; pin, DB and recording remain unchanged. Reload after contention and
+retry deliberately. This is not universal busy elimination, automatic retry or callback replay.
+Other database faults retain500; post-commit recording failures keep their existing separate result.

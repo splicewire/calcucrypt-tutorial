@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Splicewire\Beam\Facades\Particle;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +28,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user()->only(['id', 'name', 'email']);
 })->name('api.user');
+
+// The declaration registers the resource; this host chooses its authenticated REST exposure.
+Route::middleware('auth:sanctum')->group(function (): void {
+    Particle::mount('service-requests', 'service-requests')->only(['index', 'show', 'store']);
+    Particle::mount('external-requests', 'external-requests')->only(['index']);
+    Particle::mount('service-request-usage', 'service-request-usage')->only(['index']);
+});

@@ -5,6 +5,7 @@ import { configureDocs } from '@splicewire/beam-docs';
 import { beamDocsPages } from '@splicewire/beam-docs/pages';
 import '@splicewire/beam-ux/tokens-docs.css';
 import { authFeatures } from './beam';
+import { ServiceDeskTheme } from './service-desk-theme';
 
 const pages = import.meta.glob<PageModule>([
     './pages/**/*.tsx',
@@ -19,8 +20,26 @@ if (import.meta.env.DEV) {
 const options = beamInertiaOptions({
     development: import.meta.env.DEV,
     features: authFeatures,
+    fileEditorHref: () => '/account/theme',
     pages: { ...beamDocsPages, ...pages },
 });
 configureDocs();
 
-createInertiaApp(options);
+createInertiaApp({
+    ...options,
+    layout: (name) => {
+        const layouts = options.layout(name);
+
+        if (name !== 'frame/console') {
+            return layouts;
+        }
+
+        const contentLayouts = Array.isArray(layouts)
+            ? layouts
+            : layouts
+              ? [layouts]
+              : [];
+
+        return [...contentLayouts, ServiceDeskTheme];
+    },
+});

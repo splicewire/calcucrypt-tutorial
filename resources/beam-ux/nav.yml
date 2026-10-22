@@ -48,6 +48,12 @@ account-team:
   type: page
   realm: account
 
+account-create-team:
+  segment: /teams/create
+  title: Create a team
+  type: page
+  realm: account
+
 # The THEME editor's door (G2-BEAM-THEME-NAV). The page it leads to is gated on `can:ux.author` and
 # its two operations declare `ability: 'ux.author'`, so a member who follows this seat is refused at
 # the door, and hiding a seat per ABILITY (as

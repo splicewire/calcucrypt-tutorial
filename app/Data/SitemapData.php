@@ -8,6 +8,7 @@ use Schemastud\Frame\Attributes\Column;
 use Schemastud\Frame\Attributes\NotInList;
 use Spatie\LaravelData\Data;
 use Splicewire\Beam\Particle\Attributes\ParticleResource;
+use Splicewire\Beam\Write\Contracts\MapsToModelAttributes;
 
 /**
  * The record leaf's edit+read shape (kind A) — the single authored artifact the Frame
@@ -28,6 +29,7 @@ use Splicewire\Beam\Particle\Attributes\ParticleResource;
 #[ParticleResource(
     key: 'sitemap',
     backing: SitemapRecord::class,
+    input: SitemapData::class,
     label: 'Sitemap',
     group: 'Site',
     icon: 'map',
@@ -41,7 +43,7 @@ use Splicewire\Beam\Particle\Attributes\ParticleResource;
     // boundary - it replaces any row/scope predicate: the population is global, gated only by the authority.
     readBoundary: \Splicewire\Beam\Particle\ParticleResource::READ_BOUNDARY_GLOBAL,
 )]
-class SitemapData extends Data
+class SitemapData extends Data implements MapsToModelAttributes
 {
     public function __construct(
         #[Column(label: 'Label', sort: 0)]
@@ -74,23 +76,26 @@ class SitemapData extends Data
      * `prepare` is beam's before-write hook ({@see \Splicewire\Beam\Particle\ParticleResource::$prepare}),
      * the same seam `Splicewire\Beam\Accounts\Data\InvitationData` uses to mint an invite token.
      *
-     * ⚠️ `$input` is typed **array**, not `self`. The hook is handed whatever the write was given, and
-     * this resource declares no `input:` class on its `#[ParticleResource]`, so what arrives is the
-     * raw validated array — a `self` type hint here is a TypeError on every create, not a nicer
-     * signature. `self::from()` recovers the typed object, and the DTO's own defaults with it.
+     * HTTP writes receive the declared, validated input DTO. Direct array callers remain
+     * supported and use the same validation and explicit four-field column map.
      *
-     * @param  array<string, mixed>  $input
+     * @param  self|array<string, mixed>  $input
      */
-    public static function prepare(SitemapRecord $record, array $input): void
+    public static function prepare(SitemapRecord $record, self|array $input): void
     {
-        $data = self::from($input);
+        $data = $input instanceof self ? $input : self::validateAndCreate($input);
+        $record->payload = $data->toModelAttributes()['payload'];
+    }
 
-        $record->payload = [
-            'label' => $data->label,
-            'href' => $data->href,
-            'order' => $data->order,
-            'externalUrl' => $data->externalUrl,
-        ];
+    /** @return array{payload: array{label: string, href: string, order: int, externalUrl: ?string}} */
+    public function toModelAttributes(): array
+    {
+        return ['payload' => [
+            'label' => $this->label,
+            'href' => $this->href,
+            'order' => $this->order,
+            'externalUrl' => $this->externalUrl,
+        ]];
     }
 
     /**

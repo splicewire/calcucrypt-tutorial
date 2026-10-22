@@ -64,8 +64,8 @@ prototype module and route tokens. The package's static wiring audit is availabl
 
 ## Exposing a model in the admin — drop one annotated Data class
 
-A model shows up in the Frame admin by dropping **one** `#[ParticleResource]`-annotated Data class into
-`app/Data/`. That is the whole declaration — no second declaration, no `registerClass()` in a provider,
+An existing model with its table and authorization policy shows up in the Frame admin by dropping
+**one** `#[ParticleResource]`-annotated Data class into `app/Data/`. That is the whole declaration — no second declaration, no `registerClass()` in a provider,
 no handler-map entry. Beam's boot-time attributed discovery scans `app/Data` (config
 `frame.discover_paths`), reflects the attribute into the admin manifest, and the resource appears at
 `/frame/manifest` with its editor route wired.
@@ -76,18 +76,32 @@ model, nav placement (`group` / `section` / `navOrder` / `icon`), and route iden
 ```php
 #[ParticleResource(
     key: 'sitemap',
-    model: SitemapRecord::class,
+    backing: SitemapRecord::class,
     label: 'Sitemap',           // a non-empty label marks the resource FRAMED (navigable + editable)
     group: 'Site',
     section: 'links',
     navOrder: 99,
-    routeName: 'frame.resources.sitemap',
 )]
 class SitemapData extends Data { /* … Column-annotated fields … */ }
 ```
 
-See `app/Data/SitemapData.php` for the worked example (the editable sitemap resource). Adding your own
-resource is the same one-file move: annotate a Data class, drop it in `app/Data/`, done.
+See `app/Data/SitemapData.php` for the editable sitemap declaration. This registers the resource in
+Frame; a REST API is an explicit host decision using `Particle::mount()` inside the chosen middleware.
+The attribute does not create the model, table or policy and does not mount that REST exposure.
+
+For the historical private-request API/UI checkpoint, follow [Service requests](docs/examples/service-request.md):
+a model/table/policy, separate read and input Data, authenticated create/list/show, generated routes
+and response types, a cookie-free TypeScript client, and schema-driven create/list/read-only-detail
+with automatic list return on a fresh localhost fixture.
+
+Follow the [local team creation and invitation guide](docs/examples/service-desk-team.md)
+for the historical account onboarding checkpoint. Continue with the current
+[shared team queue](docs/examples/service-desk-team-requests.md), including live membership
+authority, creator attribution, outsider denial and migration of the application contract.
+Then inspect [existing Theme entitlements](docs/examples/service-desk-entitlements.md) with
+a guarded local grant/revoke fixture and the separate role/feature boundaries.
+Continue to [resource content branding](docs/examples/service-desk-branding.md) with the existing
+Theme editor and a scoped host token mapping.
 
 ## Checks
 
@@ -177,6 +191,11 @@ All contributions to the Starter Kits from now on should be made through [Maestr
 ## Code of Conduct
 
 In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
+## Theme authoring example
+
+- [Theme drafts and fixed-version Release publication](docs/examples/service-desk-releases.md): explicit local package adoption, fresh/upgrade recipe and published consumer.
+- [Local Release recording and Files recovery](docs/examples/service-desk-recording.md): member-only Git effects, separate failure, same-receipt retry and history SHA.
 
 ## License
 

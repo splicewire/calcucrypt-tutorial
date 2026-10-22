@@ -32,11 +32,62 @@ export function useBeamUxEntryClearBody(options?: MutationOpts<import("../Splice
     });
 }
 
+export function useBeamUxEntryCreateRelease(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").ReleaseData>) {
+    return useMutation({
+        mutationFn: async (vars: MutationVars) => {
+            const res = await api.post(route('beam-ux-entry.create-release', vars.params ?? {}), vars.body);
+            return res.data.data as import("../Splicewire/Beam/Ux/Data").ReleaseData;
+        },
+        ...options,
+    });
+}
+
+export function useBeamUxEntryMakeEditable(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").EntryMakeEditableOutputData>) {
+    return useMutation({
+        mutationFn: async (vars: MutationVars) => {
+            const res = await api.post(route('beam-ux-entry.make-editable'), vars.body);
+            return res.data.data as import("../Splicewire/Beam/Ux/Data").EntryMakeEditableOutputData;
+        },
+        ...options,
+    });
+}
+
+export function useBeamUxEntryPrintSource(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").EntrySourceData>) {
+    return useMutation({
+        mutationFn: async (vars: MutationVars) => {
+            const res = await api.post(route('beam-ux-entry.print-source', vars.params ?? {}), vars.body);
+            return res.data.data as import("../Splicewire/Beam/Ux/Data").EntrySourceData;
+        },
+        ...options,
+    });
+}
+
 export function useBeamUxEntryPublish(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").EntryPublicationData>) {
     return useMutation({
         mutationFn: async (vars: MutationVars) => {
             const res = await api.post(route('beam-ux-entry.publish', vars.params ?? {}), vars.body);
             return res.data.data as import("../Splicewire/Beam/Ux/Data").EntryPublicationData;
+        },
+        ...options,
+    });
+}
+
+export function useBeamUxEntryReadSource(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").BeamUxEntryBodyInputData>) {
+    return useMutation({
+        mutationFn: async (vars: MutationVars) => {
+            const res = await api.post(route('beam-ux-entry.read-source', vars.params ?? {}), vars.body);
+            return res.data.data as import("../Splicewire/Beam/Ux/Data").BeamUxEntryBodyInputData;
+        },
+        ...options,
+    });
+}
+
+export function useBeamUxEntryResolveRef(options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").PageEntryRefData>) {
+    return useQuery({
+        queryKey: ['beam-ux-entry.resolve-ref'],
+        queryFn: async () => {
+            const res = await api.get(route('beam-ux-entry.resolve-ref'));
+            return res.data.data as import("../Splicewire/Beam/Ux/Data").PageEntryRefData;
         },
         ...options,
     });

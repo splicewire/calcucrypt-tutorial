@@ -1,0 +1,52 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "ExternalRequestSourceResponseData",
+    "properties": {
+        "data": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/ExternalRequestSourceRowData"
+            },
+            "maxItems": 100
+        }
+    },
+    "required": [
+        "data"
+    ],
+    "$id": "ExternalRequestSourceResponseData",
+    "$defs": {
+        "ExternalRequestSourceRowData": {
+            "type": "object",
+            "title": "ExternalRequestSourceRowData",
+            "properties": {
+                "externalId": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 200
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "open",
+                        "closed"
+                    ],
+                    "examples": [
+                        "open"
+                    ]
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "externalId",
+                "title",
+                "status",
+                "updatedAt"
+            ]
+        }
+    }
+}

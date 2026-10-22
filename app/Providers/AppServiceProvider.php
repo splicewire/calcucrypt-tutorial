@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         // The public /schemas door serves schema documents at their identities. The catalog UI
         // gets its own path through the same plan that projects console routes and navigation.
         $this->app->bind(RouteContextPlan::class, fn (): RouteContextPlan => new RouteContextPlan(
-            resourcePaths: ['schemas' => 'schema-catalog'],
+            resourcePaths: ['schemas' => 'schema-catalog', 'beam-ux-release-files' => 'release-files'],
         ));
 
         // Bind the host account-shell provider over beam-accounts' NullAccountShellProvider default,
@@ -53,9 +53,36 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        \App\Workflows\ServiceRequestApproval::register();
+        // Creating a team is open to authenticated users, including users without a team.
+        $this->app->booted(function (): void {
+            $this->app->make(\Illuminate\Routing\Router::class)->getRoutes()->getByName('teams.create')
+                ?->defaults(\Splicewire\Beam\Authorization\SeatGate::OPEN_TO_MEMBERS, true);
+        });
+        $this->registerServiceDeskNavigation();
+        Gate::define('service-desk.external.read', fn (User $user): bool => \App\Support\ServiceRequestTeam::forUser($user) !== null);
+        Gate::define('service-desk.usage.read', fn (User $user): bool => \App\Support\ServiceRequestTeam::forUser($user) !== null);
         $this->registerAuthoringGates();
         $this->registerResourcePolicies();
         $this->registerDoctorAudits();
+    }
+
+    protected function registerServiceDeskNavigation(): void
+    {
+        $this->app->make(\Splicewire\Beam\Nav\NavSectionRegistry::class)->register(
+            new \Splicewire\Beam\Nav\NavSection(
+                key: 'service-desk',
+                realm: 'tenant',
+                label: 'Service desk',
+                icon: 'Inbox',
+                href: '/service-desk',
+                order: 20,
+                entitlement: null,
+                permission: null,
+                audience: \Splicewire\Beam\Nav\NavAudience::Product,
+            ),
+            by: 'app',
+        );
     }
 
     /**

@@ -59,4 +59,6 @@ return Application::configure(basePath: dirname(__DIR__))
         // JSON response above is left exactly as it is, and a 500 keeps the debug page while
         // APP_DEBUG is on. See splicewire/laravel-beam-accounts `Http/ErrorPages.php`.
         ErrorPages::register($exceptions);
+        $exceptions->dontReport(App\ExternalRequests\SourceFailure::class);
+        $exceptions->render(fn (App\ExternalRequests\SourceFailure $failure, Request $request) => response()->json(['message' => $failure->getMessage()], $failure->status));
     })->create();

@@ -128,6 +128,10 @@ return [
         | the manifest's nav/routeContext projection, not `frame/resources/{resource}`.
         */
         'tenant' => [
+            'service-requests',
+            'external-requests',
+            'service-request-usage',
+            'beam-ux-release-files',
             'beam-ux-entry',
             'sitemap',
             'schemas',

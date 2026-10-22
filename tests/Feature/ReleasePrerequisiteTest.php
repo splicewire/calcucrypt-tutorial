@@ -27,6 +27,10 @@ class ReleasePrerequisiteTest extends TestCase
     {
         parent::setUp();
         \Illuminate\Support\Facades\Storage::fake(config('beam.ux.storage.mirror_disk'));
+        // This retained publication suite uses fake mirrors inside the checkout. Never let its
+        // optional recorder discover or advance that checkout's real Git branch. Dedicated
+        // recording tests supply explicitly owned disposable repositories instead.
+        config(['beam.ux.recording.git' => PHP_BINARY.'-publication-test-no-git']);
     }
 
     private function author(): User

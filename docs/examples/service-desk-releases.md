@@ -57,7 +57,9 @@ security semantics. Beam PHP and every other runtime package remain locked.
 ## Build the selected UI and its declared peer
 
 Use new clones of the selected JS Schemastud and Beam authoring checkpoints, and the paired guide's
-pinned tsup8.5.1/TypeScript5.9.3/zustand5.0.14 tools. Set FRAME_JS_ROOT, BEAM_UI_ROOT and UI_BUILD_TOOLS
+pinned tsup8.5.1/TypeScript5.9.3/zustand5.0.14 tools. Include the existing beam-ux parser
+build dependencies explicitly in that disposable tool install: recast0.23.12, @babel/parser7.29.7
+and @babel/types7.29.7. Set FRAME_JS_ROOT, BEAM_UI_ROOT and UI_BUILD_TOOLS
 as in that guide. Instead of `prepare-read-schema-ui.mjs`, run:
 
 ```bash

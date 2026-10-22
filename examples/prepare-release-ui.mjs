@@ -32,3 +32,23 @@ for (const [name, target] of [
 console.log(
     'Prepared exact Theme/Release/action-form exports and generated workflow build peer',
 );
+
+// Declared beam-ux parser dependencies also build the existing surgeon entry. Keep them explicit
+// in the disposable tool install rather than resolving through an unrelated live workspace.
+const { mkdirSync } = await import('node:fs');
+for (const name of ['recast', '@babel/parser', '@babel/types']) {
+    const target = join(
+        resolve(process.env.UI_BUILD_TOOLS),
+        'node_modules',
+        name,
+    );
+    if (!existsSync(target))
+        throw Error(
+            'Install the declared parser build peer explicitly: ' + name,
+        );
+    const dest = join(beam, 'node_modules', name);
+    if (!existsSync(dest)) {
+        mkdirSync(resolve(dest, '..'), { recursive: true });
+        symlinkSync(target, dest);
+    }
+}

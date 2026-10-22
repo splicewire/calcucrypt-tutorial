@@ -192,8 +192,10 @@ All contributions to the Starter Kits from now on should be made through [Maestr
 
 In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
+## Theme authoring example
+
+- [Theme drafts and fixed-version Release publication](docs/examples/service-desk-releases.md): explicit local package adoption, fresh/upgrade recipe and published consumer.
+
 ## License
 
 The Laravel + React starter kit is open-sourced software licensed under the MIT license.
-
-- [Theme drafts and fixed-version Release publication](docs/examples/service-desk-releases.md): explicit local package adoption, fresh/upgrade recipe and published consumer.

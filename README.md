@@ -195,6 +195,7 @@ In order to ensure that the Laravel community is welcoming to all, please review
 ## Theme authoring example
 
 - [Theme drafts and fixed-version Release publication](docs/examples/service-desk-releases.md): explicit local package adoption, fresh/upgrade recipe and published consumer.
+- [Local Release recording and Files recovery](docs/examples/service-desk-recording.md): member-only Git effects, separate failure, same-receipt retry and history SHA.
 
 ## License
 

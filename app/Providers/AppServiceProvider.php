@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         // The public /schemas door serves schema documents at their identities. The catalog UI
         // gets its own path through the same plan that projects console routes and navigation.
         $this->app->bind(RouteContextPlan::class, fn (): RouteContextPlan => new RouteContextPlan(
-            resourcePaths: ['schemas' => 'schema-catalog'],
+            resourcePaths: ['schemas' => 'schema-catalog', 'beam-ux-release-files' => 'release-files'],
         ));
 
         // Bind the host account-shell provider over beam-accounts' NullAccountShellProvider default,

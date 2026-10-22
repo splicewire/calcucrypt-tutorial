@@ -1,11 +1,13 @@
 # Save a Theme draft and publish a fixed-version Release
 
 This local development guide adopts existing EP-15. It changes Theme **Save** into **Save draft**;
-**Publish** creates a server-owned Release of one. It does not record Git commits. The database's
+**Publish** creates a server-owned Release of one. The selected local recording increment adds
+member-only Git records and scoped Files recovery; follow [that chapter](service-desk-recording.md)
+after this Release setup. The database's
 version history/head and published pin remain authoritative; a mirror is a published projection.
 
 Use the supplied starter, PHP UX and Beam authoring checkpoints, plus PHP workflows
-`1ad7270f5d5d5689ab19e7f04cc44817a0d3fbb9`, PHP Frame
+`7ee34de5511aecbaacf173dcd1b39cd6397e3d65`, PHP Frame
 `b9adc1ac13562f3e32d0c84926a1bd97c64e7f85` and JS Schemastud
 `67a8c811b9026987ef4354dad280619932e70c64`. Exact worktree paths/checkpoints and receipts are supplied
 with the candidate. These are local candidates, not published package versions. The original Beam
@@ -86,9 +88,8 @@ other generated declarations not installed by this Beam-only host; this recipe c
 subpath only. Generated declarations carry package-relative imports, never private fixture paths.
 
 The fixture helper supplies the earlier ordinary actors and Theme-only owner; credentials stay in
-its private mode600 file. To prove independent review, explicitly grant the tutorial A team the same
-existing site-root manage reach in your private fixture, so its Owner/Admin can author; this is local
-fixture setup through AccessGrants, not a new permission endpoint. Start your chosen localhost port:
+its private mode600 file. For the recording guide, run `XDEBUG_MODE=off herd php examples/prepare-release-reviewer.php`
+to add the existing tutorial Admin to the Theme team through TeamProvisioner; no new grant is needed. Start your chosen localhost port:
 
 ```bash
 XDEBUG_MODE=off herd php artisan serve --host=127.0.0.1 --port=46650 --tries=1 --no-reload
@@ -163,6 +164,7 @@ actual browser/SQLite/mirror proof. Inspect generated routes and actual response
 Full current UX suite against the older locked core has known incompatible binding/realm test
 expectations and absent optional calendars; a focused pass does not make that full suite green.
 Full host PHPStan also retains the two previously recorded migration errors. No full monorepo,
-physical-tenant UI, scheduling runtime, batch/Files import/Restore, Git record/SHA/retry, push or
-publication/deployment claim is made. EP-16 and ADR-0226 still own subsequent Git recording/recovery.
+physical-tenant UI, scheduling runtime, batch/Files import/Restore, push or
+publication/deployment claim is made. The [recording chapter](service-desk-recording.md) covers
+the first EP-16 record/SHA/retry increment; broader EP-16 remains unfinished.
 Stop owned listeners/browser/proxy, release capacity and retain/teardown only guarded private fixtures.

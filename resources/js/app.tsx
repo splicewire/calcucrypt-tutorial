@@ -20,6 +20,7 @@ if (import.meta.env.DEV) {
 const options = beamInertiaOptions({
     development: import.meta.env.DEV,
     features: authFeatures,
+    fileEditorHref: () => '/account/theme',
     pages: { ...beamDocsPages, ...pages },
 });
 configureDocs();

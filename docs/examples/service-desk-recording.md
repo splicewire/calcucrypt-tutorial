@@ -152,3 +152,5 @@ tests never target candidate checkouts. Retain Release/approval/usage checks. Fu
 runtime failures and the two host PHPStan migration errors remain explicit; focused recording
 proof does not establish full-suite health. Build, interaction, visual and consumed-source proof
 are distinct in slice15 evidence.
+
+For current-pin local comparison, guarded import and missing-only Restore, continue with [Theme files](service-desk-theme-files.md).

@@ -16,17 +16,21 @@ if (count($argv) !== 1 || ! app()->environment('local') || config('database.defa
     fwrite(STDERR, "Use the disposable local approval-actors guide fixture.\n");
     exit(1);
 }
-$fixture = json_decode(file_get_contents($file), true, flags: JSON_THROW_ON_ERROR);
+$json = file_get_contents($file);
+if ($json === false) {
+    throw new RuntimeException('The private fixture could not be read.');
+}
+$fixture = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
 $names = ['owner', 'admin', 'member', 'outsider', 'teamless', 'operator', 'theme-owner'];
 $users = [];
 foreach ($names as $name) {
-    $user = App\Models\User::find($fixture['actors'][$name]['id'] ?? null);
+    $user = App\Models\User::whereKey($fixture['actors'][$name]['id'] ?? null)->first();
     if ($user === null || $user->email !== $name.'@request-approval.example.invalid') {
         throw new RuntimeException('The exact disposable actor set is required.');
     }
     $users[$name] = $user;
 }
-$team = Splicewire\Beam\Accounts\Models\Team::find($fixture['teams']['theme-owner'] ?? null);
+$team = Splicewire\Beam\Accounts\Models\Team::whereKey($fixture['teams']['theme-owner'] ?? null)->first();
 if (App\Models\User::count() !== count($names) || $team === null || $team->name !== 'Approval theme-owner team'
     || Splicewire\Beam\Accounts\Models\Team::count() !== 4) {
     throw new RuntimeException('The exact disposable team set is required.');

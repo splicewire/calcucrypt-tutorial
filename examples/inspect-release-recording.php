@@ -11,15 +11,15 @@ if (! Illuminate\Support\Str::isUuid($id)) {
 $release = Splicewire\Beam\Ux\Models\BeamUxRelease::findOrFail($id);
 $row = app(Splicewire\Beam\Ux\Recording\ReleaseRecording::class)->receipt($release);
 $members = [];
-foreach ($row?->manifest ?? [] as $file) {
-    $entry = Splicewire\Beam\Ux\Models\BeamUxEntry::findOrFail($file['entryId']);
+foreach ($row->manifest ?? [] as $file) {
+    $entry = Splicewire\Beam\Ux\Models\BeamUxEntry::whereKey($file['entryId'])->firstOrFail();
     $members[] = ['entryId' => $file['entryId'], 'versionId' => $file['versionId'],
         'publishedPin' => $entry->published_version, 'path' => $file['path'],
         'expectedSha256' => $file['sha256'],
         'mirrorMatches' => is_file($file['absolute']) && hash_file('sha256', $file['absolute']) === $file['sha256']];
 }
 echo json_encode(['releaseId' => $release->id, 'publication' => $release->status,
-    'recordingId' => $row?->id, 'recording' => $row?->state ?? 'unavailable',
-    'sha' => $row?->sha, 'noChange' => $row?->no_change ?? false,
-    'installationStarted' => $row?->installation_started ?? false, 'members' => $members,
+    'recordingId' => $row?->id, 'recording' => $row->state ?? 'unavailable',
+    'sha' => $row?->sha, 'noChange' => $row->no_change ?? false,
+    'installationStarted' => $row->installation_started ?? false, 'members' => $members,
 ], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR)."\n";

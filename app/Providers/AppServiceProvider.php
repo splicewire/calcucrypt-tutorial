@@ -8,7 +8,11 @@ use App\Data\SitemapData;
 use App\Doctor\OrphanedNavItemAudit;
 use App\Models\SitemapRecord;
 use App\Models\User;
+use App\Support\ServiceDeskSlaHost;
+use App\Support\ServiceRequestTeam;
+use App\Workflows\ServiceRequestApproval;
 use Carbon\CarbonImmutable;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -17,8 +21,13 @@ use Illuminate\Validation\Rules\Password;
 use Rushing\PermissionCascade\Contracts\EntitlementResolver;
 use Rushing\PermissionCascade\Support\CascadePolicyRegistrar;
 use Splicewire\Beam\Accounts\Contracts\AccountShellProvider;
+use Splicewire\Beam\Authorization\SeatGate;
 use Splicewire\Beam\Doctor\BeamDoctorManifest;
+use Splicewire\Beam\Nav\NavAudience;
+use Splicewire\Beam\Nav\NavSection;
+use Splicewire\Beam\Nav\NavSectionRegistry;
 use Splicewire\Beam\Ux\Frame\RouteContextPlan;
+use Splicewire\ServiceDeskSla\Contracts\ServiceDeskHost;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +36,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        if (interface_exists(ServiceDeskHost::class)) {
+            $this->app->bind(ServiceDeskHost::class, ServiceDeskSlaHost::class);
+        }
+
         // The public /schemas door serves schema documents at their identities. The catalog UI
         // gets its own path through the same plan that projects console routes and navigation.
         $this->app->bind(RouteContextPlan::class, fn (): RouteContextPlan => new RouteContextPlan(
@@ -53,15 +66,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
-        \App\Workflows\ServiceRequestApproval::register();
+        ServiceRequestApproval::register();
         // Creating a team is open to authenticated users, including users without a team.
         $this->app->booted(function (): void {
-            $this->app->make(\Illuminate\Routing\Router::class)->getRoutes()->getByName('teams.create')
-                ?->defaults(\Splicewire\Beam\Authorization\SeatGate::OPEN_TO_MEMBERS, true);
+            $this->app->make(Router::class)->getRoutes()->getByName('teams.create')
+                ?->defaults(SeatGate::OPEN_TO_MEMBERS, true);
         });
         $this->registerServiceDeskNavigation();
-        Gate::define('service-desk.external.read', fn (User $user): bool => \App\Support\ServiceRequestTeam::forUser($user) !== null);
-        Gate::define('service-desk.usage.read', fn (User $user): bool => \App\Support\ServiceRequestTeam::forUser($user) !== null);
+        Gate::define('service-desk.external.read', fn (User $user): bool => ServiceRequestTeam::forUser($user) !== null);
+        Gate::define('service-desk.usage.read', fn (User $user): bool => ServiceRequestTeam::forUser($user) !== null);
         $this->registerAuthoringGates();
         $this->registerResourcePolicies();
         $this->registerDoctorAudits();
@@ -69,8 +82,8 @@ class AppServiceProvider extends ServiceProvider
 
     protected function registerServiceDeskNavigation(): void
     {
-        $this->app->make(\Splicewire\Beam\Nav\NavSectionRegistry::class)->register(
-            new \Splicewire\Beam\Nav\NavSection(
+        $this->app->make(NavSectionRegistry::class)->register(
+            new NavSection(
                 key: 'service-desk',
                 realm: 'tenant',
                 label: 'Service desk',
@@ -79,7 +92,7 @@ class AppServiceProvider extends ServiceProvider
                 order: 20,
                 entitlement: null,
                 permission: null,
-                audience: \Splicewire\Beam\Nav\NavAudience::Product,
+                audience: NavAudience::Product,
             ),
             by: 'app',
         );

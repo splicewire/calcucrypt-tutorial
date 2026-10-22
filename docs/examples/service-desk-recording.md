@@ -143,8 +143,9 @@ unreachable result after installation started, unknown/duplicated/mismatched can
 rewritten history refuses recovery. Diagnose that state; deleting a pending receipt to retry
 blindly is not supported.
 
-This is the first EP-16 increment. Import/Take file as draft/Restore published file, moves/deletions,
-generic beam-versioning panel adoption and remote push remain separate. Version snapshots
+Local recording now composes with bounded canonical Theme draft import and missing-only Restore
+in the current-file panel. Batch import, existing-file overwrite, moves/deletions, generic
+beam-versioning panel adoption and remote push remain separate. Version snapshots
 stay immutable; one version can show multiple Release references.
 
 Owning tests require an explicit registered disposable BEAM_RECORDING_TEST_ROOT; product Git

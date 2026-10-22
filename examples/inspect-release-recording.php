@@ -14,7 +14,7 @@ $members = [];
 foreach ($row->manifest ?? [] as $file) {
     $entry = Splicewire\Beam\Ux\Models\BeamUxEntry::whereKey($file['entryId'])->firstOrFail();
     $members[] = ['entryId' => $file['entryId'], 'versionId' => $file['versionId'],
-        'publishedPin' => $entry->published_version, 'path' => $file['path'],
+        'publishedPin' => $entry->getAttribute('published_version'), 'path' => $file['path'],
         'expectedSha256' => $file['sha256'],
         'mirrorMatches' => is_file($file['absolute']) && hash_file('sha256', $file['absolute']) === $file['sha256']];
 }

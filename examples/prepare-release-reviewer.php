@@ -31,7 +31,7 @@ foreach ($names as $name) {
     $users[$name] = $user;
 }
 $team = Splicewire\Beam\Accounts\Models\Team::whereKey($fixture['teams']['theme-owner'] ?? null)->first();
-if (App\Models\User::count() !== count($names) || $team === null || $team->name !== 'Approval theme-owner team'
+if (App\Models\User::count() !== count($names) || $team === null || $team->getAttribute('name') !== 'Approval theme-owner team'
     || Splicewire\Beam\Accounts\Models\Team::count() !== 4) {
     throw new RuntimeException('The exact disposable team set is required.');
 }

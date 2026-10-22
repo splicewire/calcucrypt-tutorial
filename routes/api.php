@@ -32,4 +32,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // The declaration registers the resource; this host chooses its authenticated REST exposure.
 Route::middleware('auth:sanctum')->group(function (): void {
     Particle::mount('service-requests', 'service-requests')->only(['index', 'show', 'store']);
+    Particle::mount('external-requests', 'external-requests')->only(['index']);
 });

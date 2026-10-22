@@ -1,0 +1,74 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "External request",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "ID"
+        },
+        "source": {
+            "type": "string",
+            "title": "Source",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 0,
+                    "label": "Source"
+                }
+            }
+        },
+        "externalId": {
+            "type": "string",
+            "title": "External ID",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 1,
+                    "label": "External ID"
+                }
+            }
+        },
+        "title": {
+            "type": "string",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 2,
+                    "label": "Title"
+                }
+            }
+        },
+        "status": {
+            "type": "string",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "widget": "badge",
+                    "sort": 3,
+                    "label": "Status"
+                }
+            }
+        },
+        "updatedAt": {
+            "type": "string",
+            "title": "Updated",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 4,
+                    "label": "Updated"
+                }
+            }
+        }
+    },
+    "required": [
+        "id",
+        "source",
+        "externalId",
+        "title",
+        "status",
+        "updatedAt"
+    ],
+    "$id": "ExternalRequestData"
+}

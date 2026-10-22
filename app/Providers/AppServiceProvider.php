@@ -60,6 +60,7 @@ class AppServiceProvider extends ServiceProvider
                 ?->defaults(\Splicewire\Beam\Authorization\SeatGate::OPEN_TO_MEMBERS, true);
         });
         $this->registerServiceDeskNavigation();
+        Gate::define('service-desk.external.read', fn (User $user): bool => \App\Support\ServiceRequestTeam::forUser($user) !== null);
         $this->registerAuthoringGates();
         $this->registerResourcePolicies();
         $this->registerDoctorAudits();

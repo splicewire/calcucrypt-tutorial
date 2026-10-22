@@ -10,6 +10,7 @@ export type BeamUxEntryBodyData = import("./Splicewire/Beam/Ux/Data").BeamUxEntr
 export type DocsSearchResultsData = import("./Splicewire/Beam/Docs/Data").DocsSearchResultsData;
 export type EntryMakeEditableOutputData = import("./Splicewire/Beam/Ux/Data").EntryMakeEditableOutputData;
 export type EntryPublicationData = import("./Splicewire/Beam/Ux/Data").EntryPublicationData;
+export type ExternalRequestData = import("./App/Data").ExternalRequestData;
 export type InvitationAcceptedData = import("./Splicewire/Beam/Accounts/Data").InvitationAcceptedData;
 export type ServiceRequestData = import("./App/Data").ServiceRequestData;
 export type TeamData = import("./Splicewire/Beam/Accounts/Data").TeamData;

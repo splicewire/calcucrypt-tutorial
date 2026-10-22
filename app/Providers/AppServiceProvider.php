@@ -61,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->registerServiceDeskNavigation();
         Gate::define('service-desk.external.read', fn (User $user): bool => \App\Support\ServiceRequestTeam::forUser($user) !== null);
+        Gate::define('service-desk.usage.read', fn (User $user): bool => \App\Support\ServiceRequestTeam::forUser($user) !== null);
         $this->registerAuthoringGates();
         $this->registerResourcePolicies();
         $this->registerDoctorAudits();

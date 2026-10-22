@@ -14,7 +14,8 @@
         "lint:check": "eslint .",
         "types:check": "composer types:generate && tsc --noEmit && tsc -p tsconfig.generated.json",
         "beam:verify-prototype-boundary": "beam-verify-prototype-boundary",
-        "example:external-requests": "node scripts/external-request-client.mjs"
+        "example:external-requests": "node scripts/external-request-client.mjs",
+        "example:approval-usage": "node scripts/approval-usage-client.mjs"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",

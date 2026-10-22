@@ -5,6 +5,7 @@
 
 // Friendly, non-namespaced re-exports of each return DTO (the `type X = App.Data.Y` bridges).
 
+export type ApprovalUsageData = import("./App/Data").ApprovalUsageData;
 export type AuthUserData = import("./Splicewire/Beam/Accounts/Data").AuthUserData;
 export type BeamUxEntryBodyData = import("./Splicewire/Beam/Ux/Data").BeamUxEntryBodyData;
 export type DocsSearchResultsData = import("./Splicewire/Beam/Docs/Data").DocsSearchResultsData;

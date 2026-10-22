@@ -130,6 +130,7 @@ return [
         'tenant' => [
             'service-requests',
             'external-requests',
+            'service-request-usage',
             'beam-ux-entry',
             'sitemap',
             'schemas',

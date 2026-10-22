@@ -118,3 +118,6 @@ capacity and use guarded scratch retention after proof.
 
 Continue with the separate [read-only external request source](service-desk-external-requests.md) to
 replace the backing through existing capabilities without adding write access.
+
+Continue with [team approval usage](service-desk-approval-usage.md) to project committed workflow
+facts into a read-only resource with live-team authority and the same paired stock UI.

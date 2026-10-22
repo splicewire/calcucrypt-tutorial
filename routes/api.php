@@ -33,4 +33,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function (): void {
     Particle::mount('service-requests', 'service-requests')->only(['index', 'show', 'store']);
     Particle::mount('external-requests', 'external-requests')->only(['index']);
+    Particle::mount('service-request-usage', 'service-request-usage')->only(['index']);
 });

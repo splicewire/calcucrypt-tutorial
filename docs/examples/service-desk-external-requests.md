@@ -146,3 +146,7 @@ Full configured PHPStan retains the two known unrelated migration errors35/47; d
 Stop only the owned host/provider/browser/proxy, release capacity and use guarded scratch retention.
 No owner host/state, retained PostgreSQL, external provider/key/signup/mail/jobs/spend, source release,
 push or deployment is needed.
+
+For a local source-of-truth projection using the same read-only backing/UI seams, continue with
+[team approval usage](service-desk-approval-usage.md). It reads committed workflow facts without a
+commerce dependency or a second usage ledger.

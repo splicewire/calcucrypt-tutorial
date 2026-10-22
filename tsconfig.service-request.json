@@ -9,6 +9,8 @@
         "examples/service-request-approval-client.ts",
         "tests/Types/service-request-approval.ts",
         "examples/external-request-client.ts",
-        "tests/Types/external-request.ts"
+        "tests/Types/external-request.ts",
+        "examples/approval-usage-client.ts",
+        "tests/Types/approval-usage.ts"
     ]
 }

@@ -115,3 +115,6 @@ separate scratch setup, not standard refresh filtering or a full monorepo/catalo
 Full configured host PHPStan retains the two known migration errors35/47; no full host-suite,
 PostgreSQL concurrency or remote runtime claim is made. Stop owned listeners/browser/proxy, release
 capacity and use guarded scratch retention after proof.
+
+Continue with the separate [read-only external request source](service-desk-external-requests.md) to
+replace the backing through existing capabilities without adding write access.

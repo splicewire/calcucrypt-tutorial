@@ -1,9 +1,7 @@
 {
     "extends": "./tsconfig.generated.json",
     "compilerOptions": {
-        "types": [
-            "node"
-        ]
+        "types": ["node"]
     },
     "include": [
         "examples/service-request-client.ts",

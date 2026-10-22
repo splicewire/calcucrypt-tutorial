@@ -3,4 +3,5 @@ declare const row: ExternalRequestData;
 const source: string = row.source;
 // @ts-expect-error The declared external source identity is a string.
 const invalid: number = row.source;
-void source; void invalid;
+void source;
+void invalid;

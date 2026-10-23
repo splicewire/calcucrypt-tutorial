@@ -51,8 +51,8 @@ approve.mutate({ params: { id: requestId } });
 void history.refetch();
 ```
 
-The generated routes also declare the inspection page and the input-free GET operation
-`/service-requests/{id}/approval-history`. The page uses those generated route and Data types with
+The host router declares the inspection page. The generated client declares the input-free GET
+operation `/service-requests/{id}/approval-history`. The page uses those generated route and Data types with
 a small status-preserving read adapter so it can distinguish denied reads and cancel obsolete
 requests. It hides cached title and facts during a new read or after a denial. Changing teams
 requires a fresh authorized read. Extra subject, class, connection, version or filter inputs are

@@ -105,3 +105,12 @@ For the update, create the local `v0.1.1` tag at exact271bb0f only when releasin
 Remove first requests removal. The package remains deployed until the terminal removal, discovery/cache/assets and actual observation settle absence. Retain requests, workflow facts, SLA rules and evaluations. Reacquire/reinstall should restore the feature without backfilling old transitions. Disabled SLA and source/observer failures remain distinct from successful empty or met results. An after-commit observer cannot roll back an already committed approval.
 
 The executable proof and independent compare are still required before this candidate is accepted. Installer/build success alone does not establish the marketplace UI, licensing, dependency compatibility or removal/reinstall outcomes.
+
+
+The optional taxonomy ownership pivot is an explicit host prerequisite. The starter declines the full Accounts auth migration estate. Do not enable that estate for this example. `examples/local-marketplace/migrations/2026_10_23_000000_create_userables_table.php` is byte-identical to the selected installed Accounts `database/migrations/tenant/create_userables_table.php.stub`; it supplies the taxonomy HasUser pivot only. Its owning schema is tenant-resident in a tenancy host. This single-database local example does not prove tenant isolation. After the native stack install, apply this one path on the same private SQLite connection:
+
+```bash
+COMPOSER=composer.market.json XDEBUG_MODE=off herd php artisan migrate --path=examples/local-marketplace/migrations --no-interaction
+```
+
+The selected Accounts source is `a18b2fefe67f6694bf2e69012a1deff47cf6b6a9`; the owning stub and copied migration SHA-256 are `ae61e92069a592b9649d463e00dc4742ac2d9da031891444232b5a489c0bec88`. Recheck both before running and retain the migration receipt. The broader auth estate, grants and seed behavior stay unchanged.

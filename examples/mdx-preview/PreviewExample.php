@@ -13,7 +13,12 @@ class NativeCodec
 {
     public const IDENTITY = 'splicewire/laravel-beam-mdx@c168813b8bae73d98e7b2b6a5053fd6871f565c2 MdxBody::encode/decode';
 
-    /** @template T @param Closure(): T $operation @return T */
+    /**
+     * @template T
+     *
+     * @param  Closure(): T  $operation
+     * @return T
+     */
     public static function within(Closure $operation): mixed
     {
         $prior = Container::getInstance();
@@ -32,6 +37,7 @@ class NativeCodec
             $body = MdxBody::encode($raw);
             $output = MdxBody::decode($body);
             $again = MdxBody::encode($output);
+
             return ['output' => $output, 'content' => (string) $body[MdxBody::CONTENT_KEY],
                 'outputContent' => (string) $again[MdxBody::CONTENT_KEY], 'twice' => MdxBody::decode($again)];
         });
@@ -41,6 +47,7 @@ class NativeCodec
 final class Preview
 {
     public const LIMIT = 1048576;
+
     public const MARKER = '.mdx-preview-fixture.json';
 
     /** Refuse symbolic components before reading the selected file. */
@@ -62,6 +69,7 @@ final class Preview
         if (realpath($path) !== $path) {
             throw new PreviewFailure('missing-or-noncanonical-path');
         }
+
         return $path;
     }
 
@@ -72,6 +80,7 @@ final class Preview
         if ($s === false || ! function_exists('posix_geteuid') || $s['uid'] !== posix_geteuid()) {
             throw new PreviewFailure('ownership-refused');
         }
+
         return ['dev' => $s['dev'], 'ino' => $s['ino'], 'uid' => $s['uid']];
     }
 
@@ -93,6 +102,7 @@ final class Preview
         if (! is_array($m) || ($m['schema'] ?? null) !== 'mdx-preview-fixture/1' || ($m['root'] ?? null) !== $root || ($m['identity'] ?? null) !== $identity) {
             throw new PreviewFailure('fixture-marker-refused');
         }
+
         return $root;
     }
 
@@ -151,13 +161,15 @@ final class Preview
         if (preg_match('//u', $bytes) !== 1) {
             throw new PreviewFailure('invalid-utf8');
         }
+
         return ['bytes' => $bytes, 'identity' => ['dev' => $s['dev'], 'ino' => $s['ino'], 'mode' => $s['mode'],
             'uid' => $s['uid'], 'size' => $s['size'], 'mtime' => $s['mtime'], 'ctime' => $s['ctime'], 'sha256' => hash('sha256', $bytes)]];
     }
 
     /**
      * Optional codec subclass/observer are failure-control test seams; CLI uses native defaults.
-     * @param null|Closure(): void $afterRoundtrip
+     *
+     * @param  null|Closure(): void  $afterRoundtrip
      * @return array<string, bool|int|string>
      */
     public static function inspect(string $root, string $relative, ?NativeCodec $codec = null, ?Closure $afterRoundtrip = null): array
@@ -184,6 +196,7 @@ final class Preview
             throw new PreviewFailure('input-changed');
         }
         $equal = $before['bytes'] === $result['output'];
+
         return ['file' => $relative, 'codec' => NativeCodec::IDENTITY,
             'result' => $equal ? 'byte-equal (not validation)' : 'frontmatter normalizes (not an import)',
             'exit' => $equal ? 0 : 1, 'equal' => $equal, 'contentPreserved' => true,

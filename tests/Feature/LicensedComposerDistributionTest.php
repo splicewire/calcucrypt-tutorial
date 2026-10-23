@@ -41,7 +41,7 @@ class LicensedComposerDistributionTest extends TestCase
         $this->actingAs(User::factory()->teamMember()->create());
     }
 
-    private function reviewedListing(): Product
+    private function reviewedListing(bool $review = true): Product
     {
         $seller = Seller::create(['tenant_id' => 'registry-focused-team', 'name' => 'Local registry fixture seller']);
         $type = ProductType::query()->where('name', 'Beam Extension')->first() ?? ProductType::factory()->create(['name' => 'Beam Extension']);
@@ -56,6 +56,10 @@ class LicensedComposerDistributionTest extends TestCase
         $this->assertFalse($row->resolvable);
         $release = PackageRelease::where('package_listing_id', $row->id)->firstOrFail();
         $this->assertTrue(Storage::disk($release->dist_disk)->exists($release->dist_path));
+        if (! $review) {
+            return $listing->fresh();
+        }
+
         app(SubmitListingForReview::class)($listing->fresh());
         $this->assertTrue(app(DecideListingReview::class)->approve($listing->market()->firstOrFail())->applied);
         $this->assertSame('published', (string) $listing->fresh()->status);
@@ -209,5 +213,16 @@ class LicensedComposerDistributionTest extends TestCase
         app(\Splicewire\Beam\MarketPackages\LicenseGatedPackageDistributionGatewayResolver::class)->reconcile($market);
         $this->withHeaders($this->headers($issued->licenseKey))->getJson('/registry/packages.json')->assertOk();
         $this->withHeaders($this->headers($issued->licenseKey))->getJson('/registry/p2/other/package.json')->assertNotFound();
+    }
+
+    public function test_private_release_archive_denies_a_real_product_key_before_review(): void
+    {
+        $listing = $this->reviewedListing(false);
+        $issued = app(LicenseIssuer::class)->issue(licensable: $listing);
+        $this->assertNull($listing->market()->firstOrFail()->license_id);
+        $this->assertFalse(PackageListing::firstOrFail()->resolvable);
+        foreach (['/registry/packages.json', '/registry/p2/splicewire/service-desk-sla.json', '/registry/dist/splicewire/service-desk-sla/0.1.1.zip'] as $path) {
+            $this->withHeaders($this->headers($issued->licenseKey))->get($path)->assertForbidden();
+        }
     }
 }

@@ -192,10 +192,12 @@ All contributions to the Starter Kits from now on should be made through [Maestr
 
 In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Theme authoring example
+## File authoring examples
 
 - [Theme drafts and fixed-version Release publication](docs/examples/service-desk-releases.md): explicit local package adoption, fresh/upgrade recipe and published consumer.
 - [Local Release recording and Files recovery](docs/examples/service-desk-recording.md): member-only Git effects, separate failure, same-receipt retry and history SHA.
+
+- [Canonical MDX body takes](docs/examples/canonical-mdx-file-draft.md): explicit draft replacement, unchanged publication and safe retained-compilation warnings.
 
 ## License
 

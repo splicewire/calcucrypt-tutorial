@@ -63,7 +63,9 @@ async function request<T>(
             new Error(
                 response.status === 403
                     ? 'You do not have access to this marketplace action.'
-                    : 'The marketplace request failed. Please retry.',
+                    : response.status === 402
+                      ? 'Payment not completed. Nothing was purchased.'
+                      : 'The marketplace request failed. Please retry.',
             ),
             { status: response.status },
         );

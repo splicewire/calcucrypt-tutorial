@@ -88,4 +88,15 @@ class LocalMarketplaceRoutesTest extends TestCase
         $this->assertTrue($record->fresh()->exists);
         $this->actingAs($owner->fresh())->getJson('/api/local-marketplace/review/pending')->assertForbidden();
     }
+
+    public function test_generated_route_map_preserves_particles_and_resolves_the_two_bespoke_reads(): void
+    {
+        app('router')->getRoutes()->refreshNameLookups();
+        $manifest = app(\App\Marketplace\LocalMarketplaceRouteManifest::class)->toArray();
+        $this->assertArrayHasKey('service-requests.index', $manifest);
+        foreach (['local-marketplace.connection', 'local-marketplace.review.pending'] as $name) {
+            $this->assertSame(app('router')->getRoutes()->getByName($name)->uri(), $manifest[$name]['path']);
+            $this->assertSame(['GET'], $manifest[$name]['methods']);
+        }
+    }
 }

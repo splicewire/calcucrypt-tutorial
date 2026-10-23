@@ -33,6 +33,12 @@ final class LocalMarketplaceServiceProvider extends ServiceProvider
             return;
         }
 
+        $source = config('beam.client.sources.defaults');
+        if (! in_array($source, [\Splicewire\Beam\Source\ParticleRouteManifestSource::class, \App\Marketplace\LocalMarketplaceRouteManifest::class], true)) {
+            throw new \LogicException('This example requires the starter particle route manifest source.');
+        }
+        config(['beam.client.sources.defaults' => \App\Marketplace\LocalMarketplaceRouteManifest::class]);
+
         $this->app->booted(function (): void {
             // Market installs its tenancy defaults during packageBooted; this host has teams.
             $this->app->bind(CurrentSellerResolver::class, TeamSellerResolver::class);

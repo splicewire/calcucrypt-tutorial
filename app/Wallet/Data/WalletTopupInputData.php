@@ -14,12 +14,13 @@ class WalletTopupInputData extends BeamData
 {
     public function __construct(
         #[MapInputName('amount_usd'), Title('Amount (USD)')]
-        #[Description('Sandbox funds, 1–10000 USD, rounded to cents. A new submission is a new purchase.')]
+        #[Description('Sandbox funds, 1–10000 USD, up to two decimal places. A new submission is a new purchase.')]
         public float $amountUsd,
     ) {}
 
+    /** @return array<string, list<string>> */
     public static function rules(ValidationContext $context): array
     {
-        return ['amount_usd' => ['required', 'numeric', 'min:1', 'max:10000']];
+        return ['amount_usd' => ['required', 'numeric', 'decimal:0,2', 'min:1', 'max:10000']];
     }
 }

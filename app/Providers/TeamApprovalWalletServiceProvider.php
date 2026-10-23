@@ -23,7 +23,7 @@ final class TeamApprovalWalletServiceProvider extends ServiceProvider
         }
         Gate::define('service-desk.wallet.read', fn ($actor): bool => app(TeamWalletContext::class)->team($actor) !== null);
         Gate::define('entitlement:service-desk.wallet.fund', fn ($actor): bool => app(TeamWalletContext::class)->mayFund($actor));
-        app(ParticleResourceRegistry::class)->registerClass(TeamApprovalWalletData::class);
+        app(ParticleResourceRegistry::class)->registerClass(TeamApprovalWalletData::class, ['tenant']);
         config(['frame.realms.tenant' => [...config('frame.realms.tenant', []), 'team-approval-wallet']]);
     }
 }

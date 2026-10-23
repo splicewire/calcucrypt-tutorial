@@ -28,7 +28,7 @@ final class TeamApprovalWallet
         $credited = (int) round($assessment->cap * 100);
         $usage = (int) round($assessment->spend * 100);
 
-        return new TeamApprovalWalletData('approvals', (string) $team->name,
+        return new TeamApprovalWalletData('approvals', (string) $team->getAttribute('name'),
             self::usd($credited), intdiv($usage, 25), self::usd($usage), self::usd($credited - $usage));
     }
 

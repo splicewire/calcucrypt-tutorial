@@ -40,6 +40,9 @@ class TeamApprovalWalletTest extends TestCase
 
     protected function setUp(): void
     {
+        if (! class_exists(Wallets::class)) {
+            $this->markTestSkipped('Optional Commerce composition is absent.');
+        }
         parent::setUp();
         $this->assertSame(':memory:', DB::connection()->getDatabaseName(), 'Refuse tests against a served DB.');
         $this->withoutVite();
@@ -149,7 +152,7 @@ class TeamApprovalWalletTest extends TestCase
         foreach (['party', 'team', 'beneficiary', 'unit', 'driver', 'tariff', 'actor'] as $key) {
             $this->postJson('/team-approval-wallet/top-up', ['amount_usd' => 2, $key => 'forged'])->assertUnprocessable();
         }
-        foreach ([0, 10001, 'invalid', []] as $amount) {
+        foreach ([0, 10001, 1.005, 'invalid', []] as $amount) {
             $this->postJson('/team-approval-wallet/top-up', ['amount_usd' => $amount])->assertUnprocessable();
         }
         $events = 0;
@@ -269,5 +272,13 @@ class TeamApprovalWalletTest extends TestCase
         $this->putJson('/frame/resources/team-approval-wallet/records/approvals', ['creditedUsd' => 999])->assertForbidden();
         $this->deleteJson('/frame/resources/team-approval-wallet/records/approvals')->assertForbidden();
         $this->assertSame($before, $this->state());
+    }
+
+    public function test_stock_console_href_is_registered_beside_the_api(): void
+    {
+        $this->actingAs($this->owner());
+        $this->assertSame('/team-approval-wallet', app(\Splicewire\Beam\Ux\Frame\RouteContextProjector::class)
+            ->hrefs('tenant')['team-approval-wallet.index'] ?? null);
+        $this->get('/team-approval-wallet')->assertOk();
     }
 }

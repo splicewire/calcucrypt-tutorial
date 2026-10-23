@@ -3,13 +3,13 @@
 use Examples\KeyedRegistry\Example;
 use Examples\KeyedRegistry\LocalPolicy;
 use PHPUnit\Framework\TestCase;
-use Rushing\Graphine\Contracts\GraphStore;
-use Rushing\Graphine\Contracts\EnumerableStore;
-use Rushing\Graphine\Contracts\NodeContract;
 use Rushing\Graphine\Contracts\EdgeContract;
+use Rushing\Graphine\Contracts\EnumerableStore;
+use Rushing\Graphine\Contracts\GraphStore;
+use Rushing\Graphine\Contracts\NodeContract;
 use Rushing\Graphine\Drivers\RelationalDriverFactory;
-use Rushing\Graphine\Laravel\Sources\RegistryGraphSource;
 use Rushing\Graphine\Enums\Capability;
+use Rushing\Graphine\Laravel\Sources\RegistryGraphSource;
 use Rushing\Popcorn\Registries\Authorizer;
 use Rushing\Popcorn\Registries\BasicRegistry;
 use Rushing\Popcorn\Registries\Exceptions\AmbiguousRegistryMatch;
@@ -161,9 +161,11 @@ final class ExampleTest extends TestCase
         $spy = new class($calls) implements Authorizer
         {
             public function __construct(private int &$calls) {}
+
             public function allows(string $ability, RegistryKey $key): bool
             {
                 $this->calls++;
+
                 return false;
             }
         };
@@ -200,31 +202,62 @@ final class ExampleTest extends TestCase
     {
         $store = new class implements GraphStore
         {
-            public function name(): string { return 'not-enumerable'; }
-            public function supports(Capability $capability): bool { return false; }
-            public function speaks(): array { return []; }
+            public function name(): string
+            {
+                return 'not-enumerable';
+            }
+
+            public function supports(Capability $capability): bool
+            {
+                return false;
+            }
+
+            public function speaks(): array
+            {
+                return [];
+            }
         };
         $this->expectException(InvalidArgumentException::class);
         Example::project(Example::registry('reader'), factory: fn (): GraphStore => $store);
     }
+
     public function test_enumerable_but_incomplete_graph_refuses_false_success(): void
     {
         $registry = Example::registry('reader');
         $native = RelationalDriverFactory::make(new RegistryGraphSource($registry));
-        $incomplete = new class($native->nodes()) implements GraphStore, EnumerableStore
+        $incomplete = new class($native->nodes()) implements EnumerableStore, GraphStore
         {
             /** @param list<NodeContract> $nodes */
             public function __construct(private array $nodes) {}
-            public function name(): string { return 'incomplete'; }
-            public function supports(Capability $capability): bool { return $capability === Capability::Enumerate; }
-            public function speaks(): array { return []; }
+
+            public function name(): string
+            {
+                return 'incomplete';
+            }
+
+            public function supports(Capability $capability): bool
+            {
+                return $capability === Capability::Enumerate;
+            }
+
+            public function speaks(): array
+            {
+                return [];
+            }
+
             /** @return list<NodeContract> */
-            public function nodes(): array { return $this->nodes; }
+            public function nodes(): array
+            {
+                return $this->nodes;
+            }
+
             /** @return list<EdgeContract> */
-            public function edges(): array { return []; }
+            public function edges(): array
+            {
+                return [];
+            }
         };
         $this->expectException(InvalidArgumentException::class);
         Example::project($registry, factory: fn (): GraphStore => $incomplete);
     }
-
 }

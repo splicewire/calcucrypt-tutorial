@@ -68,7 +68,7 @@ final class Example
     }
 
     /** @param BasicRegistry<string> $registry
-     * @param (callable(RegistryGraphSource): GraphStore)|null $factory Test seam; CLI always uses the native factory.
+     * @param  (callable(RegistryGraphSource): GraphStore)|null  $factory  Test seam; CLI always uses the native factory.
      * @return array<string, mixed>
      */
     public static function project(BasicRegistry $registry, bool $trustedTooling = false, ?callable $factory = null): array

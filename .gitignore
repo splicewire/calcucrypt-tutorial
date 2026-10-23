@@ -62,3 +62,6 @@ CLAUDE.md
 
 /composer.market.json
 /composer.market.lock
+
+/composer.paid.json
+/composer.paid.lock

@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Providers\LocalMarketplaceServiceProvider;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use LucaLongo\Licensing\Models\License;
 use Lunar\Core\Models\Currency;
@@ -223,5 +224,58 @@ class PaidMarketplaceEntitlementTest extends TestCase
         $before = $grant->fresh()->getAttributes();
         $this->assertNull(app(Entitlements::class)->activeFor($listing, $buyer));
         $this->assertSame($before, $grant->fresh()->getAttributes());
+    }
+
+    public function test_buyer_install_requires_the_actual_effective_paid_subject_and_preserves_operator_free_install(): void
+    {
+        config(['local-marketplace.enabled' => true]);
+        (new LocalMarketplaceServiceProvider(app()))->boot();
+        Route::middleware('web')->group(base_path('routes/local-marketplace.php'));
+        $buyer = User::factory()->teamMember()->create();
+        setPermissionsTeamId($buyer->current_team_id);
+        $buyer->givePermissionTo(Permission::findOrCreate('marketplace.buyer', 'web'));
+        $free = $this->listing(0);
+        $free->update(['status' => 'published']);
+        $paid = $this->listing();
+        $paid->update(['status' => 'published']);
+        $gate = Gate::forUser($buyer);
+        $this->assertFalse($gate->allows('market-extensions.install', $free));
+        $this->assertFalse($gate->allows('market-extensions.install', $paid));
+        $this->actingAs($buyer)->postJson('/api/local-marketplace/catalog/'.$free->id.'/install')->assertForbidden();
+        $this->postJson('/api/local-marketplace/catalog/'.$paid->id.'/install')->assertForbidden();
+        $this->assertDatabaseCount('beam_market_installed_extensions', 0);
+        $grant = app(PurchaseListing::class)($paid, $buyer);
+        $this->assertTrue($gate->allows('market-extensions.install', $paid));
+        $this->postJson('/api/local-marketplace/catalog/'.$paid->id.'/install')->assertOk();
+        app(LicenseIssuer::class)->revoke($grant->license_id);
+        $this->assertFalse($gate->allows('market-extensions.install', $paid));
+        $buyer->givePermissionTo(Permission::findOrCreate('marketplace.host-operator', 'web'));
+        $this->assertTrue($gate->allows('market-extensions.install', $free));
+        $this->postJson('/api/local-marketplace/catalog/'.$free->id.'/install')->assertOk();
+    }
+
+    public function test_legacy_null_license_key_fails_closed_without_losing_history(): void
+    {
+        $listing = $this->listing();
+        $buyer = User::factory()->teamMember()->create();
+        $grant = app(PurchaseListing::class)($listing, $buyer);
+        $grant->update(['license_key' => null]);
+        $before = $grant->fresh()->getAttributes();
+        $this->assertNull(app(Entitlements::class)->activeFor($listing, $buyer));
+        $this->assertSame($before, $grant->fresh()->getAttributes());
+    }
+
+    public function test_payment_sandbox_provider_refuses_production(): void
+    {
+        config(['local-marketplace.enabled' => true, 'local-marketplace.payment_sandbox' => true]);
+        app()['env'] = 'production';
+        try {
+            (new LocalMarketplaceServiceProvider(app()))->boot();
+            $this->fail('The local sandbox provider must refuse production.');
+        } catch (\LogicException $e) {
+            $this->assertSame('The local payment/payout sandbox cannot run in production.', $e->getMessage());
+        } finally {
+            app()['env'] = 'testing';
+        }
     }
 }

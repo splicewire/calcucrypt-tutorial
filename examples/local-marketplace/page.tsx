@@ -392,13 +392,14 @@ function Marketplace({ props }: { props: LocalMarketplacePageData }) {
                             toast.error(
                                 'The extension request failed. Please retry.',
                             ),
-                        can: (ability) =>
+                        can: (ability, listing) =>
                             ability === 'installed-extension.view' ||
                             (props.buyer &&
-                                [
-                                    'market-extensions.purchase',
-                                    'market-extensions.install',
-                                ].includes(ability)) ||
+                                (ability === 'market-extensions.purchase' ||
+                                    (ability === 'market-extensions.install' &&
+                                        listing !== undefined &&
+                                        !listing.isFree &&
+                                        listing.isEntitled))) ||
                             (props.hostOperator &&
                                 [
                                     'market-extensions.install',

@@ -33,7 +33,7 @@ for section, entries in [('require', lock['packages']), ('require-dev', lock['pa
             version += ' as 2.0.0-alpha.6'
         m.setdefault(section, {})[x['name']] = version
 sources = [
-    ('market', 'splicewire/laravel-beam-market', 'c91601590e8155b5120e73025c2ae84a65902c8d'),
+    ('market', 'splicewire/laravel-beam-market', 'df2c1710e1fb77a6c83880c02db7af813ae28b85'),
     ('beam_commerce', 'splicewire/laravel-beam-commerce', '42c8d495630d4d3f3b174a57f5e9abb836350a09'),
     ('tenancy', 'splicewire/laravel-beam-tenancy', '4b527177171f2732699a9470abcdb376b3f93896'),
 ]

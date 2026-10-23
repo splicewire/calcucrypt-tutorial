@@ -59,6 +59,40 @@ class LocalMarketplaceDependenciesTest extends TestCase
         $this->assertSame('Updated local listing', $product->fresh()->name['en']);
     }
 
+    public function test_workflow_actor_and_run_grouping_survive_activitylog4_and_outer_rollback(): void
+    {
+        $this->seed(\Database\Seeders\ServiceRequestApprovalSeeder::class);
+        $actor = auth()->user();
+        $context = new \Splicewire\Beam\Workflows\Control\TransitionContext(actor: 'user:'.$actor->id, runId: 'local-marketplace-dependency-proof');
+        $records = collect(['First', 'Second'])->map(function ($title) use ($actor) {
+            $record = new \App\Models\ServiceRequest(['title' => $title, 'status' => 'open']);
+            $record->user_id = $actor->id;
+            $record->team_id = $actor->current_team_id;
+            $record->save();
+
+            return $record;
+        });
+        $actuator = app(\Splicewire\Beam\Workflows\Control\WorkflowActuator::class);
+        $before = Activity::count();
+        DB::beginTransaction();
+        $this->assertTrue($actuator->transition($records[0], 'approve', $context)->applied);
+        DB::rollBack();
+        $this->assertSame($before, Activity::count());
+        $this->assertDatabaseCount('workflow_transition_facts', 0);
+        foreach ($records as $record) {
+            $this->assertTrue($actuator->transition($record->fresh(), 'approve', $context)->applied);
+        }
+        $statuses = Activity::where('log_name', 'status')->where('properties->run_id', $context->runId)->get();
+        $this->assertCount(2, $statuses);
+        foreach ($statuses as $status) {
+            $this->assertSame($context->actor, $status->properties['actor']);
+            $this->assertSame('complete', $status->event);
+        }
+        $facts = \Splicewire\Beam\Workflows\Control\WorkflowTransitionFact::where('run_id', $context->runId)->get();
+        $this->assertCount(2, $facts);
+        $this->assertSame([$context->actor], $facts->pluck('actor')->unique()->values()->all());
+    }
+
     public function test_scout_collection_save_update_delete_callbacks_and_model_index_separation(): void
     {
         $models = [

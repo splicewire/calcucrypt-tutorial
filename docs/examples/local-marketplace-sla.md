@@ -104,7 +104,7 @@ For the update, create the local `v0.1.1` tag at exact271bb0f only when releasin
 
 Remove first requests removal. The package remains deployed until the terminal removal, discovery/cache/assets and actual observation settle absence. Retain requests, workflow facts, SLA rules and evaluations. Reacquire/reinstall should restore the feature without backfilling old transitions. Disabled SLA and source/observer failures remain distinct from successful empty or met results. An after-commit observer cannot roll back an already committed approval.
 
-The executable proof and independent compare are still required before this candidate is accepted. Installer/build success alone does not establish the marketplace UI, licensing, dependency compatibility or removal/reinstall outcomes.
+The builder proof exercises this local lifecycle, real listing licensing, changed-dependency controls and removal/reinstall preservation. Independent comparison and acceptance are separate. This does not approve a shipping dependency downgrade, a live Lunar fork, paid commerce, remote publication or deployment.
 
 
 The optional taxonomy ownership pivot is an explicit host prerequisite. The starter declines the full Accounts auth migration estate. Do not enable that estate for this example. `examples/local-marketplace/migrations/2026_10_23_000000_create_userables_table.php` is byte-identical to the selected installed Accounts `database/migrations/tenant/create_userables_table.php.stub`; it supplies the taxonomy HasUser pivot only. Its owning schema is tenant-resident in a tenancy host. This single-database local example does not prove tenant isolation. After the native stack install, apply this one path on the same private SQLite connection:
@@ -114,3 +114,36 @@ COMPOSER=composer.market.json XDEBUG_MODE=off herd php artisan migrate --path=ex
 ```
 
 The selected Accounts source is `a18b2fefe67f6694bf2e69012a1deff47cf6b6a9`; the owning stub and copied migration SHA-256 are `ae61e92069a592b9649d463e00dc4742ac2d9da031891444232b5a489c0bec88`. Recheck both before running and retain the migration receipt. The broader auth estate, grants and seed behavior stay unchanged.
+
+
+## Explicit package changes and checks
+
+In the private alternate context, add a VCS repository restricted to `splicewire/service-desk-sla` and pointing at the allowlisted standalone artifact clone. Require exact `0.1.0` for the first deployment. Inspect this constrained dry run before executing without `--dry-run`:
+
+```sh
+COMPOSER=composer.market.json XDEBUG_MODE=off herd composer update splicewire/service-desk-sla --dry-run --no-scripts --no-interaction
+```
+
+First install must be one install, zero updates/removals; all previous 254 full lock records stay equal. Actual execution uses normal Composer hooks, which perform discovery and registry caching. Run the native installer with `--no-seed`, generate assets and build the host. Use the same alternate context for every command. Change only the SLA requirement to `0.1.1` for the metadata update: its dry run must be one update, and all other records remain equal. A failed attempt to require unavailable `0.1.99` must revert the alternate files and leave the old detected/last-verified deployment intact.
+
+Removal and reinstall are explicit terminal operations after their respective UI requests:
+
+```sh
+COMPOSER=composer.market.json XDEBUG_MODE=off herd composer remove splicewire/service-desk-sla --no-interaction
+# Perform normal cache/registry/assets preparation and the declared host build; then Check again.
+COMPOSER=composer.market.json XDEBUG_MODE=off herd composer require splicewire/service-desk-sla:0.1.1 --no-interaction
+COMPOSER=composer.market.json XDEBUG_MODE=off herd php artisan splicewire:beam:install --no-interaction --no-seed
+```
+
+Do not roll migrations back. Preserve rules, evaluations, requests and immutable facts. Approving a request while the extension is absent still increments the read-only usage projection. Reinstall does not evaluate that older transition; a new approval is evaluated normally. The observer is best effort after commit: deliberately invalid request source can leave a committed approval/fact and no evaluation. It does not reverse the approval.
+
+Focused checks in the alternate installed composition:
+
+```sh
+SERVICE_DESK_MARKETPLACE_ENABLED=false COMPOSER=composer.market.json XDEBUG_MODE=off herd php artisan test \
+  tests/Feature/LocalMarketplaceAuthorityTest.php tests/Feature/LocalMarketplaceRoutesTest.php \
+  tests/Feature/LocalMarketplaceDependenciesTest.php tests/Feature/ServiceRequestApprovalTest.php \
+  tests/Feature/ApprovalUsageTest.php tests/Feature/ExternalRequestTest.php
+```
+
+The dependency tests use native owning migrations on an isolated in-memory connection. They exercise Lunar log old/new values, actor and batch identity, workflow actor/run grouping and rollback, plus Scout collection save/update/delete/search for taxonomy and Lunar models. CollectionEngine reads live rows and deliberately performs no external index IO; this does not certify Meilisearch. The separate local HTTP proof covers SourceClient success/empty/503/timeout/redirect refusal/auth-before-request and private-token non-disclosure, plus the actual Guzzle promise/PSR7 stream boundary. The marketplace catalog has category/kind filters; no new free-text search UI is promised.

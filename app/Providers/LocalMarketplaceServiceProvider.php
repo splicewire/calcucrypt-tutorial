@@ -15,7 +15,6 @@ use Illuminate\Support\ServiceProvider;
 use Splicewire\Beam\Accounts\Facades\BeamAccounts;
 use Splicewire\Beam\Market\Checkout\Contracts\EntitlementScopeResolver;
 use Splicewire\Beam\Market\Checkout\Entitlements;
-use Splicewire\Beam\Market\Checkout\ListingPrice;
 use Splicewire\Beam\Market\Data\InstalledExtensionData;
 use Splicewire\Beam\Market\Data\MarketExtensionData;
 use Splicewire\Beam\Market\Data\MarketListingData;
@@ -69,7 +68,7 @@ final class LocalMarketplaceServiceProvider extends ServiceProvider
                 && BeamAccounts::isRoot($actor->fresh()));
             Gate::define('market-extensions.install', fn ($actor, ?Product $listing = null): bool => app(TeamMarketplaceContext::class)->mayOperate($actor)
                 || ($listing !== null && app(TeamMarketplaceContext::class)->mayPurchase($actor)
-                    && ! ListingPrice::isFree($listing)
+                    && ! $listing->isFree()
                     && app(Entitlements::class)->isEntitled($listing, $actor)));
             // The starter scans app/Data; explicitly register these existing package declarations.
             $registry = $this->app->make(ParticleResourceRegistry::class);

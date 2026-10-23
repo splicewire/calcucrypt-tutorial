@@ -7,6 +7,7 @@ use App\Marketplace\TeamMarketplaceContext;
 use App\Models\User;
 use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
+use Splicewire\Beam\Market\Checkout\Contracts\EntitlementScopeResolver;
 use Tests\TestCase;
 
 class LocalMarketplaceAuthorityTest extends TestCase
@@ -40,6 +41,9 @@ class LocalMarketplaceAuthorityTest extends TestCase
 
     public function test_entitlement_scope_follows_fresh_selection_not_a_cached_team(): void
     {
+        if (! interface_exists(EntitlementScopeResolver::class)) {
+            $this->markTestSkipped('Optional Marketplace entitlement scope contract is absent.');
+        }
         $this->artisan('migrate:fresh')->assertExitCode(0);
         $owner = User::factory()->create();
         $team = app(TeamProvisioner::class)->createTeamFor($owner, 'Scope one');

@@ -252,6 +252,12 @@ class PaidMarketplaceEntitlementTest extends TestCase
         $buyer->givePermissionTo(Permission::findOrCreate('marketplace.host-operator', 'web'));
         $this->assertTrue($gate->allows('market-extensions.install', $free));
         $this->postJson('/api/local-marketplace/catalog/'.$free->id.'/install')->assertOk();
+        $install = \Splicewire\Beam\Market\Models\InstalledExtension::where('product_id', $free->id)->firstOrFail();
+        $install->update(['removal_requested_at' => now()]);
+        $before = $install->fresh()->getAttributes();
+        $buyer->revokePermissionTo(Permission::findOrCreate('marketplace.host-operator', 'web'));
+        $this->postJson('/api/local-marketplace/catalog/'.$free->id.'/install')->assertForbidden();
+        $this->assertSame($before, $install->fresh()->getAttributes());
     }
 
     public function test_legacy_null_license_key_fails_closed_without_losing_history(): void

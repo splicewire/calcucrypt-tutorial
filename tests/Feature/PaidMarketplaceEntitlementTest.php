@@ -163,7 +163,8 @@ class PaidMarketplaceEntitlementTest extends TestCase
         $root = User::factory()->teamMember()->create();
         setPermissionsTeamId(null);
         $root->assignRole(\App\Models\Role::findOrCreate('Root', 'web'));
-        $this->actingAs($root->fresh())->postJson($revoke, ['entitlementId' => $grant->id])->assertOk()
+        $this->actingAs($root->fresh())->get('/local-marketplace')->assertOk();
+        $this->postJson($revoke, ['entitlementId' => $grant->id])->assertOk()
             ->assertJsonPath('data.status', 'revoked')->assertJsonMissingPath('data.licenseKey');
         $this->assertSame('revoked', $grant->fresh()->status);
         $this->assertFalse(\LucaLongo\Licensing\Models\License::where('uid', $grant->license_id)->firstOrFail()->isUsable());

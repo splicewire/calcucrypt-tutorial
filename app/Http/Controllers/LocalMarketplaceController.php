@@ -30,7 +30,7 @@ final class LocalMarketplaceController
                 ->with('product')->latest('granted_at')->limit(100)->get()->map(fn ($grant) => new BuyerEntitlementInspectionData(
                     entitlementId: (string) $grant->id,
                     productId: (int) $grant->product_id,
-                    listing: $grant->product?->translateAttribute('name') ?? 'Unavailable listing',
+                    listing: (string) ($grant->product?->translate('name') ?? 'Unavailable listing'),
                     buyerRef: $grant->buyer_ref,
                     scopeRef: $grant->scope_ref,
                     status: $grant->status,

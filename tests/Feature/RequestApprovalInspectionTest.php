@@ -92,6 +92,7 @@ class RequestApprovalInspectionTest extends TestCase
         foreach (['subject_type', 'subject_id', 'connection', 'version', 'filter', 'class'] as $selector) {
             $this->actingAs($owner)->getJson('/service-requests/'.$row->id.'/approval-history?'.$selector.'=forged')->assertUnprocessable();
         }
+        $this->actingAs($owner)->json('GET', '/service-requests/'.$row->id.'/approval-history', ['subject_id' => 999])->assertUnprocessable();
         $this->actingAs($owner)->get('/service-requests/'.$row->id.'/inspection')->assertOk()
             ->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
                 ->component('service-requests/inspection', false)
@@ -177,11 +178,15 @@ class RequestApprovalInspectionTest extends TestCase
         $db->rollBack();
         $this->assertCount(0, app(WorkflowHistory::class)->forSubject($row));
         $this->assertSame('pending', $row->fresh()->approval_state);
-        \Illuminate\Support\Facades\Event::listen(\Splicewire\Beam\Workflows\Control\Events\WorkflowTransitioned::class, fn () => throw new \RuntimeException('Observer delivery unavailable'));
+        $observed = 0;
+        \Illuminate\Support\Facades\Event::listen(\Splicewire\Beam\Workflows\Control\Events\WorkflowTransitioned::class, function () use (&$observed): never {
+            $observed++;
+            throw new \RuntimeException('Observer delivery unavailable');
+        });
         $this->actingAs($owner)->postJson('/service-requests/'.$row->id.'/approve')->assertOk();
         $this->getJson('/service-requests/'.$row->id.'/approval-history')->assertOk()->assertJsonCount(1, 'data.facts');
+        $this->assertSame(1, $observed);
     }
-
 
     public function test_current_team_a_b_a_reads_only_actual_requests(): void
     {

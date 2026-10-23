@@ -17,7 +17,7 @@ Run the native installer with `--no-seed`, then seed the approval definition:
 
 ```sh
 XDEBUG_MODE=off herd php artisan splicewire:beam:install --no-seed --no-interaction
-XDEBUG_MODE=off herd php artisan db:seed --class=Database\Seeders\ServiceRequestApprovalSeeder
+XDEBUG_MODE=off herd php artisan db:seed --class='Database\Seeders\ServiceRequestApprovalSeeder'
 XDEBUG_MODE=off herd php artisan splicewire:beam:generate:assets --json
 pnpm run build
 ```
@@ -30,19 +30,22 @@ does not replace that lock or select a package release.
 
 ## Create, approve, inspect
 
-The generated client declares `useServiceRequestsStore`, `useServiceRequestsApprove` and
+Create a request through the Service desk console, whose authenticated browser transport is
+`POST /frame/resources/service-requests` with `{ title, status }`; its response contains `data.id`.
+The separate `/api/service-requests` REST door uses token authentication in this host. A browser
+session alone is not a substitute for that API credential. No authentication middleware changes
+are needed for the inspection page.
+
+The generated client declares `useServiceRequestsApprove` and
 `useServiceRequestsApprovalHistory` in `resources/js/generated/hooks/service-requests.ts`.
-The last hook returns `ReadRequestApprovalHistoryOutputData`, whose fact `from` and `to` are
+The history hook returns `ReadRequestApprovalHistoryOutputData`, whose fact `from` and `to` are
 `string[]`. Hooks belong inside React components:
 
 ```tsx
-const create = useServiceRequestsStore();
 const approve = useServiceRequestsApprove();
 const history = useServiceRequestsApprovalHistory({ id: requestId });
 
-// As an authenticated team member:
-create.mutate({ body: { title: 'Inspect this request', status: 'open' } });
-// Use the returned request ID; an Owner or Admin performs the existing action:
+// An Owner or Admin performs the existing action for the returned request ID:
 approve.mutate({ params: { id: requestId } });
 // Refetch after the action. A repeated approval refuses with 409.
 void history.refetch();
@@ -83,3 +86,9 @@ Run the focused checks with:
 ```sh
 XDEBUG_MODE=off herd php artisan test --filter=RequestApprovalInspectionTest
 ```
+
+The complete generated registry currently also contains accepted Release/Files API declarations
+from a later source composition. Full generation with the shipping UX package does not reproduce
+those unrelated entries. This example preserves them and propagates only the native-generated
+history route, alias and hook; its new DTO schemas are native outputs. The separate API publication
+prerequisite must eventually make full generation match the tracked registry.

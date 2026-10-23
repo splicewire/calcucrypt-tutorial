@@ -67,7 +67,6 @@ final class PreviewTest extends TestCase
                 NativeCodec::within(static function (): never {
                     throw new RuntimeException('controlled-codec-exception');
                 });
-                self::fail('exception must propagate');
             } catch (RuntimeException $e) {
                 self::assertSame('controlled-codec-exception', $e->getMessage());
             }

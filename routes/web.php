@@ -22,7 +22,10 @@ Route::get('/', fn () => Inertia::render('site/home', EntryPageData::from([
 ])))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Splicewire\Beam\Facades\Particle::ops('service-requests', 'service-requests', [App\Particle\Operations\ApproveServiceRequest::class]);
+    Splicewire\Beam\Facades\Particle::ops('service-requests', 'service-requests', [App\Particle\Operations\ApproveServiceRequest::class, App\Particle\Operations\ReadRequestApprovalHistory::class]);
+
+    Route::get('service-requests/{id}/inspection', App\Http\Controllers\RequestApprovalInspectionController::class)
+        ->whereNumber('id')->name('service-requests.inspection');
 
     // The host owns auth + verified; the packaged operations each declare ux.author.
     Splicewire\Beam\Ux\Support\EditorRoutes::mount();

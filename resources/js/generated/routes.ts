@@ -33,6 +33,7 @@ export const defaults: RouteMap = {
     'external-requests.index': 'api/external-requests',
     'invitations.redeem': 'invitations/{id}/redeem',
     'service-request-usage.index': 'api/service-request-usage',
+    'service-requests.approval-history': 'service-requests/{id}/approval-history',
     'service-requests.approve': 'service-requests/{id}/approve',
     'service-requests.index': 'api/service-requests',
     'service-requests.show': 'api/service-requests/{id}',

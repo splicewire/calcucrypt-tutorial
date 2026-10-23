@@ -21,6 +21,7 @@ export type PageEntryRefData = import("./Splicewire/Beam/Ux/Data").PageEntryRefD
 export type ReleaseData = import("./Splicewire/Beam/Ux/Data").ReleaseData;
 export type ReleaseFilesData = import("./Splicewire/Beam/Ux/Data").ReleaseFilesData;
 export type ReleaseRecordingData = import("./Splicewire/Beam/Ux/Data").ReleaseRecordingData;
+export type ReadRequestApprovalHistoryOutputData = import("./App/Data").ReadRequestApprovalHistoryOutputData;
 export type ServiceRequestData = import("./App/Data").ServiceRequestData;
 export type TeamData = import("./Splicewire/Beam/Accounts/Data").TeamData;
 export type WorkflowTransitionAttemptData = import("./Splicewire/Beam/Workflows/Data").WorkflowTransitionAttemptData;

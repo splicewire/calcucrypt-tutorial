@@ -11,6 +11,17 @@ type QueryOpts<T> = Omit<Partial<UseQueryOptions<T, Error, T>>, 'queryKey' | 'qu
 type MutationVars = { params?: Record<string, string | number>; body?: unknown };
 type MutationOpts<T> = Omit<Partial<UseMutationOptions<T, Error, MutationVars>>, 'mutationFn'>;
 
+export function useServiceRequestsApprovalHistory(params: Record<string, string | number>, options?: QueryOpts<import("../App/Data").ReadRequestApprovalHistoryOutputData>) {
+    return useQuery({
+        queryKey: ['service-requests.approval-history', params],
+        queryFn: async () => {
+            const res = await api.get(route('service-requests.approval-history', params));
+            return res.data.data as import("../App/Data").ReadRequestApprovalHistoryOutputData;
+        },
+        ...options,
+    });
+}
+
 export function useServiceRequestsApprove(options?: MutationOpts<import("../Splicewire/Beam/Workflows/Data").WorkflowTransitionAttemptData>) {
     return useMutation({
         mutationFn: async (vars: MutationVars) => {

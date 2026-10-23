@@ -33,6 +33,17 @@ if (! is_string($output) || file_exists($output) || is_link($output)
     exit(1);
 }
 
+// Native owning workflow migrations are a prerequisite, not something actor creation can repair.
+if (! Illuminate\Support\Facades\Schema::hasTable('workflow_definition_lineages')
+    || ! Illuminate\Support\Facades\Schema::hasTable('workflow_definition_versions')) {
+    fwrite(STDERR, "Run the six selected native workflow migration paths before creating any sandbox actors.\n");
+    exit(1);
+}
+set_exception_handler(function (Throwable $error): void {
+    fwrite(STDERR, 'Paid fixture preparation failed ('.$error::class."). No completed fixture receipt was written.\n");
+    exit(1);
+});
+
 $actors = [];
 foreach (['creator', 'admin', 'member', 'outside', 'operator', 'reviewer', 'buyer', 'secondbuyer', 'denied', 'alternate'] as $name) {
     $password = bin2hex(random_bytes(20));

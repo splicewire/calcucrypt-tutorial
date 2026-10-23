@@ -1,3 +1,4 @@
+import type { BuyerEntitlementInspectionData } from '@/generated/App/Data/Pages';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Button } from '@schemastud/ui';
 import {

@@ -44,6 +44,18 @@ final class LocalMarketplaceServiceProvider extends ServiceProvider
             $this->app->bind(CurrentSellerResolver::class, TeamSellerResolver::class);
             $this->app->bind(EntitlementScopeResolver::class, TeamEntitlementScopeResolver::class);
             Gate::policy(Product::class, CreatorListingPolicy::class);
+            if (config('local-marketplace.payment_sandbox')) {
+                if (! $this->app->environment(['local', 'testing'])) {
+                    throw new \LogicException('The local payment/payout sandbox cannot run in production.');
+                }
+                config(['commerce.driver' => 'fake', 'beam.market.checkout.driver' => 'fake']);
+                $this->app->bind(\Splicewire\Beam\Market\Payout\Contracts\PayoutGatewayResolver::class, \App\Marketplace\SandboxPayoutGateway::class);
+            }
+            Gate::define('market-extensions.purchase', fn ($actor): bool => app(TeamMarketplaceContext::class)->mayPurchase($actor));
+            Gate::define('market-extensions.revoke-entitlement', fn ($actor): bool => app(TeamMarketplaceContext::class)->team($actor) !== null
+                && \Splicewire\Beam\Accounts\Facades\BeamAccounts::isRoot($actor->fresh()));
+            Gate::define('market-extensions.install', fn ($actor): bool => app(TeamMarketplaceContext::class)->mayOperate($actor)
+                || app(TeamMarketplaceContext::class)->mayPurchase($actor));
             // The starter scans app/Data; explicitly register these existing package declarations.
             $registry = $this->app->make(\Splicewire\Beam\Particle\ParticleResourceRegistry::class);
             foreach ([
@@ -56,7 +68,7 @@ final class LocalMarketplaceServiceProvider extends ServiceProvider
                 $registry->registerClass($declaration);
             }
 
-            foreach (['market-extensions.install', 'installed-extensions.refresh', 'installed-extensions.remove'] as $ability) {
+            foreach (['installed-extensions.refresh', 'installed-extensions.remove'] as $ability) {
                 Gate::define($ability, fn ($actor): bool => app(TeamMarketplaceContext::class)->mayOperate($actor));
             }
         });

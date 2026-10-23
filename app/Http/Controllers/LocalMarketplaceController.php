@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\Pages\BuyerEntitlementInspectionData;
 use App\Data\Pages\LocalMarketplacePageData;
 use App\Marketplace\TeamMarketplaceContext;
 use Illuminate\Http\Request;
@@ -23,6 +24,19 @@ final class LocalMarketplaceController
             hostOperator: $context->mayOperate($actor),
             reviewer: BeamAccounts::isRoot($actor),
             simulatedCallback: (bool) config('beam.market.repo_authorization.simulated_callback'),
+            buyer: $context->mayPurchase($actor),
+            paymentSandbox: (bool) config('local-marketplace.payment_sandbox'),
+            buyerEntitlements: BeamAccounts::isRoot($actor) ? \Splicewire\Beam\Market\Models\ListingEntitlement::query()
+                ->with('product')->latest('granted_at')->limit(100)->get()->map(fn ($grant) => new BuyerEntitlementInspectionData(
+                    entitlementId: (string) $grant->id,
+                    productId: (int) $grant->product_id,
+                    listing: $grant->product?->translateAttribute('name') ?? 'Unavailable listing',
+                    buyerRef: $grant->buyer_ref,
+                    scopeRef: $grant->scope_ref,
+                    status: $grant->status,
+                    paymentRef: $grant->payment_ref,
+                    licenseId: $grant->license_id,
+                ))->all() : [],
         ));
     }
 }

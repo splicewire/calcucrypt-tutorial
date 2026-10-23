@@ -38,6 +38,19 @@ class LocalMarketplaceRoutesTest extends TestCase
         return $actor->fresh();
     }
 
+    public function test_paid_buyer_permission_is_explicit_and_removed_membership_is_authoritative(): void
+    {
+        $buyer = $this->owner();
+        $gate = \Illuminate\Support\Facades\Gate::forUser($buyer);
+        $this->assertFalse($gate->allows('market-extensions.purchase'));
+        setPermissionsTeamId($buyer->current_team_id);
+        $buyer->givePermissionTo(Permission::findOrCreate('marketplace.buyer', 'web'));
+        $this->assertTrue($gate->allows('market-extensions.purchase'));
+        $this->assertFalse($gate->allows('market-extensions.revoke-entitlement'));
+        $buyer->currentTeam->memberships()->where('user_id', $buyer->id)->delete();
+        $this->assertFalse($gate->allows('market-extensions.purchase'));
+    }
+
     public function test_creator_identities_and_draft_writes_stay_with_the_selected_team(): void
     {
         $owner = $this->owner();

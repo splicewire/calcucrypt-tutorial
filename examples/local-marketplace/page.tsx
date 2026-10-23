@@ -1,4 +1,4 @@
-import { Head, usePage } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { Button } from '@schemastud/ui';
 import {
     CreatorProvider,
@@ -142,7 +142,7 @@ function ReviewQueue() {
                                     onChange={(event) =>
                                         setReason(event.target.value)
                                     }
-                                    className="mt-1 block w-full rounded border bg-background p-2"
+                                    className="bg-background mt-1 block w-full rounded border p-2"
                                 />
                             </label>
                             {pending.data.map((row) => (
@@ -201,6 +201,67 @@ function ReviewQueue() {
                         </>
                     )}
                 </>
+            )}
+        </section>
+    );
+}
+
+function BuyerLicenses({ rows }: { rows: BuyerEntitlementInspectionData[] }) {
+    const revoke = useMutation({
+        mutationFn: async (row: BuyerEntitlementInspectionData) =>
+            request(
+                'POST',
+                url('market-extensions.revoke-entitlement', row.productId),
+                undefined,
+                { entitlementId: row.entitlementId },
+            ),
+        onSuccess: () => router.reload({ only: ['buyerEntitlements'] }),
+    });
+    return (
+        <section aria-label="Buyer licenses" className="space-y-4">
+            <h2 className="text-lg font-semibold">Buyer licenses</h2>
+            <p className="text-muted-foreground text-sm">
+                Revocation blocks future acquisition. Installed code and data
+                remain. No refund is issued.
+            </p>
+            {revoke.isError && (
+                <p role="alert">
+                    Unable to revoke this buyer license. Please retry.
+                </p>
+            )}
+            {rows.length === 0 ? (
+                <p>No buyer purchases recorded.</p>
+            ) : (
+                rows.map((row) => (
+                    <article
+                        key={row.entitlementId}
+                        className="space-y-2 break-words rounded border p-4"
+                    >
+                        <h3 className="font-semibold">{row.listing}</h3>
+                        <p>
+                            Buyer {row.buyerRef} ·{' '}
+                            {row.scopeRef ?? 'No team scope'}
+                        </p>
+                        <p>
+                            Status: {row.status} · Payment: {row.paymentRef}
+                        </p>
+                        <Button
+                            disabled={
+                                revoke.isPending || row.status === 'revoked'
+                            }
+                            onClick={() => {
+                                if (
+                                    window.confirm(
+                                        `Revoke buyer ${row.buyerRef} license for ${row.listing} (${row.scopeRef ?? 'No team scope'})? Blocks future acquisition. Installed code and data remain.`,
+                                    )
+                                )
+                                    revoke.mutate(row);
+                            }}
+                        >
+                            Revoke buyer license
+                        </Button>
+                    </article>
+                ))
             )}
         </section>
     );
@@ -279,12 +340,25 @@ function Marketplace({ props }: { props: LocalMarketplacePageData }) {
                         Listing review
                     </Button>
                 )}
+                {props.reviewer && (
+                    <Button
+                        variant={tab === 'licenses' ? 'default' : 'outline'}
+                        onClick={() => setTab('licenses')}
+                    >
+                        Buyer licenses
+                    </Button>
+                )}
                 <a href="/service-desk" className="rounded px-3 py-2 underline">
                     Service desk
                 </a>
             </nav>
+            {props.paymentSandbox && (
+                <p role="status" className="bg-muted rounded border p-3">
+                    Local payment and payout sandbox — no charge.
+                </p>
+            )}
             {props.simulatedCallback && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                     Local repository preview: provider association is simulated.
                     Deployment requires an explicit terminal command.
                 </p>
@@ -302,6 +376,8 @@ function Marketplace({ props }: { props: LocalMarketplacePageData }) {
                 >
                     <CreatorWorkspaceArea />
                 </CreatorProvider>
+            ) : tab === 'licenses' && props.reviewer ? (
+                <BuyerLicenses rows={props.buyerEntitlements} />
             ) : tab === 'review' && props.reviewer ? (
                 <ReviewQueue />
             ) : (
@@ -315,6 +391,11 @@ function Marketplace({ props }: { props: LocalMarketplacePageData }) {
                             ),
                         can: (ability) =>
                             ability === 'installed-extension.view' ||
+                            (props.buyer &&
+                                [
+                                    'market-extensions.purchase',
+                                    'market-extensions.install',
+                                ].includes(ability)) ||
                             (props.hostOperator &&
                                 [
                                     'market-extensions.install',

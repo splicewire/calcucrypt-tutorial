@@ -22,6 +22,12 @@ final class TeamMarketplaceContext
             ->whereIn('role', [Role::Owner->value, Role::Admin->value])->exists();
     }
 
+    public function mayPurchase(mixed $actor): bool
+    {
+        return $this->team($actor) !== null && $actor->fresh()->getAllPermissions()
+            ->contains('name', 'marketplace.buyer');
+    }
+
     public function mayOperate(mixed $actor): bool
     {
         // This permission admits SITE-WIDE code changes, not a team-local installation.

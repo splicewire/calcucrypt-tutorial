@@ -12,6 +12,7 @@ use Splicewire\Beam\Market\Extensions\Ops\InstallExtension;
 use Splicewire\Beam\Market\Extensions\Ops\PurchaseExtension;
 use Splicewire\Beam\Market\Extensions\Ops\RefreshInstalledExtension;
 use Splicewire\Beam\Market\Extensions\Ops\RemoveInstalledExtension;
+use Splicewire\Beam\Market\Extensions\Ops\RevokeBuyerEntitlement;
 use Splicewire\Beam\Market\Http\Controllers\ConnectionStatusController;
 use Splicewire\Beam\Market\Http\Controllers\Operator\ListingReviewController;
 use Splicewire\Beam\Market\RepoAuthorization\Ops\InspectRepoArtifact;
@@ -38,7 +39,7 @@ Route::middleware(['auth', 'verified', RequireMarketplaceTeam::class])->group(fu
         Particle::mount('installed', 'installed-extensions')->only(['index'])
             ->ops([RefreshInstalledExtension::class, RemoveInstalledExtension::class]);
         Particle::mount('catalog', 'market-extensions')->only(['index', 'show'])
-            ->ops([InstallExtension::class, PurchaseExtension::class]);
+            ->ops([InstallExtension::class, PurchaseExtension::class, RevokeBuyerEntitlement::class]);
         Route::get('connection', [ConnectionStatusController::class, 'show'])
             ->name('local-marketplace.connection');
     });

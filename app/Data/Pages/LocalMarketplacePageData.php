@@ -14,5 +14,9 @@ final class LocalMarketplacePageData extends Data
         public bool $hostOperator,
         public bool $reviewer,
         public bool $simulatedCallback,
+        public bool $buyer,
+        public bool $paymentSandbox,
+        /** @var BuyerEntitlementInspectionData[] */
+        public array $buyerEntitlements,
     ) {}
 }

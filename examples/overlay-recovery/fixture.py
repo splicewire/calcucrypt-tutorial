@@ -214,8 +214,10 @@ def main():
     p.add_argument('--root', required=True, type=Path)
     p.add_argument('--fixture', required=True, type=Path)
     p.add_argument('--host', type=Path)
-    p.add_argument('--php', default='/Users/stephen/Library/Application Support/Herd/bin/php84')
+    p.add_argument('--php', help='Explicit Herd PHP executable for native command actions')
     a = p.parse_args()
+    if a.action in ['diagnose', 'preview', 'apply'] and not a.php:
+        p.error('--php is required for native command actions')
     try:
         if a.action == 'prepare':
             prepare(a.root, a.fixture)

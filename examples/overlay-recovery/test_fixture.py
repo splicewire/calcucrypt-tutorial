@@ -3,6 +3,8 @@ import json
 import os
 from pathlib import Path
 import tempfile
+import subprocess
+import sys
 import unittest
 from unittest.mock import patch
 
@@ -86,6 +88,15 @@ class FixtureSafeguards(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Symlink'):
                 f.validate(self.fixture)
             read.assert_not_called()
+
+    def test_native_actions_require_explicit_php_before_path_access(self):
+        for action in ['diagnose', 'preview', 'apply']:
+            result = subprocess.run([sys.executable, str(Path(__file__).with_name('fixture.py')),
+                                     action, '--root', '/missing-root', '--fixture', '/missing-fixture'],
+                                    text=True, capture_output=True)
+            self.assertEqual(2, result.returncode)
+            self.assertIn('--php is required', result.stderr)
+            self.assertNotIn('Expected real directory', result.stderr)
 
     def test_outside_fixture_refuses(self):
         with self.assertRaisesRegex(ValueError, 'direct child'):

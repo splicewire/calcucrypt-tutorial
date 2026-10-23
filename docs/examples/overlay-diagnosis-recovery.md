@@ -16,7 +16,7 @@ instructions. Do not copy an owner vendor tree, `.env`, auth file or database.
 # TOOL points to a reviewed ecosystem clone with nested scratch support (b4b2825ef or later).
 # R is your freshly registered, exclusively owned scratch root; ROW is your actual queue row.
 F=$(node "$TOOL/rigs/launch/bin/scratch.mjs" create --parent "$R" --prefix overlay-example- --row "$ROW")
-PHP="/Users/stephen/Library/Application Support/Herd/bin/php84"
+PHP=$(XDEBUG_MODE=off herd php -r 'echo PHP_BINARY;')
 cd "$R/host"
 python3 examples/overlay-recovery/fixture.py prepare --root "$R" --fixture "$F"
 ```
@@ -67,7 +67,10 @@ findings, not just the process status.
 The removal command previews by default. Its JSON reports the verb, base and
 `composer.local.json` modify action. It is not a complete before/after diff. No
 sidecar, file or index change is expected. To also assert unchanged bytes and index,
-use the example's read-only `diagnose` and `preview` actions with the common flags:
+use the example's read-only `diagnose` and `preview` actions with the common flags.
+Neither read action requires the disposable write marker; they still validate the
+owned-root target layout/JSON and assert no file/index changes. The native CLI itself
+is trusted developer filesystem access, not an ownership authorizer:
 
 ```sh
 python3 examples/overlay-recovery/fixture.py preview --root "$R" --fixture "$F" --host "$R/host" --php "$PHP"

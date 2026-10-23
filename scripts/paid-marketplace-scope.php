@@ -28,7 +28,11 @@ if ($fixture['root'] !== realpath(base_path()) || $fixture['database'] !== realp
 }
 $buyer = User::findOrFail($fixture['actors']['buyer']['id']);
 $team = Team::findOrFail($fixture['teams'][$choice]);
-if (! $team->memberships()->where('user_id', $buyer->id)->exists() || ! $buyer->switchTeam($team)) {
+if (! $team->memberships()->where('user_id', $buyer->id)->exists()) {
     throw new RuntimeException('Buyer is not a current member of that scope.');
+}
+$buyer->switchTeam($team);
+if ((string) $buyer->fresh()->current_team_id !== (string) $team->id) {
+    throw new RuntimeException('Selected scope was not persisted.');
 }
 echo json_encode(['buyerRef' => (string) $buyer->id, 'scopeRef' => 'team:'.$buyer->fresh()->current_team_id, 'setupOnly' => true], JSON_THROW_ON_ERROR)."\n";

@@ -24,7 +24,7 @@ final class TeamApprovalWallet
         $this->assertConfiguration();
         $party = $this->context->party($team);
         $meter = new ApprovalWalletMeter($party, (string) $team->getKey(), $this->facts);
-        $assessment = $this->wallets->budgetSource($party, 'usd', $meter)->assess();
+        $assessment = $this->wallets->budgetSource($party, 'usd', new CommerceUsageMeter($meter))->assess();
         $credited = (int) round($assessment->cap * 100);
         $usage = (int) round($assessment->spend * 100);
 

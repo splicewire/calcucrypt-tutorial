@@ -4,10 +4,9 @@ namespace App\Wallet;
 
 use App\Support\CommittedApprovals;
 use InvalidArgumentException;
-use Rushing\Commerce\Contracts\UsageMeter;
 
 /** Concrete per-read meter. Never bound over the application's global UsageMeter. */
-final class ApprovalWalletMeter implements UsageMeter
+final class ApprovalWalletMeter
 {
     public function __construct(private string $party, private string $teamId, private CommittedApprovals $facts) {}
 

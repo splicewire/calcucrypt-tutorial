@@ -19,6 +19,9 @@ class LocalMarketplaceRoutesTest extends TestCase
 {
     protected function setUp(): void
     {
+        if (! class_exists(Product::class)) {
+            $this->markTestSkipped('Optional Marketplace composition is absent.');
+        }
         parent::setUp();
         $this->assertSame(':memory:', config('database.connections.sqlite.database'));
         $this->artisan('migrate:fresh')->assertExitCode(0);

@@ -6,6 +6,7 @@ use App\Models\ServiceRequest;
 use App\Models\User;
 use App\Support\CommittedApprovals;
 use App\Wallet\ApprovalWalletMeter;
+use App\Wallet\CommerceUsageMeter;
 use App\Wallet\TeamApprovalWallet;
 use App\Wallet\TeamWalletContext;
 use Illuminate\Contracts\Console\Kernel;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Rushing\Commerce\Events\PurchaseCompleted;
+use Rushing\Commerce\Wallets;
 use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Splicewire\Beam\Workflows\Control\WorkflowActuator;
@@ -173,7 +175,7 @@ class TeamApprovalWalletTest extends TestCase
         $a = $this->owner();
         $row = $this->pending($a);
         $party = app(TeamWalletContext::class)->party($a->currentTeam);
-        $meter = new ApprovalWalletMeter($party, (string) $a->current_team_id, app(CommittedApprovals::class));
+        $meter = new CommerceUsageMeter(new ApprovalWalletMeter($party, (string) $a->current_team_id, app(CommittedApprovals::class)));
         app(WorkflowActuator::class)->transition($row, 'approve');
         $this->assertSame(0.25, $meter->debitedFor($party, 'usd'));
         $this->actingAs($a)->getJson('/frame/resources/service-request-usage')->assertOk()->assertJsonPath('data.0.quantity', 1);
@@ -190,8 +192,14 @@ class TeamApprovalWalletTest extends TestCase
             }
         }
         $this->summary('$0.00', 1, '$0.25', '-$0.25');
-        $this->expectException(\InvalidArgumentException::class);
-        $meter->debitedFor('foreign', 'usd');
+        foreach ([['foreign', 'usd'], [$party, 'eur']] as [$requestedParty, $unit]) {
+            try {
+                $meter->debitedFor($requestedParty, $unit);
+                $this->fail('Unsupported scope or unit was accepted.');
+            } catch (\InvalidArgumentException $error) {
+                $this->assertSame('Unsupported approval wallet party or unit.', $error->getMessage());
+            }
+        }
     }
 
     public function test_same_captured_purchase_replay_no_second_credit_new_purchase_different(): void

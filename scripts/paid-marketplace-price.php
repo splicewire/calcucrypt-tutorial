@@ -9,6 +9,10 @@ use Splicewire\Beam\Market\Models\ProductVariant;
 require __DIR__.'/../vendor/autoload.php';
 $app = require __DIR__.'/../bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
+set_exception_handler(function (Throwable $error): void {
+    fwrite(STDERR, 'Prepared pricing failed ('.$error::class.").\n");
+    exit(1);
+});
 $id = $argv[1] ?? null;
 $amount = $argv[2] ?? null;
 $url = parse_url((string) config('app.url'));

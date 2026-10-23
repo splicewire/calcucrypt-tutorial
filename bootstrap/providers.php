@@ -6,6 +6,7 @@ use App\Providers\TypeScriptTransformerServiceProvider;
 
 return [
     AppServiceProvider::class,
+    App\Providers\LocalMarketplaceServiceProvider::class,
     FortifyServiceProvider::class,
     TypeScriptTransformerServiceProvider::class,
 ];

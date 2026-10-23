@@ -56,3 +56,9 @@ CLAUDE.md
 # Local Git-release overlay, beside composer.local.json — never commit machine paths or the hook.
 /pnpm.local.json
 /.pnpmfile.cjs
+
+# Explicitly prepared optional local marketplace example (source in examples/).
+/resources/js/pages/examples/local-marketplace.tsx
+
+/composer.market.json
+/composer.market.lock

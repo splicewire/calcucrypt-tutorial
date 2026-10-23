@@ -25,5 +25,11 @@ final class TypeScriptTransformerServiceProvider extends TypeScriptTransformerAp
                 base_path('vendor/splicewire/laravel-beam-accounts/src/Data/Pages'),
             )
             ->writer(new ModuleWriter(path: null));
+
+        // The optional review queue is a bespoke declared response, outside particle discovery.
+        if (config('local-marketplace.enabled') && is_dir(base_path('vendor/splicewire/laravel-beam-market/src/Data'))) {
+            $config->transformDirectories(base_path('vendor/splicewire/laravel-beam-market/src/Data'));
+        }
+
     }
 }

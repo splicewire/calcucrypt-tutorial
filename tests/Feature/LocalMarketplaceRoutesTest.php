@@ -99,4 +99,24 @@ class LocalMarketplaceRoutesTest extends TestCase
             $this->assertSame(['GET'], $manifest[$name]['methods']);
         }
     }
+
+    public function test_missing_bespoke_route_refuses_generation(): void
+    {
+        $router = new \Illuminate\Routing\Router(app('events'), app());
+        $source = new \App\Marketplace\LocalMarketplaceRouteManifest(app(\Splicewire\Beam\Source\ParticleRouteManifestSource::class), $router);
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Expected exactly one selected marketplace route');
+        $source->toArray();
+    }
+
+    public function test_duplicate_live_name_refuses_generation(): void
+    {
+        $router = new \Illuminate\Routing\Router(app('events'), app());
+        $router->get('fixture-one', fn () => 'fixture')->name('local-marketplace.connection');
+        $router->get('fixture-two', fn () => 'fixture')->name('local-marketplace.connection');
+        $source = new \App\Marketplace\LocalMarketplaceRouteManifest(app(\Splicewire\Beam\Source\ParticleRouteManifestSource::class), $router);
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Expected exactly one selected marketplace route');
+        $source->toArray();
+    }
 }

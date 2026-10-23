@@ -15,10 +15,19 @@ final class LocalMarketplaceRouteManifest implements RouteManifestSource
     {
         $manifest = $this->particles->toArray();
         foreach (['local-marketplace.connection', 'local-marketplace.review.pending'] as $name) {
-            $route = $this->router->getRoutes()->getByName($name);
-            if ($route === null) {
-                throw new \LogicException('Missing selected marketplace route: '.$name);
+            if (isset($manifest[$name])) {
+                throw new \LogicException('Duplicate marketplace manifest route: '.$name);
             }
+            $matches = [];
+            foreach ($this->router->getRoutes() as $candidate) {
+                if ($candidate->getName() === $name) {
+                    $matches[] = $candidate;
+                }
+            }
+            if (count($matches) !== 1) {
+                throw new \LogicException('Expected exactly one selected marketplace route: '.$name);
+            }
+            $route = $matches[0];
             $manifest[$name] = [
                 'path' => ltrim($route->uri(), '/'),
                 'methods' => array_values(array_diff($route->methods(), ['HEAD'])),

@@ -53,6 +53,7 @@ class LocalMarketplaceAuthorityTest extends TestCase
     public function test_default_example_is_disabled_without_optional_route_or_package_requirement(): void
     {
         $this->assertFalse((bool) config('local-marketplace.enabled'));
+        $this->assertSame(\Splicewire\Beam\Source\ParticleRouteManifestSource::class, config('beam.client.sources.defaults'));
         $this->assertFalse(app('router')->getRoutes()->hasNamedRoute('local-marketplace'));
         $manifest = json_decode(file_get_contents(base_path('composer.json')), true);
         $this->assertArrayNotHasKey('splicewire/laravel-beam-market', $manifest['require']);

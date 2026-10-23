@@ -8,10 +8,14 @@ use Examples\DeclaredTopology\IncompleteMeasurement;
 
 try {
     $options = getopt('', ['root:', 'fixture:']);
-    if (! isset($options['root'], $options['fixture']) || count($options) !== 2) {
+    if (! isset($options['root'], $options['fixture']) || ! is_string($options['root']) || ! is_string($options['fixture']) || count($options) !== 2) {
         throw new InvalidArgumentException('Supply root and fixture');
     }
-    require dirname(__DIR__, 2).'/vendor/autoload.php';
+    $autoload = dirname(__DIR__, 2).'/vendor/autoload.php';
+    if (! is_file($autoload)) {
+        throw new RuntimeException('Developer dependencies unavailable');
+    }
+    require $autoload;
     $result = Example::inspect($options['root'], $options['fixture']);
     echo json_encode(['status' => $result['violations'] === [] ? 'measured-clean' : 'violations', ...$result], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)."\n";
     exit($result['violations'] === [] ? 0 : 1);

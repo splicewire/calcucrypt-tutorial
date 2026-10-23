@@ -100,9 +100,20 @@ final class ExampleTest extends TestCase
     {
         $driver = new class implements GraphStore
         {
-            public function name(): string { return 'unsupported'; }
-            public function supports(Capability $capability): bool { return false; }
-            public function speaks(): array { return []; }
+            public function name(): string
+            {
+                return 'unsupported';
+            }
+
+            public function supports(Capability $capability): bool
+            {
+                return false;
+            }
+
+            public function speaks(): array
+            {
+                return [];
+            }
         };
         $this->expectException(InvalidArgumentException::class);
         Example::inspect($this->root, $this->fixture, fn (): GraphStore => $driver);
@@ -115,7 +126,10 @@ final class ExampleTest extends TestCase
         $store = RelationalDriverFactory::make($source);
         $scope = new class implements PackageScope
         {
-            public function sees(string $name): bool { return false; }
+            public function sees(string $name): bool
+            {
+                return false;
+            }
         };
         try {
             Example::measure($contract, $store, $this->fixture, $scope);

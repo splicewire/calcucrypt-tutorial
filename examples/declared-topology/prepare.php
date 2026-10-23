@@ -6,7 +6,7 @@ use Examples\DeclaredTopology\Example;
 
 try {
     $options = getopt('', ['root:', 'fixture:', 'cyclic']);
-    if (! isset($options['root'], $options['fixture']) || array_diff(array_keys($options), ['root', 'fixture', 'cyclic']) !== []) {
+    if (! isset($options['root'], $options['fixture']) || ! is_string($options['root']) || ! is_string($options['fixture']) || array_diff(array_keys($options), ['root', 'fixture', 'cyclic']) !== []) {
         throw new InvalidArgumentException('Supply root and fixture');
     }
     Example::prepare($options['root'], $options['fixture'], isset($options['cyclic']));

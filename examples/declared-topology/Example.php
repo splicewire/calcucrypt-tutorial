@@ -57,6 +57,9 @@ final class Example
     {
         $data = self::json($path.'/.openrig-scratch-owner.json');
         $stat = stat($path);
+        if ($stat === false) {
+            throw new InvalidArgumentException('Fixture identity unavailable');
+        }
         if (($data['schema'] ?? null) !== 'openrig.scratch-owner/v2' || ($data['path'] ?? null) !== $path
             || ($data['owner'] ?? null) !== getenv('OPENRIG_SESSION_NAME') || empty($data['owner'])
             || ($data['dev'] ?? null) !== $stat['dev'] || ($data['ino'] ?? null) !== $stat['ino'] || empty($data['id'])) {
@@ -87,7 +90,11 @@ final class Example
                 throw new InvalidArgumentException('Symlink or nonregular fixture payload refused');
             }
             if ($file->isFile()) {
-                $files[substr($file->getPathname(), strlen($fixture) + 1)] = hash_file('sha256', $file->getPathname());
+                $hash = hash_file('sha256', $file->getPathname());
+                if ($hash === false) {
+                    throw new InvalidArgumentException('Fixture bytes unavailable');
+                }
+                $files[substr($file->getPathname(), strlen($fixture) + 1)] = $hash;
             }
         }
         ksort($files);

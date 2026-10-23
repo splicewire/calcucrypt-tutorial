@@ -65,3 +65,7 @@ CLAUDE.md
 
 /composer.paid.json
 /composer.paid.lock
+
+# Optional isolated team-wallet dependency context
+/composer.wallet.json
+/composer.wallet.lock

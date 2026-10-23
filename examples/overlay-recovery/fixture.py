@@ -79,6 +79,7 @@ def snapshot(fixture):
 
 
 def validate(fixture, *, repaired=False):
+    snapshot(fixture)  # reject parent-directory symlinks before reading manifests
     base = read_json(fixture / 'composer.json')
     overlay = read_json(fixture / 'composer.local.json')
     read_json(fixture / 'composer.lock')

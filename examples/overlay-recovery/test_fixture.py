@@ -72,6 +72,21 @@ class FixtureSafeguards(unittest.TestCase):
             f.guard(self.root, self.fixture)
         self.assertEqual('not JSON', outside.read_text())
 
+    def test_symlinked_kept_directory_refuses_before_manifest_read(self):
+        self.prepared()
+        kept = self.fixture / 'packages/kept'
+        original = kept / 'composer.json'
+        original.unlink()
+        kept.rmdir()
+        outside = self.root / 'outside-package'
+        outside.mkdir()
+        (outside / 'composer.json').write_text('{"name":"fixture/kept"}')
+        kept.symlink_to(outside, target_is_directory=True)
+        with patch.object(f, 'read_json', wraps=f.read_json) as read:
+            with self.assertRaisesRegex(ValueError, 'Symlink'):
+                f.validate(self.fixture)
+            read.assert_not_called()
+
     def test_outside_fixture_refuses(self):
         with self.assertRaisesRegex(ValueError, 'direct child'):
             f.locations(self.fixture, self.root)

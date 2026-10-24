@@ -22,8 +22,31 @@ host as `composer.example.json` and `composer.example.lock`, remapping only its 
 source/repository URLs to your own exact-ref clones. The packet's full-record check must pass.
 The host's committed Composer and pnpm manifests/locks stay unchanged.
 
-Use the reviewed ecosystem tool from the packet (b4b2825ef0d3e938806d1e2a263589fc37753f44)
-for **every** Composer command, beginning with configuration/install. Run in `$HOST`:
+The supplied packet contains a **complete offline Git bundle** of reviewed ecosystem tool
+b4b2825ef0d3e938806d1e2a263589fc37753f44, not a promise that this commit can be fetched from
+remote main. Before using it, verify every packet file against the committed input manifest:
+
+```bash
+python3 - "$INPUTS" "$HOST/examples/service-desk-preview-inputs.json" <<'CHECK'
+from pathlib import Path
+import hashlib, json, sys
+root = Path(sys.argv[1]).resolve()
+for name, expected in json.loads(Path(sys.argv[2]).read_text())['packetFiles'].items():
+    file = (root / name).resolve()
+    assert file.is_relative_to(root) and file.is_file(), name
+    assert hashlib.sha256(file.read_bytes()).hexdigest() == expected['sha256'], name
+CHECK
+git clone --no-checkout "$INPUTS/ecosystem-b4.bundle" "$RUN_ROOT/eco"
+git -C "$RUN_ROOT/eco" checkout --detach b4b2825ef0d3e938806d1e2a263589fc37753f44
+test "$(git -C "$RUN_ROOT/eco" rev-parse HEAD)" = b4b2825ef0d3e938806d1e2a263589fc37753f44
+```
+
+The immutable `RECIPE.md` and `recipe-commands.json` are hash-bound by that manifest. Verify the
+original Composer pair **before** the three documented local transport remaps; record those URL
+changes separately and prove all 225 complete package records otherwise identical. No version,
+reference, dist or additional field change is a transport remap.
+
+Use the tool for **every** Composer command, beginning with configuration/install. Run in `$HOST`:
 
 ```bash
 export COMPOSER=composer.example.json
@@ -63,8 +86,25 @@ fresh. Their output manifests must be captured immediately. Install the host's f
 with scripts ignored and an owned store; compose the four selected package namespaces using the
 packet's checked local links, including existing isolated-store dependent links. This does not
 change the shipping lock. Do not use `pnpm link` or run a hidden package preparation step.
-Use the reviewed Composer wrapper as the host's `composer` executable when running its declared
-`pnpm run build`: it performs native type transformation, both TypeScript checks and Vite.
+Install this explicit contained Composer shim before the declared host build. It is the
+same wrapper, not an unwrapped Composer fallback; the heredoc preserves its argument forwarding.
+`NODE` is the absolute executable of the selected Node 22 installation.
+
+```bash
+export NODE=/absolute/path/to/selected/node
+mkdir -p "$RUN_ROOT/bin"
+cat > "$RUN_ROOT/bin/composer" <<'SHIM'
+#!/bin/sh
+exec "$NODE" "$RUN_ROOT/eco/rigs/launch/bin/composer-leg.mjs" --root "$RUN_ROOT" -- "$@"
+SHIM
+chmod 700 "$RUN_ROOT/bin/composer"
+export RUN_ROOT NODE
+export PATH="$RUN_ROOT/bin:$PATH"
+test "$(command -v composer)" = "$RUN_ROOT/bin/composer"
+pnpm run build
+```
+
+That declared build performs native type transformation, both TypeScript checks and Vite.
 **Generation and the declared build must pass with review off before starting a browser.** Stop
 on a concrete missing type/input; do not enable host-wide review, handwrite a generated type or
 drop declarations to make the build pass.

@@ -7,8 +7,11 @@ use Illuminate\Contracts\Console\Kernel;
 use Splicewire\Beam\Accounts\Models\Team;
 
 $output = $argv[1] ?? null;
-$refuse = static function (): never {
-    fwrite(STDERR, "Use a fresh local service-desk.sqlite and a new private output path after native installation and ApprovalSeeder.\n");
+$provisioningStarted = false;
+$refuse = static function () use (&$provisioningStarted): never {
+    fwrite(STDERR, $provisioningStarted
+        ? "Preparation did not complete. Actors may already exist and the database may no longer be fresh; inspect this private fixture before any further command. Do not rerun actor creation.\n"
+        : "Use a fresh local service-desk.sqlite and a new private output path after native installation and ApprovalSeeder.\n");
     exit(1);
 };
 
@@ -44,6 +47,7 @@ try {
 
     // The existing native helper owns users, teams, membership, selected teams and private credentials.
     // A fresh PHP process avoids bootstrapping Laravel twice in this process.
+    $provisioningStarted = true;
     $command = [PHP_BINARY, __DIR__.'/service-request-fixture.php', $output, '--shared'];
     $process = proc_open($command, [0 => STDIN, 1 => STDOUT, 2 => STDERR], $pipes, base_path());
     if (! is_resource($process)) {
@@ -51,7 +55,7 @@ try {
     }
     $status = proc_close($process);
     if ($status !== 0) {
-        exit($status);
+        $refuse();
     }
     if (! is_file($output) || is_link($output) || (fileperms($output) & 0077) !== 0) {
         $refuse();

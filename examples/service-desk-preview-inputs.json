@@ -33,5 +33,31 @@
   "flags": {
     "BEAM_CANONICAL_MDX_REVIEW_ENABLED": false
   },
-  "delivery": "Supplied isolated preview source/input packet; unpublished checkpoints, not a released main-only install. Exact derived manifest/lock, transport maps, per-owner build inputs and receipts accompany the packet. Do not solve wider dependencies or modify shipping locks."
+  "delivery": "Supplied isolated preview source/input packet; unpublished checkpoints, not a released main-only install. Exact derived manifest/lock, transport maps, per-owner build inputs and receipts accompany the packet. Do not solve wider dependencies or modify shipping locks.",
+  "tool": {
+    "ref": "b4b2825ef0d3e938806d1e2a263589fc37753f44",
+    "delivery": "complete ecosystem-b4.bundle; clone locally offline; not assumed origin-main reachability"
+  },
+  "packetFiles": {
+    "ecosystem-b4.bundle": {
+      "sha256": "dbe13229a0be7420a88f1dad340235482e20e9a5bfade26d0829ca085f55e1dd",
+      "bytes": 413947001
+    },
+    "composer.example.json": {
+      "sha256": "a2ec51376393d237c4d01316fdb3a3f17981e20408f96616dc830dd300bc6b62",
+      "bytes": 20264
+    },
+    "composer.example.lock": {
+      "sha256": "d068b696eebde6f2de90ce5a50e6b06afcbc7175281cdc58025b1bfbaf4e3dc2",
+      "bytes": 631350
+    },
+    "RECIPE.md": {
+      "sha256": "d9244c8ecfa79911c08d8bc671b6eee59783fa5c5ee10e50df3c2c257139bffe",
+      "bytes": 10776
+    },
+    "recipe-commands.json": {
+      "sha256": "8926803abd9bdd19a4e8e2a3d5755ae04b57c86e1e8d763bbea9fcc3505c1b38",
+      "bytes": 2664
+    }
+  }
 }

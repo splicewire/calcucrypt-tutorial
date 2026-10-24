@@ -11,10 +11,10 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Rushing\LaravelDataSchemasScribe\Attributes\ResponseFromData;
 use Splicewire\Beam\Ux\Body\BodyKind;
+use Splicewire\Beam\Ux\Data\ReleaseData;
 use Splicewire\Beam\Ux\Format\UxFormat;
 use Splicewire\Beam\Ux\Models\BeamUxEntry;
 use Splicewire\Beam\Ux\Models\BeamUxRelease;
-use Splicewire\Beam\Ux\Data\ReleaseData;
 use Splicewire\Beam\Ux\Publish\EntryPublication;
 use Splicewire\Beam\Ux\Release\ReleaseService;
 use Splicewire\Beam\Ux\Type\UxType;
@@ -30,7 +30,7 @@ final class CanonicalMdxReviewController
         Gate::forUser($actor)->authorize('ux.author');
         $entry = BeamUxEntry::findOrFail($id);
         $releases->authorizeFileEdit($entry, $actor);
-        abort_unless($entry->type === UxType::Page && $entry->format === UxFormat::Mdx && $entry->bodyKind() === BodyKind::Source, 404);
+        abort_unless($entry->getAttribute('type') === UxType::Page && $entry->getAttribute('format') === UxFormat::Mdx && $entry->bodyKind() === BodyKind::Source, 404);
         abort_if($request->query->count() !== 0, 422);
         // Authorize before reading the version store; only saved identities/labels cross this door.
         $choices = array_map(fn ($version): CanonicalMdxVersionChoiceData => new CanonicalMdxVersionChoiceData(
@@ -44,7 +44,7 @@ final class CanonicalMdxReviewController
             ->orderByDesc('created_at')->get()->map(fn ($release): ReleaseData => ReleaseData::project($release))->all();
 
         return Inertia::render('account/canonical-mdx-review', new CanonicalMdxReviewPageData(
-            $entry->id, $entry->title ?? $entry->slug, $choices, $savedReleases,
+            (string) $entry->getKey(), $entry->title ?? (string) $entry->getAttribute('slug'), $choices, array_values($savedReleases),
         ));
     }
 }

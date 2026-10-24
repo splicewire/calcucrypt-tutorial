@@ -38,7 +38,7 @@ export default function CanonicalMdxReviewPage({ entryId, title, versions, relea
         <p>Choose an explicitly saved version. A later working draft does not replace a fixed Release member. Another author must review before publication.</p>
         <p>Publication writes the selected version’s mirror and records it locally. It does not check a last-minute external file hash.</p>
         {error && <p role="alert">{error}</p>}
-        <label>Existing Release <select aria-label="Existing Release" className="rounded border bg-background p-2" value={release?.id ?? ''} onChange={event => setRelease(releases.find(item => item.id === event.target.value) ?? null)}>
+        <label className="block min-w-0">Existing Release <select aria-label="Existing Release" className="block w-full min-w-0 max-w-full rounded border bg-background p-2" value={release?.id ?? ''} onChange={event => setRelease(releases.find(item => item.id === event.target.value) ?? null)}>
             <option value="">Choose a Release, or create one</option>
             {releases.map(item => <option key={item.id} value={item.id}>{item.title} ({item.status})</option>)}
         </select></label>

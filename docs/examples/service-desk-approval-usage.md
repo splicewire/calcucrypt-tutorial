@@ -1,5 +1,8 @@
 # Inspect your team's committed approval usage
 
+For the current **one-host, one-request** trail, start with [the cumulative preview](service-desk-current-preview.md).
+The setup/checkpoint commands below retain their own historical inputs; do not concatenate their fresh fixtures.
+
 Current authoring compatibility: follow [Theme draft/Release adoption](service-desk-releases.md)
 for the selected package pair and fresh/upgrade setup. Theme **Save draft** keeps published tokens
 unchanged; explicit **Publish** releases the saved version (or requests review). Earlier slice proof

@@ -1,5 +1,8 @@
 # Inspect committed request approvals
 
+For the current **one-host, one-request** trail, start with [the cumulative preview](service-desk-current-preview.md).
+The setup/checkpoint commands below retain their own historical inputs; do not concatenate their fresh fixtures.
+
 An Owner, Admin or Member can inspect a request in their currently selected team at
 `/service-requests/{id}/inspection`. Open a request in the Service desk console to obtain its ID,
 then visit that URL. **Back to request** returns to the existing console detail.

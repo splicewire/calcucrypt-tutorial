@@ -6,7 +6,7 @@
     "schemastud/laravel-frame": "f94c047b261c890098b62ae7054f594da66694bd",
     "splicewire/laravel-beam-ux": "c27259a5fe60af3efb07204fd07e368abaea1e37",
     "splicewire/laravel-beam-workflows": "0ea706d7b2722691d141af8e6a79ff46b8b435f9",
-    "splicewire/laravel-mdx": "c168813b8bae73d98e7b2b6a5053fd6871f565c2"
+    "splicewire/laravel-beam-mdx": "c168813b8bae73d98e7b2b6a5053fd6871f565c2"
   },
   "javascript": {
     "beam": "5e41347f78dcd1eb0a765ab3188a2c38b6af946d",

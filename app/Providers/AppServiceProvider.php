@@ -66,6 +66,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        if (config('canonical-mdx.enabled', false)) {
+            config(['beam.ux.releases.review_required' => true, 'beam.ux.releases.allow_self_approval' => false]);
+        }
         ServiceRequestApproval::register();
         // Creating a team is open to authenticated users, including users without a team.
         $this->app->booted(function (): void {

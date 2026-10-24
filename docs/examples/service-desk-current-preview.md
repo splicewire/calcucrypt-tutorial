@@ -125,16 +125,17 @@ tenant isolation. Start the host on the selected loopback port after its success
 
 1. Sign in as Member from the private fixture. Open **Service requests** in the actual navigation,
    choose Create, submit a title such as “Printer access” and status `open`. Keep the returned
-   request ID **R**. Read its stock detail and reload: the creator is this Member, team is Team A,
-   and approval is pending. Do not create a second request to recover an assertion failure.
+   request ID **R**. Read its stock detail and reload: title/status/approval are displayed, with approval pending.
+   Native readback binds the server-owned creator to this Member and team to Team A; the four-field
+   stock DTO does not display ownership columns. Do not create a second request to recover an assertion failure.
 2. Open the existing **Approval usage** surface as Team A: lifetime quantity is zero. Inspection
    for R says there are no committed approval transitions. Usage counts approvals, not requests.
 3. In a separate ordinary session sign in as Owner. Open R, inspect its title/state, then use its
    declared **Approve** action once. Owner is a different actor in the same team. Record fact **F**,
    actual time and pinned workflow version from the resulting safe history. No second approval
    is needed after a timeout; inspect persisted state before continuing.
-4. Reload R as Member/Owner, refetch Approval usage (quantity one), and follow R's **Inspection**
-   action. The safe history identifies the same R and F, transition `approve`, pending→approved,
+4. Reload R as Member/Owner, refetch Approval usage (quantity one), and open the documented per-ID Inspection URL
+   `/service-requests/R/inspection` (replace R with the observed ID; there is no visible history action). The safe history identifies the same R and F, transition `approve`, pending→approved,
    actual actor/time and fact-time definition version. Reload retains them. Do not substitute a
    latest definition for missing historical metadata.
 

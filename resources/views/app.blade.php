@@ -50,8 +50,9 @@
         @vite(['resources/css/app.css', 'resources/js/app.tsx'])
         {{-- ADR-0237: the Analytics Tag's head slot - OUTSIDE Inertia's head so it loads once per document and survives client navigation. Renders nothing until a provider has an id. --}}
         @beamAnalyticsHead
+        {{-- ADR-0234 d1: the Page Head the server composed (title, description, canonical URL, social tags), printed where SSR doesn't run so a crawler reads it before any script; the brand's name as the title on a page with none. Inertia keeps it current on navigation. --}}
         <x-inertia::head>
-            <title>{{ \Splicewire\Beam\Brand\Brand::for(request())->name }}</title>
+            @beamPageHead
         </x-inertia::head>
     </head>
     <body class="font-sans antialiased">

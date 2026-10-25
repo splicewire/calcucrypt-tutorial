@@ -7,12 +7,14 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Session\ArraySessionHandler;
 use Illuminate\Session\Store;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\ResponseFactory;
 use Splicewire\Beam\Ux\Data\Pages\EntryPageData;
+use Splicewire\Beam\Ux\Head\PageHead;
 
 uses(Tests\TestCase::class);
 
@@ -81,7 +83,14 @@ it('declares each route page and preserves initial populated and missing entry p
     // rows — the fixture inserts no format and compiles no artifact — and null is the honest answer
     // ("the host did not say" / "never authored"), which is exactly what the client must receive.
     $expected = ['entry' => $entry === null ? null : $entry + ['format' => null, 'artifact' => null]];
-    expect($response->toResponse($request)->getData(true)['props'])->toBe($expected);
+    $props = $response->toResponse($request)->getData(true)['props'];
+    expect(Arr::except($props, 'head'))->toBe($expected);
+    // EP-28 (ADR-0234 d2): `/` also passes the Page Head composed from its home row, and none where no row exists, so
+    // the root template keeps its fallback title.
+    expect($props['head'])->toBe($entry === null ? [] : PageHead::forPage('home', $request));
+    if ($entry !== null) {
+        expect($props['head'][0])->toStartWith('<title data-inertia="title">');
+    }
     // No page carries a lazy prop or a count any more: `/dashboard` and `/operator` are the realm
     // dashboards' frame-console leaves (realm-dashboards ticket 05) and share no entry, and the counts
     // the operator landing once computed inline now come from each resource's summary provider over

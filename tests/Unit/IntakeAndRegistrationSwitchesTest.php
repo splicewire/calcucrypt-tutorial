@@ -46,6 +46,22 @@ class IntakeAndRegistrationSwitchesTest extends TestCase
         }
     }
 
+    public function test_mdx_pages_holding_blocks_register_the_kit_this_starter_renders(): void
+    {
+        // The starter receipt: with BEAM_UX_MDX_HOLDS_BLOCKS on, the canvas refused every MDX page, because their profile
+        // offered the beam-mdx kit (and an Artifact this starter cannot render) while the editor registered none of it.
+        $root = dirname(__DIR__, 2);
+        $app = file_get_contents($root.'/resources/js/app.tsx');
+
+        $this->assertFalse((require $root.'/config/beam/mdx.php')['kit']['artifact'], 'the starter has no <Artifact> renderer');
+        $this->assertStringContainsString('VITE_BEAM_UX_MDX_HOLDS_BLOCKS="${BEAM_UX_MDX_HOLDS_BLOCKS}"', file_get_contents($root.'/.env.example'));
+        $this->assertStringContainsString("components: import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true'", $app);
+        foreach (['Callout', 'Steps', 'Step', 'Figure', 'Terminal', 'SectionLanding', 'CardGrid', 'Card', 'DoctorOutput', 'FileTree', 'Ref'] as $component) {
+            $this->assertMatchesRegularExpression('/\{[^}]*\b'.$component.'\b[^}]*\}\s*:\s*\{\}/', $app, "{$component} is registered");
+        }
+        $this->assertDoesNotMatchRegularExpression('/\bArtifact\b/', $app);
+    }
+
     public function test_the_vite_build_mirrors_both_doors(): void
     {
         $root = dirname(__DIR__, 2);

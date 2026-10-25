@@ -2,6 +2,8 @@ import { createInertiaApp } from '@inertiajs/react';
 import { beamInertiaOptions } from '@splicewire/beam-inertia';
 import type { PageModule } from '@splicewire/beam-inertia';
 import { configureDocs } from '@splicewire/beam-docs';
+import { Ref } from '@splicewire/beam-mdx';
+import { Callout, Card, CardGrid, DoctorOutput, FileTree, Figure, SectionLanding, Step, Steps, Terminal } from '@splicewire/beam-mdx/kit';
 import { beamDocsPages } from '@splicewire/beam-docs/pages';
 import '@splicewire/beam-ux/tokens-docs.css';
 import { authFeatures } from './beam';
@@ -23,6 +25,11 @@ const options = beamInertiaOptions({
     fileEditorHref: () => '/account/theme',
     // The packaged page form, where the server mounts its public intake door (BEAM_INTAKE_ENABLED).
     intakeForms: import.meta.env.VITE_BEAM_INTAKE_ENABLED === 'true',
+    // Where MDX pages hold blocks (BEAM_UX_MDX_HOLDS_BLOCKS), the beam-mdx kit their profile offers; this starter
+    // renders no artifacts, so config/beam/mdx.php leaves that one out of the kit.
+    components: import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true'
+        ? { Callout, Steps, Step, Figure, Terminal, SectionLanding, CardGrid, Card, DoctorOutput, FileTree, Ref }
+        : {},
     pages: { ...beamDocsPages, ...pages },
 });
 configureDocs();

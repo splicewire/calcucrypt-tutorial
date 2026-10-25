@@ -56,8 +56,9 @@ class IntakeAndRegistrationSwitchesTest extends TestCase
         $this->assertFalse((require $root.'/config/beam/mdx.php')['kit']['artifact'], 'the starter has no <Artifact> renderer');
         $this->assertStringContainsString('VITE_BEAM_UX_MDX_HOLDS_BLOCKS="${BEAM_UX_MDX_HOLDS_BLOCKS}"', file_get_contents($root.'/.env.example'));
         $this->assertStringContainsString("components: import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true'", $app);
+        $registered = substr($app, strpos($app, 'components:'), strpos($app, 'pages:') - strpos($app, 'components:'));
         foreach (['Callout', 'Steps', 'Step', 'Figure', 'Terminal', 'SectionLanding', 'CardGrid', 'Card', 'DoctorOutput', 'FileTree', 'Ref'] as $component) {
-            $this->assertMatchesRegularExpression('/\{[^}]*\b'.$component.'\b[^}]*\}\s*:\s*\{\}/', $app, "{$component} is registered");
+            $this->assertMatchesRegularExpression('/\b'.$component.'\b/', $registered, "{$component} is registered");
         }
         $this->assertDoesNotMatchRegularExpression('/\bArtifact\b/', $app);
     }

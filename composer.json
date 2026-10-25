@@ -87,6 +87,14 @@
         },
         {
             "type": "git",
+            "url": "https://github.com/schemastud/laravel-data-schema-org.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/schemastud/laravel-json-reference.git"
+        },
+        {
+            "type": "git",
             "url": "https://github.com/stephenr85/laravel-popcorn.git"
         },
         {
@@ -178,6 +186,7 @@
         "splicewire/laravel-beam-sitemap": "*",
         "splicewire/laravel-beam-ux-prototype": "*",
         "schemastud/laravel-frame": "*",
+        "schemastud/laravel-data-schema-org": "dev-main",
         "schemastud/laravel-data-schemas": "dev-main",
         "wikimedia/composer-merge-plugin": "^2.1",
         "splicewire/laravel-beam-docs": "dev-main"

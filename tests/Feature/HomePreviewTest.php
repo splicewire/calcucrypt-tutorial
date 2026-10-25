@@ -46,13 +46,13 @@ class HomePreviewTest extends TestCase
         $artifacts = app(EntryArtifactStore::class);
 
         // Outside a Preview first: a cookie set with withCookie() rides every later request in the test.
-        $live = $this->withHeader('X-Inertia', 'true')->get('/');
+        $live = $this->withHeaders($this->inertia())->get('/');
         $live->assertOk();
         $this->assertSame($artifacts->version($this->home->fresh()), $live->json('props.entry.artifact.version'), 'outside a Preview, the live body');
         $this->assertArrayNotHasKey('preview', $live->json('props'));
         $this->assertStringNotContainsString('Previewed front door', implode('', $live->json('props.head')));
 
-        $previewed = $this->withCookie(ResolvePreviewContext::COOKIE, $cookie)->withHeader('X-Inertia', 'true')->get('/');
+        $previewed = $this->withCookie(ResolvePreviewContext::COOKIE, $cookie)->withHeaders($this->inertia())->get('/');
 
         $previewed->assertOk();
         $this->assertSame($artifacts->versionKey($draft), $previewed->json('props.entry.artifact.version'), "the Release's body");
@@ -87,6 +87,19 @@ class HomePreviewTest extends TestCase
         ]);
 
         return $release;
+    }
+
+    /**
+     * An Inertia visit's headers. It carries the asset version the starter's middleware computes: with the assets built,
+     * Inertia answers a visit without it 409 (a version mismatch), not the page.
+     *
+     * @return array<string, string>
+     */
+    private function inertia(): array
+    {
+        $version = app(\App\Http\Middleware\HandleInertiaRequests::class)->version(\Illuminate\Http\Request::create('/'));
+
+        return ['X-Inertia' => 'true', 'X-Inertia-Version' => (string) $version];
     }
 
     /** Opens the Release's Preview Link as a guest and returns the Preview cookie's value. */

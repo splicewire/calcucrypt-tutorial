@@ -2,7 +2,8 @@ import { authFeaturesFrom } from '@splicewire/beam-inertia';
 
 export const authFeatures = authFeaturesFrom([
     /* @chisel-registration */
-    'registration',
+    // Only where the registration door is open (ACCOUNT_REGISTRATION), as the server offers the register island.
+    ...(import.meta.env.VITE_ACCOUNT_REGISTRATION === 'open' ? (['registration'] as const) : []),
     /* @end-chisel-registration */
     /* @chisel-email-verification */
     'email-verification',

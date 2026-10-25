@@ -168,6 +168,43 @@ class EntryBodyTransportTest extends TestCase
             ->assertInertia(fn ($page) => $page->where('entry.artifact.version', $version));
     }
 
+    /**
+     * EP-07d, starter receipt 2026-10-25: a form published on `/` read 'This form is not available.', because only the
+     * packaged entry renderer put the forms' schemas on its page and `/` renders from this host's own route.
+     */
+    public function test_the_home_page_gives_its_published_forms_their_schemas_and_the_honeypot_field(): void
+    {
+        $entry = $this->pageEntry('home');
+        $schema = ['type' => 'object', 'properties' => ['title' => ['type' => 'string']], 'required' => ['title']];
+        $this->app->instance(\Splicewire\Beam\Schema\Contracts\SchemaTargetResolver::class, new class($schema) implements \Splicewire\Beam\Schema\Contracts\SchemaTargetResolver
+        {
+            public function __construct(private array $schema) {}
+
+            public function targetFor(string $recordType, ?int $version = null): array
+            {
+                return $recordType === 'service-request' ? $this->schema : [];
+            }
+        });
+        $form = ['kind' => 'block', 'name' => 'IntakeForm', 'isComponent' => true, 'dynamic' => false, 'id' => '01a1f000-0000-7000-8000-000000000001',
+            'props' => [['name' => 'captureKey', 'kind' => 'string', 'value' => 'service-request']], 'children' => []];
+        $this->app->instance(\Splicewire\Beam\Ux\Bindings\PublishedBindingDocument::class, new class([$form]) extends \Splicewire\Beam\Ux\Bindings\PublishedBindingDocument
+        {
+            public function __construct(private array $body) {}
+
+            public function read(BeamUxEntry $entry): array
+            {
+                return $entry->slug === 'home' ? $this->body : [];
+            }
+        });
+        config(['beam.core.intake.enabled' => true, 'beam.core.intake.public_schemas' => ['service-request'], 'beam.core.intake.honeypot.field' => 'nickname']);
+
+        $this->get('/')
+            ->assertSuccessful()
+            ->assertInertia(fn ($page) => $page->where('entry.id', (string) $entry->getKey())
+                ->where('intakeForms', ['service-request' => $schema])
+                ->where('intakeHoneypotField', 'nickname'));
+    }
+
     public function test_a_page_entry_ref_is_null_when_the_row_was_never_seeded(): void
     {
         $this->assertNull(PageEntryRef::for('never-seeded'));

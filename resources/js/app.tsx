@@ -21,6 +21,8 @@ const options = beamInertiaOptions({
     development: import.meta.env.DEV,
     features: authFeatures,
     fileEditorHref: () => '/account/theme',
+    // The packaged page form, where the server mounts its public intake door (BEAM_INTAKE_ENABLED).
+    intakeForms: import.meta.env.VITE_BEAM_INTAKE_ENABLED === 'true',
     pages: { ...beamDocsPages, ...pages },
 });
 configureDocs();

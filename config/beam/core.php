@@ -48,8 +48,9 @@ return [
     | unless a schema stem is explicitly listed in `public_schemas`.
     */
     'intake' => [
-        // Mount POST /beam/intake/{schema}. Off by default — the door is opt-in.
-        'enabled' => false,
+        // Mount POST /beam/intake/{schema}. Off by default — the door is opt-in. BEAM_INTAKE_ENABLED, which the Vite
+        // build mirrors (VITE_BEAM_INTAKE_ENABLED) to register the packaged page form.
+        'enabled' => (bool) env('BEAM_INTAKE_ENABLED', false),
 
         // URL-safe slug => the schema stem (or absolute $id) it resolves. The route addresses an intake
         // surface by its slug; the slug maps to a registered schema. A slug absent here (and not itself

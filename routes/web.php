@@ -7,6 +7,8 @@ use Schemastud\Frame\Http\Controllers\FrameManifestController;
 use Splicewire\Beam\Authorization\SeatGate;
 use Splicewire\Beam\Dashboard\RealmDashboard;
 use Splicewire\Beam\Ux\Data\Pages\EntryPageData;
+use Splicewire\Beam\Ux\Intake\IntakeForms;
+use Splicewire\Beam\Ux\Models\BeamUxEntry;
 use Splicewire\Beam\Ux\Support\PageEntryRef;
 
 require __DIR__.'/local-marketplace.php';
@@ -18,9 +20,15 @@ require __DIR__.'/canonical-mdx.php';
 //
 // It shares `entry` ({id, slug}) so the page addresses its beam-ux row by ID (ADR-0214 §2). The server
 // is the only party that can: no compile-time frontend map can carry a per-database uuid.
-Route::get('/', fn () => Inertia::render('site/home', EntryPageData::from([
-    'entry' => PageEntryRef::for('home'),
-])))->name('home');
+//
+// EP-07d: its published forms get their schemas and the door's honeypot field, as a packaged entry page's do.
+Route::get('/', function () {
+    $entry = PageEntryRef::for('home');
+    $model = $entry === null ? null : BeamUxEntry::find($entry['id']);
+
+    return Inertia::render('site/home', EntryPageData::from(['entry' => $entry]))
+        ->with($model === null ? [] : app(IntakeForms::class)->pagePropsFor($model));
+})->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Splicewire\Beam\Facades\Particle::ops('service-requests', 'service-requests', [App\Particle\Operations\ApproveServiceRequest::class, App\Particle\Operations\ReadRequestApprovalHistory::class]);

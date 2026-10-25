@@ -13,7 +13,7 @@ class IntakeAndRegistrationSwitchesTest extends TestCase
 {
     public function test_the_intake_door_follows_beam_intake_enabled(): void
     {
-        $prior = getenv('BEAM_INTAKE_ENABLED');
+        $prior = [getenv('BEAM_INTAKE_ENABLED'), $_ENV['BEAM_INTAKE_ENABLED'] ?? null, $_SERVER['BEAM_INTAKE_ENABLED'] ?? null];
         $door = function (?string $value): bool {
             putenv($value === null ? 'BEAM_INTAKE_ENABLED' : "BEAM_INTAKE_ENABLED={$value}");
             if ($value === null) {
@@ -30,7 +30,19 @@ class IntakeAndRegistrationSwitchesTest extends TestCase
             $this->assertTrue($door('true'));
             $this->assertFalse($door('false'));
         } finally {
-            $door($prior === false ? null : $prior);
+            // Put back what the run had, in all three places env() reads, for the tests after this one.
+            [$process, $env, $server] = $prior;
+            putenv($process === false ? 'BEAM_INTAKE_ENABLED' : "BEAM_INTAKE_ENABLED={$process}");
+            if ($env === null) {
+                unset($_ENV['BEAM_INTAKE_ENABLED']);
+            } else {
+                $_ENV['BEAM_INTAKE_ENABLED'] = $env;
+            }
+            if ($server === null) {
+                unset($_SERVER['BEAM_INTAKE_ENABLED']);
+            } else {
+                $_SERVER['BEAM_INTAKE_ENABLED'] = $server;
+            }
         }
     }
 

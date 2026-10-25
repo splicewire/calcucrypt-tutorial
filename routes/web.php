@@ -1,6 +1,7 @@
 <?php
 
 use App\Data\Pages\FrameConsolePageData;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Schemastud\Frame\Http\Controllers\FrameManifestController;
@@ -8,8 +9,10 @@ use Splicewire\Beam\Authorization\SeatGate;
 use Splicewire\Beam\Dashboard\RealmDashboard;
 use Splicewire\Beam\Ux\Data\Pages\EntryPageData;
 use Splicewire\Beam\Ux\Head\PageHead;
+use Splicewire\Beam\Ux\Http\Middleware\ResolvePreviewContext;
 use Splicewire\Beam\Ux\Intake\IntakeForms;
 use Splicewire\Beam\Ux\Models\BeamUxEntry;
+use Splicewire\Beam\Ux\Preview\PreviewBar;
 use Splicewire\Beam\Ux\Support\PageEntryRef;
 
 require __DIR__.'/local-marketplace.php';
@@ -25,14 +28,21 @@ require __DIR__.'/canonical-mdx.php';
 // ADR-0234 d2: the Page Head composed from the same row rides along, and the root template prints it before any script.
 //
 // EP-07d: its published forms get their schemas and the door's honeypot field, as a packaged entry page's do.
-Route::get('/', function () {
+//
+// ADR-0232 d15 (EP-18): `/` renders inside a Preview like every packaged page. The Preview middleware verifies the
+// cookie; the entry ref then addresses the Preview's version of the body, the bar rides along, and a home the
+// Preview takes down answers the uniform 404. Outside a Preview nothing here changes.
+Route::get('/', function (Request $request) {
+    abort_if(PageEntryRef::hiddenByPreview('home'), 404);
     $entry = PageEntryRef::for('home');
     $model = $entry === null ? null : BeamUxEntry::find($entry['id']);
+    $preview = app(PreviewBar::class)->for($request, $model);
 
     return Inertia::render('site/home', EntryPageData::from(['entry' => $entry]))
         ->with($model === null ? [] : app(IntakeForms::class)->pagePropsFor($model))
-        ->with('head', PageHead::forPage('home'));
-})->name('home');
+        ->with('head', PageHead::forPage('home'))
+        ->with($preview === null ? [] : ['preview' => $preview]);
+})->middleware(ResolvePreviewContext::class)->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Splicewire\Beam\Facades\Particle::ops('service-requests', 'service-requests', [App\Particle\Operations\ApproveServiceRequest::class, App\Particle\Operations\ReadRequestApprovalHistory::class]);

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Splicewire\Beam\Ux\Compile\EntryArtifactStore;
+use Splicewire\Beam\Ux\Data\EntryPageSettingsData;
 use Splicewire\Beam\Ux\Http\Middleware\ResolvePreviewContext;
 use Splicewire\Beam\Ux\Models\BeamUxEntry;
 use Splicewire\Beam\Ux\Models\BeamUxRelease;
@@ -39,7 +40,8 @@ class HomePreviewTest extends TestCase
 
     public function test_the_front_door_renders_the_previews_home_under_the_bar(): void
     {
-        $draft = app(EntryPublication::class)->recordDraft($this->home->fresh(), [$this->node('Previewed home')])->headVersion;
+        $draft = app(EntryPublication::class)->recordDraft($this->home->fresh(), [$this->node('Previewed home')],
+            pageSettings: new EntryPageSettingsData(title: 'Previewed front door', description: 'What the Release says.'))->headVersion;
         $cookie = $this->openLink($this->release('Spring', $draft));
         $artifacts = app(EntryArtifactStore::class);
 
@@ -48,6 +50,7 @@ class HomePreviewTest extends TestCase
         $live->assertOk();
         $this->assertSame($artifacts->version($this->home->fresh()), $live->json('props.entry.artifact.version'), 'outside a Preview, the live body');
         $this->assertArrayNotHasKey('preview', $live->json('props'));
+        $this->assertStringNotContainsString('Previewed front door', implode('', $live->json('props.head')));
 
         $previewed = $this->withCookie(ResolvePreviewContext::COOKIE, $cookie)->withHeader('X-Inertia', 'true')->get('/');
 
@@ -57,6 +60,9 @@ class HomePreviewTest extends TestCase
         $this->assertSame('preview', $previewed->json('props.preview.mode'));
         $this->assertSame([$this->home->id], array_column($previewed->json('props.preview.changes.pages'), 'entryId'));
         $this->assertSame('no-store, private', $previewed->headers->get('Cache-Control'));
+        // The head reads the Release's page settings too, as the packaged renderer's does.
+        $this->assertStringContainsString('Previewed front door', $previewed->json('props.head.0'));
+        $this->assertStringContainsString('What the Release says.', implode('', $previewed->json('props.head')));
     }
 
     public function test_a_home_the_preview_takes_down_answers_not_found_there_and_stays_live(): void

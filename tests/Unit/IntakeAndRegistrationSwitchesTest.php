@@ -53,14 +53,18 @@ class IntakeAndRegistrationSwitchesTest extends TestCase
         $root = dirname(__DIR__, 2);
         $app = file_get_contents($root.'/resources/js/app.tsx');
 
-        $this->assertFalse((require $root.'/config/beam/mdx.php')['kit']['artifact'], 'the starter has no <Artifact> renderer');
+        $kit = (require $root.'/config/beam/mdx.php')['kit'];
+        $this->assertFalse($kit['artifact'], 'the starter has no <Artifact> renderer');
+        // The rerun: Ref comes only from beam-mdx's root entry, and importing it crashed the starter's bundle on boot.
+        $this->assertFalse($kit['ref'], 'the starter has no <Ref> renderer');
         $this->assertStringContainsString('VITE_BEAM_UX_MDX_HOLDS_BLOCKS="${BEAM_UX_MDX_HOLDS_BLOCKS}"', file_get_contents($root.'/.env.example'));
         $this->assertStringContainsString("components: import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true'", $app);
         $registered = substr($app, strpos($app, 'components:'), strpos($app, 'pages:') - strpos($app, 'components:'));
-        foreach (['Callout', 'Steps', 'Step', 'Figure', 'Terminal', 'SectionLanding', 'CardGrid', 'Card', 'DoctorOutput', 'FileTree', 'Ref'] as $component) {
+        foreach (['Callout', 'Steps', 'Step', 'Figure', 'Terminal', 'SectionLanding', 'CardGrid', 'Card', 'DoctorOutput', 'FileTree'] as $component) {
             $this->assertMatchesRegularExpression('/\b'.$component.'\b/', $registered, "{$component} is registered");
         }
-        $this->assertDoesNotMatchRegularExpression('/\bArtifact\b/', $app);
+        $this->assertDoesNotMatchRegularExpression('/\b(Artifact|Ref)\b/', $app);
+        $this->assertStringNotContainsString("from '@splicewire/beam-mdx';", $app, 'no import from the root entry');
     }
 
     public function test_the_vite_build_mirrors_both_doors(): void

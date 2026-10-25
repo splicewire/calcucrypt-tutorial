@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b7ba4ca7d35644eb0a416c410e3973f",
+    "content-hash": "edef09e849428e8835729b8c24b34ecc",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -6253,6 +6253,86 @@
             "time": "2026-10-17T02:08:30+00:00"
         },
         {
+            "name": "schemastud/laravel-data-schema-org",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/schemastud/laravel-data-schema-org.git",
+                "reference": "8c996354ee41503520c33e76315ee80bce8e5d0d"
+            },
+            "require": {
+                "illuminate/contracts": "^11.0|^12.0|^13.0",
+                "illuminate/support": "^11.0|^12.0|^13.0",
+                "php": "^8.3",
+                "rushing/laravel-popcorn": "dev-main",
+                "rushing/php-popcorn": "dev-main",
+                "schemastud/laravel-json-reference": "dev-main",
+                "spatie/laravel-data": "^4.0|^5.0",
+                "spatie/laravel-package-tools": "^1.16",
+                "spatie/schema-org": "^3.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "orchestra/testbench": "^10.0|^11.0",
+                "pestphp/pest": "^4.0",
+                "wikimedia/composer-merge-plugin": "^2.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Schemastud\\DataSchemaOrg\\ServiceProvider"
+                    ]
+                },
+                "merge-plugin": {
+                    "include": [
+                        "composer.local.json"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Schemastud\\DataSchemaOrg\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Schemastud\\DataSchemaOrg\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "@php vendor/bin/pest"
+                ],
+                "pint": [
+                    "@php -d memory_limit=512M vendor/bin/pint"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stephen Rushing",
+                    "email": "stephenr85@gmail.com"
+                }
+            ],
+            "description": "A boundary projector marrying spatie/laravel-data DTOs to spatie/schema-org: a typed registry + attribute-driven primitives that project a Data object into a Schema.org node (JSON-LD) at the edge. Internal identity (@id) is reused from laravel-json-reference; the leaf stays domain-agnostic and never names concrete schema.org types.",
+            "keywords": [
+                "json-ld",
+                "laravel",
+                "laravel-data",
+                "schema-org",
+                "seo",
+                "structured-data"
+            ],
+            "time": "2026-10-16T21:04:13+00:00"
+        },
+        {
             "name": "schemastud/laravel-data-schemas",
             "version": "dev-main",
             "source": {
@@ -6489,6 +6569,78 @@
                 "popcorn"
             ],
             "time": "2026-09-08T14:13:37+00:00"
+        },
+        {
+            "name": "schemastud/laravel-json-reference",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/schemastud/laravel-json-reference.git",
+                "reference": "aac4731c625bc96e5214a449fb3c37e920edf2d5"
+            },
+            "require": {
+                "illuminate/contracts": "^11.0|^12.0|^13.0",
+                "illuminate/support": "^11.0|^12.0|^13.0",
+                "php": "^8.3",
+                "rushing/laravel-popcorn": "dev-main",
+                "rushing/php-popcorn": "dev-main",
+                "spatie/laravel-data": "^4.0|^5.0",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "orchestra/testbench": "^10.0|^11.0",
+                "pestphp/pest": "^4.0",
+                "wikimedia/composer-merge-plugin": "^2.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Schemastud\\JsonReference\\ServiceProvider"
+                    ]
+                },
+                "merge-plugin": {
+                    "include": [
+                        "composer.local.json"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Schemastud\\JsonReference\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Schemastud\\JsonReference\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "pint": [
+                    "@php -d memory_limit=512M vendor/bin/pint"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Stephen Rushing",
+                    "email": "stephenr85@gmail.com"
+                }
+            ],
+            "description": "A node-type-agnostic JSON reference/identity leaf: NodeId (@id) instance identity plus the base cross-engine reference vocabulary every engine's resolution primitive builds on. Like JSON Schema's $ref, its keywords are unprefixed and base-owned.",
+            "keywords": [
+                "dereference",
+                "identity",
+                "json",
+                "json-ld",
+                "laravel",
+                "reference"
+            ],
+            "time": "2026-10-18T02:56:34+00:00"
         },
         {
             "name": "schemastud/php-json-ns",
@@ -7737,6 +7889,79 @@
                 }
             ],
             "time": "2026-02-25T07:59:20+00:00"
+        },
+        {
+            "name": "spatie/schema-org",
+            "version": "3.23.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/schema-org.git",
+                "reference": "85def9a383ce0da75a44e839bff95f8e5198ffb7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/schema-org/zipball/85def9a383ce0da75a44e839bff95f8e5198ffb7",
+                "reference": "85def9a383ce0da75a44e839bff95f8e5198ffb7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.6",
+                "graham-campbell/analyzer": "^4.2",
+                "illuminate/collections": "^8.62.0",
+                "league/flysystem": "^2.3.0 || ^3.0",
+                "pestphp/pest": "^1.21",
+                "symfony/console": "^5.3.7 || 6.0",
+                "twig/twig": "^3.3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\SchemaOrg\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian De Deyne",
+                    "email": "sebastian@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Tom Witkowski",
+                    "email": "dev.gummibeer@gmail.com",
+                    "homepage": "https://gummibeer.de",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A fluent builder Schema.org types and ld+json generator",
+            "homepage": "https://github.com/spatie/schema-org",
+            "keywords": [
+                "schema-org",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/schema-org/issues",
+                "source": "https://github.com/spatie/schema-org/tree/3.23.2"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-05-29T07:44:19+00:00"
         },
         {
             "name": "spatie/typescript-transformer",
@@ -16670,6 +16895,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "rushing/laravel-surgeon": 20,
+        "schemastud/laravel-data-schema-org": 20,
         "schemastud/laravel-data-schemas": 20,
         "splicewire/laravel-beam": 20,
         "splicewire/laravel-beam-dev": 20,

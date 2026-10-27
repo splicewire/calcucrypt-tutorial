@@ -67,6 +67,24 @@ class IntakeAndRegistrationSwitchesTest extends TestCase
         $this->assertStringNotContainsString("from '@splicewire/beam-mdx';", $app, 'no import from the root entry');
     }
 
+    public function test_mdx_pages_holding_blocks_register_what_the_shipped_docs_pages_place(): void
+    {
+        // EP-42 (starter room, 10-27): with BEAM_UX_MDX_HOLDS_BLOCKS on, the canvas refused /docs, /docs/api and /docs/mcp.
+        // Their profile also offers ApiReference (laravel-beam-docs) and SiteNav and ManifestTable (laravel-beam-ux), which
+        // the packages' shipped docs pages place. beam-inertia registers the last two where the host says its MDX pages
+        // hold blocks; ApiReference is the starter's, beside the kit.
+        $root = dirname(__DIR__, 2);
+        $app = file_get_contents($root.'/resources/js/app.tsx');
+
+        $this->assertStringContainsString("mdxHoldsBlocks: import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true'", $app);
+        $registered = substr($app, strpos($app, 'components:'), strpos($app, 'pages:') - strpos($app, 'components:'));
+        $this->assertMatchesRegularExpression('/\bApiReference\b/', $registered, 'ApiReference is registered where MDX pages hold blocks');
+
+        // The packages convert their own unedited pages when they are seeded again. Turned on without that, those pages
+        // keep MDX source while they declare blocks, and the canvas cannot draw what they place.
+        $this->assertStringContainsString('splicewire:beam:seed', file_get_contents($root.'/.env.example'));
+    }
+
     public function test_the_vite_build_mirrors_both_doors(): void
     {
         $root = dirname(__DIR__, 2);

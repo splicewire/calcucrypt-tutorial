@@ -15,6 +15,7 @@
 /resources/js/generated/Illuminate/
 /resources/js/generated/Spatie/
 /resources/js/generated/Splicewire/
+/resources/js/generated/Rushing/
 # The transformer's own hash manifest of what it just emitted — a build cache, not a registry.
 # aliases.ts and routes.ts above it ARE committed (ADR 0218 names routes.ts a committed registry);
 # these per-vendor type directories are not, and were the only ones left neither tracked nor ignored.

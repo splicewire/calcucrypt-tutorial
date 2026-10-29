@@ -28,8 +28,15 @@ use Splicewire\Beam\Source\ParticleRouteManifestSource;
 
 final class LocalMarketplaceServiceProvider extends ServiceProvider
 {
+    public const MARKET_PACKAGE = 'splicewire/laravel-beam-market';
+
     public function register(): void
     {
+        // A host that requires beam-market itself owns that composition; the example leaves the package's surfaces alone.
+        if (self::hostRequiresMarket($this->app->basePath('composer.json'))) {
+            return;
+        }
+
         // No optional API/federation/reporting surface is exposed by merely installing the example.
         config([
             'beam.market.extensions.register_routes' => false,
@@ -37,6 +44,19 @@ final class LocalMarketplaceServiceProvider extends ServiceProvider
             'beam.market.reporting.register_routes' => false,
             'beam.market.federation.publish.register_routes' => false,
         ]);
+    }
+
+    /**
+     * Whether the host's own manifest requires beam-market. The caller passes the host's `composer.json`, never the
+     * alternate manifest `COMPOSER` may name: the example's own context (`composer.market.json`) adds beam-market there,
+     * and the example owns that composition.
+     */
+    public static function hostRequiresMarket(string $manifest): bool
+    {
+        $decoded = is_file($manifest) ? json_decode((string) file_get_contents($manifest), true) : null;
+
+        return is_array($decoded) && is_array($decoded['require'] ?? null)
+            && array_key_exists(self::MARKET_PACKAGE, $decoded['require']);
     }
 
     public function boot(): void

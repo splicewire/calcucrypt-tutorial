@@ -22,12 +22,14 @@ use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Splicewire\Beam\Workflows\Control\WorkflowActuator;
 use Tests\Concerns\MigratesTenantDirectoryCentrally;
+use Tests\Concerns\RefusesServedDatabase;
 use Tests\TestCase;
 
 class TeamApprovalWalletTest extends TestCase
 {
     use MigratesTenantDirectoryCentrally;
     use RefreshDatabase;
+    use RefusesServedDatabase;
 
     public function createApplication()
     {
@@ -48,7 +50,7 @@ class TeamApprovalWalletTest extends TestCase
             $this->markTestSkipped('Optional Commerce composition is absent.');
         }
         parent::setUp();
-        $this->assertSame(':memory:', DB::connection()->getDatabaseName(), 'Refuse tests against a served DB.');
+        $this->assertScratchDatabase();
         $this->withoutVite();
         // Native published shared migration is a prerequisite, never a fabricated test schema.
         $paths = glob(database_path('migrations/shared/*_create_commerce_credit_entries_table.php'));

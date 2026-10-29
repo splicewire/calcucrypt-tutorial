@@ -12,14 +12,17 @@ use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Splicewire\Beam\Market\Checkout\Contracts\EntitlementScopeResolver;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
+use Tests\Concerns\RefusesServedDatabase;
 use Tests\TestCase;
 
 class LocalMarketplaceAuthorityTest extends TestCase
 {
+    use RefusesServedDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
-        $this->assertSame(':memory:', config('database.connections.sqlite.database'));
+        $this->assertScratchDatabase();
     }
 
     public function test_membership_is_rechecked_even_when_selected_team_and_relation_are_loaded(): void

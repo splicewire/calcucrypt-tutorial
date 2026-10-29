@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\ServiceRequest;
 use App\Models\User;
+use App\Support\CommittedApprovals;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -197,5 +198,23 @@ class ApprovalUsageTest extends TestCase
         }
         $this->quantity(1);
         $this->assertSame($before, $this->business());
+    }
+
+    public function test_a_fact_counts_only_for_its_exact_request_id_on_every_driver(): void
+    {
+        $a = $this->owner();
+        $row = $this->pending($a);
+        app(WorkflowActuator::class)->transition($row, 'approve', new TransitionContext(actor: 'user:'.$a->id));
+        $fact = (array) DB::table('workflow_transition_facts')->where('subject_id', (string) $row->id)->first();
+        // `subject_id` is a string column and `service_requests.id` an integer. The join compares them as text, so a
+        // numerically equal spelling names another subject. Before the cast, sqlite's affinity counted these and
+        // Postgres refused the comparison (`character varying = bigint`). Raw inserts are intentional source
+        // counterexamples in the isolated test DB, not product writes.
+        foreach (['0'.$row->id, $row->id.'.0', ' '.$row->id] as $spelling) {
+            DB::table('workflow_transition_facts')->insert(array_replace($fact, ['id' => (string) Str::uuid(), 'subject_id' => $spelling]));
+        }
+        $this->assertSame(1, app(CommittedApprovals::class)->forTeam((string) $a->current_team_id));
+        $this->actingAs($a);
+        $this->quantity(1);
     }
 }

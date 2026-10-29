@@ -21,10 +21,12 @@ use Rushing\Commerce\Wallets;
 use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Splicewire\Beam\Workflows\Control\WorkflowActuator;
+use Tests\Concerns\MigratesTenantDirectoryCentrally;
 use Tests\TestCase;
 
 class TeamApprovalWalletTest extends TestCase
 {
+    use MigratesTenantDirectoryCentrally;
     use RefreshDatabase;
 
     public function createApplication()
@@ -52,6 +54,7 @@ class TeamApprovalWalletTest extends TestCase
         $paths = glob(database_path('migrations/shared/*_create_commerce_credit_entries_table.php'));
         $this->assertCount(1, $paths, 'Publish exact Commerce credit stub before this optional suite.');
         $this->artisan('migrate', ['--path' => $paths, '--realpath' => true, '--force' => true])->assertExitCode(0);
+        $this->migrateTenantDirectoryUnlessCentral();
         $this->seed(\Database\Seeders\ServiceRequestApprovalSeeder::class);
     }
 

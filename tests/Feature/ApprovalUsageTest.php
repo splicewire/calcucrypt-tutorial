@@ -12,15 +12,18 @@ use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Splicewire\Beam\Workflows\Control\TransitionContext;
 use Splicewire\Beam\Workflows\Control\WorkflowActuator;
+use Tests\Concerns\MigratesTenantDirectoryCentrally;
 use Tests\TestCase;
 
 class ApprovalUsageTest extends TestCase
 {
+    use MigratesTenantDirectoryCentrally;
     use RefreshDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->migrateTenantDirectoryUnlessCentral();
         config(['app.key' => 'base64:'.base64_encode(str_repeat('u', 32))]);
         $this->withoutVite();
         $this->seed(\Database\Seeders\ServiceRequestApprovalSeeder::class);

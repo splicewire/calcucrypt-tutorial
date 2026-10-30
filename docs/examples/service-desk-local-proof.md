@@ -170,4 +170,3 @@ node scripts/service-request-client.mjs
 ```
 
 Expected: `result: passed` after real HTTP requests, including create201, same-team list/detail200, invalid input422 with no added row, guest401, foreign-team record404 and teamless403. The driver imports generated route templates and `ServiceRequestData` response types. Its request body is `unknown` and its response cast is not runtime validation. This proves neither typed mutation-body validation nor executing React hooks. Server validation and authorization remain authoritative.
-

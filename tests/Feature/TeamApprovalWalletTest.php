@@ -38,7 +38,7 @@ class TeamApprovalWalletTest extends TestCase
         $this->traitsUsedByTest = class_uses_recursive(static::class);
         $app->afterBootstrapping(LoadConfiguration::class, function (Application $app): void {
             $app['config']->set(['team-wallet.enabled' => true, 'team-wallet.sandbox' => true,
-                'commerce.driver' => 'fake', 'commerce.currency' => 'USD', 'commerce.credit.unit' => 'usd']);
+                'commerce.driver' => 'fake', 'commerce.custody' => 'hosted', 'commerce.currency' => 'USD', 'commerce.credit.unit' => 'usd']);
         });
         $app->make(Kernel::class)->bootstrap();
 

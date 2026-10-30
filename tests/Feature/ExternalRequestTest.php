@@ -58,7 +58,8 @@ class ExternalRequestTest extends TestCase
         $this->assertNull($second['nextCursor']);
         $this->getJson('/frame/resources/external-requests?filter[status]=closed')->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.externalId', 'R2');
         $this->getJson('/frame/resources/external-requests/records/fixture-desk-a:R1')->assertOk()->assertJsonPath('data.source', 'fixture-desk-a')->assertDontSee('not-projected');
-        $this->getJson('/api/external-requests?perPage=2')->assertOk()->assertJsonPath('limit', 2)->assertJsonCount(2, 'data')->assertJsonMissingPath('total');
+        // No total is reported: absent (beam's ArrayResponseEnvelope) or null (ResponseBodyEnvelope); json() reads both as null.
+        $this->assertNull($this->getJson('/api/external-requests?perPage=2')->assertOk()->assertJsonPath('limit', 2)->assertJsonCount(2, 'data')->json('total'));
         $this->getJson('/api/external-requests/fixture-desk-a:R1')->assertNotFound();
         $this->actingAs($b);
         $this->getJson('/frame/resources/external-requests')->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.id', 'fixture-desk-b:R1');

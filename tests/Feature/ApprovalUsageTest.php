@@ -79,7 +79,8 @@ class ApprovalUsageTest extends TestCase
         $before = $this->business();
         $this->quantity(1);
         $this->getJson('/frame/resources/service-request-usage/records/approvals')->assertOk()->assertJsonPath('data.quantity', 1);
-        $this->getJson('/api/service-request-usage')->assertOk()->assertJsonPath('data.0.quantity', 1)->assertJsonMissingPath('total');
+        // No total is reported: absent (beam's ArrayResponseEnvelope) or null (ResponseBodyEnvelope); json() reads both as null.
+        $this->assertNull($this->getJson('/api/service-request-usage')->assertOk()->assertJsonPath('data.0.quantity', 1)->json('total'));
         $this->postJson('/service-requests/'.$id.'/approve')->assertConflict();
         $this->quantity(1);
         $this->assertSame($before, $this->business());

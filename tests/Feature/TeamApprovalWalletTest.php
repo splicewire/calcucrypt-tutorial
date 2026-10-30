@@ -15,7 +15,6 @@ use Illuminate\Foundation\Bootstrap\LoadConfiguration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Schema;
 use Rushing\Commerce\Events\PurchaseCompleted;
 use Rushing\Commerce\Wallets;
 use Splicewire\Beam\Accounts\Enums\Role;
@@ -23,6 +22,7 @@ use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Splicewire\Beam\Workflows\Control\WorkflowActuator;
 use Tests\Concerns\MigratesTenantDirectoryCentrally;
 use Tests\Concerns\RefusesServedDatabase;
+use Tests\Concerns\WithholdsTables;
 use Tests\TestCase;
 
 class TeamApprovalWalletTest extends TestCase
@@ -30,6 +30,7 @@ class TeamApprovalWalletTest extends TestCase
     use MigratesTenantDirectoryCentrally;
     use RefreshDatabase;
     use RefusesServedDatabase;
+    use WithholdsTables;
 
     public function createApplication()
     {
@@ -42,6 +43,12 @@ class TeamApprovalWalletTest extends TestCase
         $app->make(Kernel::class)->bootstrap();
 
         return $app;
+    }
+
+    /** RefreshDatabase migrates in parent::setUp(); refuse a served database before that, not after it. */
+    protected function beforeRefreshingDatabase(): void
+    {
+        $this->assertScratchDatabase();
     }
 
     protected function setUp(): void
@@ -188,18 +195,9 @@ class TeamApprovalWalletTest extends TestCase
         app(WorkflowActuator::class)->transition($this->pending($a), 'approve');
         DB::rollBack();
         $this->assertSame(0.25, $meter->debitedFor($party, 'usd'));
-        // Each missing source is met inside its own savepoint. Postgres aborts the enclosing transaction at the first
-        // read of the missing table, and rolling back to the savepoint restores both the transaction and the rename
-        // (sqlite's DDL is transactional too).
+        // Each missing source is met on its own, and the table comes back on every driver (WithholdsTables).
         foreach (['workflow_transition_facts', 'commerce_credit_entries'] as $table) {
-            DB::beginTransaction();
-            try {
-                Schema::rename($table, $table.'_unavailable');
-                $this->getJson('/frame/resources/team-approval-wallet')->assertStatus(500)->assertJsonMissingPath('data');
-            } finally {
-                DB::rollBack();
-            }
-            $this->assertTrue(Schema::hasTable($table));
+            $this->withoutTable($table, fn () => $this->getJson('/frame/resources/team-approval-wallet')->assertStatus(500)->assertJsonMissingPath('data'));
         }
         $this->summary('$0.00', 1, '$0.25', '-$0.25');
         foreach ([['foreign', 'usd'], [$party, 'eur']] as [$requestedParty, $unit]) {

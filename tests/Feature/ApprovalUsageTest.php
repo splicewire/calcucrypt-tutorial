@@ -7,19 +7,20 @@ use App\Models\User;
 use App\Support\CommittedApprovals;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Splicewire\Beam\Workflows\Control\TransitionContext;
 use Splicewire\Beam\Workflows\Control\WorkflowActuator;
 use Tests\Concerns\MigratesTenantDirectoryCentrally;
+use Tests\Concerns\WithholdsTables;
 use Tests\TestCase;
 
 class ApprovalUsageTest extends TestCase
 {
     use MigratesTenantDirectoryCentrally;
     use RefreshDatabase;
+    use WithholdsTables;
 
     protected function setUp(): void
     {
@@ -188,23 +189,14 @@ class ApprovalUsageTest extends TestCase
         app(WorkflowActuator::class)->transition($this->pending($a), 'approve');
         $this->actingAs($a);
         $before = $this->business();
-        // Each request meets the missing source inside its own savepoint. Postgres aborts the enclosing transaction at
-        // the first read of the missing table, and rolling back to the savepoint restores both the transaction and the
-        // rename (sqlite's DDL is transactional too), so the next request meets the missing source, not an aborted one.
+        // Each request meets the missing source on its own, and the table comes back on every driver (WithholdsTables).
         foreach ([
             fn () => $this->getJson('/frame/resources/service-request-usage')->assertStatus(500)->assertJsonMissingPath('data'),
             fn () => $this->getJson('/frame/resources/service-request-usage/records/approvals')->assertStatus(500)->assertJsonMissingPath('data'),
             fn () => $this->getJson('/api/service-request-usage')->assertStatus(500),
         ] as $request) {
-            DB::beginTransaction();
-            try {
-                Schema::rename('workflow_transition_facts', 'usage_source_unavailable');
-                $request();
-            } finally {
-                DB::rollBack();
-            }
+            $this->withoutTable('workflow_transition_facts', $request);
         }
-        $this->assertTrue(Schema::hasTable('workflow_transition_facts'));
         $this->quantity(1);
         $this->assertSame($before, $this->business());
     }

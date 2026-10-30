@@ -188,13 +188,18 @@ class TeamApprovalWalletTest extends TestCase
         app(WorkflowActuator::class)->transition($this->pending($a), 'approve');
         DB::rollBack();
         $this->assertSame(0.25, $meter->debitedFor($party, 'usd'));
+        // Each missing source is met inside its own savepoint. Postgres aborts the enclosing transaction at the first
+        // read of the missing table, and rolling back to the savepoint restores both the transaction and the rename
+        // (sqlite's DDL is transactional too).
         foreach (['workflow_transition_facts', 'commerce_credit_entries'] as $table) {
-            Schema::rename($table, $table.'_unavailable');
+            DB::beginTransaction();
             try {
+                Schema::rename($table, $table.'_unavailable');
                 $this->getJson('/frame/resources/team-approval-wallet')->assertStatus(500)->assertJsonMissingPath('data');
             } finally {
-                Schema::rename($table.'_unavailable', $table);
+                DB::rollBack();
             }
+            $this->assertTrue(Schema::hasTable($table));
         }
         $this->summary('$0.00', 1, '$0.25', '-$0.25');
         foreach ([['foreign', 'usd'], [$party, 'eur']] as [$requestedParty, $unit]) {

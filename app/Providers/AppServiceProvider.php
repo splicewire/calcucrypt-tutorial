@@ -12,6 +12,7 @@ use App\Support\ServiceDeskSlaHost;
 use App\Support\ServiceRequestTeam;
 use App\Workflows\ServiceRequestApproval;
 use Carbon\CarbonImmutable;
+use Database\Seeders\ServiceRequestApprovalSeeder;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,7 @@ use Splicewire\Beam\Doctor\BeamDoctorManifest;
 use Splicewire\Beam\Nav\NavAudience;
 use Splicewire\Beam\Nav\NavSection;
 use Splicewire\Beam\Nav\NavSectionRegistry;
+use Splicewire\Beam\Seed\BeamSeedManifest;
 use Splicewire\Beam\Ux\Frame\RouteContextPlan;
 use Splicewire\ServiceDeskSla\Contracts\ServiceDeskHost;
 
@@ -81,6 +83,20 @@ class AppServiceProvider extends ServiceProvider
         $this->registerAuthoringGates();
         $this->registerResourcePolicies();
         $this->registerDoctorAudits();
+        $this->registerExampleSeeds();
+    }
+
+    /** Register the host example without teaching the generic installer its name. */
+    protected function registerExampleSeeds(): void
+    {
+        $flag = config('examples.service_desk.seed');
+        config(['examples.service_desk.seed' => $flag !== null ? (bool) $flag : ! $this->app->environment('production')]);
+
+        $this->app->make(BeamSeedManifest::class)->register(
+            package: 'app/service-desk',
+            seederClass: ServiceRequestApprovalSeeder::class,
+            configGate: 'examples.service_desk.seed',
+        );
     }
 
     protected function registerServiceDeskNavigation(): void

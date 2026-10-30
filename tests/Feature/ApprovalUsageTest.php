@@ -188,14 +188,23 @@ class ApprovalUsageTest extends TestCase
         app(WorkflowActuator::class)->transition($this->pending($a), 'approve');
         $this->actingAs($a);
         $before = $this->business();
-        Schema::rename('workflow_transition_facts', 'usage_source_unavailable');
-        try {
-            $this->getJson('/frame/resources/service-request-usage')->assertStatus(500)->assertJsonMissingPath('data');
-            $this->getJson('/frame/resources/service-request-usage/records/approvals')->assertStatus(500)->assertJsonMissingPath('data');
-            $this->getJson('/api/service-request-usage')->assertStatus(500);
-        } finally {
-            Schema::rename('usage_source_unavailable', 'workflow_transition_facts');
+        // Each request meets the missing source inside its own savepoint. Postgres aborts the enclosing transaction at
+        // the first read of the missing table, and rolling back to the savepoint restores both the transaction and the
+        // rename (sqlite's DDL is transactional too), so the next request meets the missing source, not an aborted one.
+        foreach ([
+            fn () => $this->getJson('/frame/resources/service-request-usage')->assertStatus(500)->assertJsonMissingPath('data'),
+            fn () => $this->getJson('/frame/resources/service-request-usage/records/approvals')->assertStatus(500)->assertJsonMissingPath('data'),
+            fn () => $this->getJson('/api/service-request-usage')->assertStatus(500),
+        ] as $request) {
+            DB::beginTransaction();
+            try {
+                Schema::rename('workflow_transition_facts', 'usage_source_unavailable');
+                $request();
+            } finally {
+                DB::rollBack();
+            }
         }
+        $this->assertTrue(Schema::hasTable('workflow_transition_facts'));
         $this->quantity(1);
         $this->assertSame($before, $this->business());
     }

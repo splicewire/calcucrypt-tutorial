@@ -26,6 +26,9 @@ export default defineConfig({
             // host raises (account/tokens, account/team, account/theme) went nowhere, silently. A
             // missing toast looks exactly like a mutation that did not run.
             'sonner',
+            // Docs registration and the lazy entry page share one Beam UX registry,
+            // including when external family peers resolve another physical copy.
+            '@splicewire/beam-ux',
         ],
     },
     plugins: [

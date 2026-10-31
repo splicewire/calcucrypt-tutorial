@@ -7,7 +7,6 @@ use Inertia\Inertia;
 use Schemastud\Frame\Http\Controllers\FrameManifestController;
 use Splicewire\Beam\Authorization\SeatGate;
 use Splicewire\Beam\Dashboard\RealmDashboard;
-use Splicewire\Beam\Ux\Containment\EntryPathResolver;
 use Splicewire\Beam\Ux\Data\Pages\EntryPageData;
 use Splicewire\Beam\Ux\Head\PageHead;
 use Splicewire\Beam\Ux\Head\PageHeadComposer;
@@ -44,13 +43,20 @@ Route::get('/', function (Request $request) {
     $head = PageHead::forPage('home', $request);
     $context = $request->attributes->get('beam.ux.preview');
     if ($model !== null && $context instanceof PreviewContext) {
-        $previewEntry = $context->project($model);
-        if ($previewEntry !== null) {
-            $chain = app(EntryPathResolver::class)->ancestry($previewEntry);
-            $head = app(PageHeadComposer::class)
-                ->compose($previewEntry, $request->path(), $chain === null || app(PublicEntryGate::class)->isRestricted($chain), $request, $chain ?? [])
+        // A preview is an immutable view of the Release's entries and ancestry. Never fall
+        // back to live ancestry here: it can differ from the version the guest is previewing.
+        $chain = app(PublicEntryGate::class)->chainForEntry($model, 'site', null, $context);
+        $head = $chain === null
+            ? []
+            : app(PageHeadComposer::class)
+                ->compose(
+                    $chain[array_key_last($chain)],
+                    $request->path(),
+                    false,
+                    $request,
+                    $chain,
+                )
                 ->elements();
-        }
     }
 
     return Inertia::render('site/home', EntryPageData::from(['entry' => $entry]))

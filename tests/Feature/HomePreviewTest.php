@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Splicewire\Beam\Ux\Access\EntryRequirement;
 use Splicewire\Beam\Ux\Compile\EntryArtifactStore;
 use Splicewire\Beam\Ux\Data\EntryPageSettingsData;
 use Splicewire\Beam\Ux\Http\Middleware\ResolvePreviewContext;
@@ -40,6 +42,17 @@ class HomePreviewTest extends TestCase
 
     public function test_the_front_door_renders_the_previews_home_under_the_bar(): void
     {
+        // A requirement is not itself a denial: this one explicitly admits guests. Preview
+        // metadata must use the same preview chain and guest-read decision as the page render.
+        $this->home->forceFill(['requirements' => ['preview-guest-readable']])->save();
+        app()->instance('beam.ux.requirement.preview-guest-readable', new class implements EntryRequirement
+        {
+            public function allows(?Authenticatable $actor, BeamUxEntry $entry): bool
+            {
+                return $actor === null;
+            }
+        });
+
         $draft = app(EntryPublication::class)->recordDraft($this->home->fresh(), [$this->node('Previewed home')],
             pageSettings: new EntryPageSettingsData(title: 'Previewed front door', description: 'What the Release says.'))->headVersion;
         $cookie = $this->openLink($this->release('Spring', $draft));
@@ -63,6 +76,8 @@ class HomePreviewTest extends TestCase
         // The head reads the Release's page settings too, as the packaged renderer's does.
         $this->assertStringContainsString('Previewed front door', $previewed->json('props.head.0'));
         $this->assertStringContainsString('What the Release says.', implode('', $previewed->json('props.head')));
+        $this->assertStringNotContainsString('noindex', implode('', $previewed->json('props.head')),
+            'a guest-readable requirement is not a reason to suppress the preview head');
     }
 
     public function test_a_home_the_preview_takes_down_answers_not_found_there_and_stays_live(): void

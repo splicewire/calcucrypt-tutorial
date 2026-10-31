@@ -109,12 +109,19 @@ class AccountNavIaInvariantsTest extends TestCase
         $this->assertContains('/dashboard', $hrefs);
     }
 
-    public function test_teamless_and_joined_users_can_discover_team_creation_from_the_account_rail(): void
+    public function test_team_creation_is_a_dashboard_action_not_an_account_realm_seat(): void
     {
-        foreach ([User::factory()->create(), User::factory()->teamMember()->create()] as $user) {
-            $this->assertContains('/teams/create', $this->accountHrefs($user));
-            $this->actingAs($user)->get('/teams/create')->assertOk();
-        }
+        $teamless = User::factory()->create();
+        $this->assertNotContains('/teams/create', $this->accountHrefs($teamless));
+
+        $actions = $this->actingAs($teamless)->getJson('frame/resources/user-dashboard')
+            ->assertOk()->json('data.0.welcome.actions');
+        $this->assertContains(['key' => 'create-team', 'label' => 'Create a team', 'href' => '/teams/create'], $actions);
+        $this->actingAs($teamless)->get('/teams/create')->assertOk();
+
+        $joined = User::factory()->teamMember()->create();
+        $this->assertNotContains('/teams/create', $this->accountHrefs($joined));
+        $this->actingAs($joined)->get('/teams/create')->assertOk();
     }
 
     public function test_guests_cannot_open_or_submit_team_creation(): void

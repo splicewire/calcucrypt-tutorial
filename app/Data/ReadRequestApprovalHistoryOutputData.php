@@ -4,9 +4,11 @@ namespace App\Data;
 
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Data;
+use Schemastud\DataSchemas\Attributes\Title;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
+#[Title('Request approval history')]
 final class ReadRequestApprovalHistoryOutputData extends Data
 {
     /** @param list<RequestApprovalFactData> $facts */

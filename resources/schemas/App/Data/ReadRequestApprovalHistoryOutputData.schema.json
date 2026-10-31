@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "title": "ReadRequestApprovalHistoryOutputData",
+    "title": "Request approval history",
     "properties": {
         "requestId": {
             "type": "integer"
@@ -36,7 +36,7 @@
     "$defs": {
         "RequestApprovalFactData": {
             "type": "object",
-            "title": "RequestApprovalFactData",
+            "title": "Request approval fact",
             "properties": {
                 "id": {
                     "type": "string"

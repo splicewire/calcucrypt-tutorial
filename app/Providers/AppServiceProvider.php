@@ -6,6 +6,7 @@ use App\Account\StarterAccountShell;
 use App\Beam\RealmRegistry;
 use App\Data\SitemapData;
 use App\Doctor\OrphanedNavItemAudit;
+use App\Frame\ServiceRequestReadSchemaResolver;
 use App\Models\SitemapRecord;
 use App\Models\User;
 use App\Support\ServiceDeskSlaHost;
@@ -29,6 +30,7 @@ use Splicewire\Beam\Nav\NavSection;
 use Splicewire\Beam\Nav\NavSectionRegistry;
 use Splicewire\Beam\Seed\BeamSeedManifest;
 use Splicewire\Beam\Ux\Frame\RouteContextPlan;
+use Schemastud\Frame\Contracts\ResourceSchemaResolver;
 use Splicewire\ServiceDeskSla\Contracts\ServiceDeskHost;
 
 class AppServiceProvider extends ServiceProvider
@@ -68,6 +70,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        if ($this->app->bound(ResourceSchemaResolver::class)) {
+            $this->app->extend(ResourceSchemaResolver::class, fn (ResourceSchemaResolver $next): ResourceSchemaResolver => new ServiceRequestReadSchemaResolver($next));
+        } else {
+            $this->app->singleton(ResourceSchemaResolver::class, fn (): ResourceSchemaResolver => new ServiceRequestReadSchemaResolver);
+        }
         if (config('canonical-mdx.enabled', false)) {
             config(['beam.ux.releases.review_required' => true, 'beam.ux.releases.allow_self_approval' => false]);
         }

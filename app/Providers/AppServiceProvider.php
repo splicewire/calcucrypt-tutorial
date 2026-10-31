@@ -6,12 +6,14 @@ use App\Account\StarterAccountShell;
 use App\Beam\RealmRegistry;
 use App\Data\SitemapData;
 use App\Doctor\OrphanedNavItemAudit;
+use App\Frame\ServiceRequestReadSchemaResolver;
 use App\Models\SitemapRecord;
 use App\Models\User;
 use App\Support\ServiceDeskSlaHost;
 use App\Support\ServiceRequestTeam;
 use App\Workflows\ServiceRequestApproval;
 use Carbon\CarbonImmutable;
+use Database\Seeders\ServiceRequestApprovalSeeder;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +28,9 @@ use Splicewire\Beam\Doctor\BeamDoctorManifest;
 use Splicewire\Beam\Nav\NavAudience;
 use Splicewire\Beam\Nav\NavSection;
 use Splicewire\Beam\Nav\NavSectionRegistry;
+use Splicewire\Beam\Seed\BeamSeedManifest;
 use Splicewire\Beam\Ux\Frame\RouteContextPlan;
+use Schemastud\Frame\Contracts\ResourceSchemaResolver;
 use Splicewire\ServiceDeskSla\Contracts\ServiceDeskHost;
 
 class AppServiceProvider extends ServiceProvider
@@ -66,6 +70,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        if ($this->app->bound(ResourceSchemaResolver::class)) {
+            $this->app->extend(ResourceSchemaResolver::class, fn (ResourceSchemaResolver $next): ResourceSchemaResolver => new ServiceRequestReadSchemaResolver($next));
+        } else {
+            $this->app->singleton(ResourceSchemaResolver::class, fn (): ResourceSchemaResolver => new ServiceRequestReadSchemaResolver);
+        }
         if (config('canonical-mdx.enabled', false)) {
             config(['beam.ux.releases.review_required' => true, 'beam.ux.releases.allow_self_approval' => false]);
         }
@@ -81,6 +90,20 @@ class AppServiceProvider extends ServiceProvider
         $this->registerAuthoringGates();
         $this->registerResourcePolicies();
         $this->registerDoctorAudits();
+        $this->registerExampleSeeds();
+    }
+
+    /** Register the host example without teaching the generic installer its name. */
+    protected function registerExampleSeeds(): void
+    {
+        $flag = config('examples.service_desk.seed');
+        config(['examples.service_desk.seed' => $flag !== null ? (bool) $flag : ! $this->app->environment('production')]);
+
+        $this->app->make(BeamSeedManifest::class)->register(
+            package: 'app/service-desk',
+            seederClass: ServiceRequestApprovalSeeder::class,
+            configGate: 'examples.service_desk.seed',
+        );
     }
 
     protected function registerServiceDeskNavigation(): void

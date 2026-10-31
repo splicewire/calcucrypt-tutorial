@@ -9,10 +9,13 @@ use Splicewire\Beam\Authorization\SeatGate;
 use Splicewire\Beam\Dashboard\RealmDashboard;
 use Splicewire\Beam\Ux\Data\Pages\EntryPageData;
 use Splicewire\Beam\Ux\Head\PageHead;
+use Splicewire\Beam\Ux\Head\PageHeadComposer;
 use Splicewire\Beam\Ux\Http\Middleware\ResolvePreviewContext;
+use Splicewire\Beam\Ux\Http\PublicEntryGate;
 use Splicewire\Beam\Ux\Intake\IntakeForms;
 use Splicewire\Beam\Ux\Models\BeamUxEntry;
 use Splicewire\Beam\Ux\Preview\PreviewBar;
+use Splicewire\Beam\Ux\Preview\PreviewContext;
 use Splicewire\Beam\Ux\Support\PageEntryRef;
 
 require __DIR__.'/local-marketplace.php';
@@ -37,10 +40,28 @@ Route::get('/', function (Request $request) {
     $entry = PageEntryRef::for('home');
     $model = $entry === null ? null : BeamUxEntry::find($entry['id']);
     $preview = app(PreviewBar::class)->for($request, $model);
+    $head = PageHead::forPage('home', $request);
+    $context = $request->attributes->get('beam.ux.preview');
+    if ($model !== null && $context instanceof PreviewContext) {
+        // A preview is an immutable view of the Release's entries and ancestry. Never fall
+        // back to live ancestry here: it can differ from the version the guest is previewing.
+        $chain = app(PublicEntryGate::class)->chainForEntry($model, 'site', null, $context);
+        $head = $chain === null
+            ? []
+            : app(PageHeadComposer::class)
+                ->compose(
+                    $chain[array_key_last($chain)],
+                    $request->path(),
+                    false,
+                    $request,
+                    $chain,
+                )
+                ->elements();
+    }
 
     return Inertia::render('site/home', EntryPageData::from(['entry' => $entry]))
         ->with($model === null ? [] : app(IntakeForms::class)->pagePropsFor($model))
-        ->with('head', PageHead::forPage('home'))
+        ->with('head', $head)
         ->with($preview === null ? [] : ['preview' => $preview]);
 })->middleware(ResolvePreviewContext::class)->name('home');
 

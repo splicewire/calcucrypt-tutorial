@@ -3,10 +3,12 @@
 namespace App\Data;
 
 use Schemastud\DataSchemas\Attributes\ArrayItems;
+use Schemastud\DataSchemas\Attributes\Title;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
+#[Title('Request approval fact')]
 final class RequestApprovalFactData extends Data
 {
     /** @param list<string> $from

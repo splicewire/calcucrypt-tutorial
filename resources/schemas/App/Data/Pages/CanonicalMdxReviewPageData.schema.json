@@ -113,7 +113,7 @@
         },
         "ReleaseRecordingData": {
             "type": "object",
-            "title": "ReleaseRecordingData",
+            "title": "Release recording",
             "properties": {
                 "releaseId": {
                     "type": "string"

@@ -41,8 +41,11 @@ class SitemapWriteAuthorizationTest extends TestCase
 
         $team = app(TeamProvisioner::class)->personalTeamFor($owner);
         app(TeamProvisioner::class)->addMember($member, $team, Role::Member);
+        $member->switchTeam($team);
 
-        // Roles are TEAM-SCOPED, so a user resolves zero roles until the registrar is pointed at one.
+        // Membership and the active team are separate: the member must switch to this team so the
+        // request middleware can bind its team-scoped roles for the read while writes still fail closed.
+        // The registrar is also pointed here for this direct test setup.
         // In a real request `bootstrap/app.php`'s `splicewire.team` middleware does this; here the
         // test is the caller, and without it every assertion below would be a denial for the wrong
         // reason — which is precisely the shape that reports a passing authorization test.

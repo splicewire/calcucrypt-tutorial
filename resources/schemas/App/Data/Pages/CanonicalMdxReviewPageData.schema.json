@@ -245,6 +245,20 @@
                         "string",
                         "null"
                     ]
+                },
+                "previewHref": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "canManagePreviewLinks": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "redirects": {
+                    "type": "array",
+                    "default": []
                 }
             },
             "required": [
@@ -261,7 +275,10 @@
                 "filesMemberId",
                 "filesHref",
                 "previewLinksEnabled",
-                "previewLink"
+                "previewLink",
+                "previewHref",
+                "canManagePreviewLinks",
+                "redirects"
             ]
         }
     }

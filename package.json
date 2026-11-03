@@ -60,11 +60,11 @@
         "@schemastud/nav": "github:schemastud/js#ea1bb1a06d83de66164e19f9b6798342ed2a8c51&path:/nav",
         "@schemastud/seam": "github:schemastud/js#72b9e79d72e3dbd9a14113988c67b72f065a5b87&path:/seam",
         "@schemastud/ui": "github:schemastud/js#09abbd00e4be30694dc49518ece40987b3e17086&path:/ui",
-        "@splicewire/beam-accounts": "github:splicewire/beam#20341083bc8ac6956b7f349e730a03e0501117a3&path:/beam-accounts",
-        "@splicewire/beam-inertia": "github:splicewire/beam#7d80380fb2114f4a9ffb3ea92723bf7535e441f1&path:/beam-inertia",
+        "@splicewire/beam-accounts": "github:splicewire/beam#70a034947218a2f98014b76678032f766f709d49&path:/beam-accounts",
+        "@splicewire/beam-inertia": "github:splicewire/beam#17e2c8a4c86081f96e37ec03a7c0037c100757c8&path:/beam-inertia",
         "@splicewire/beam-mainframe": "github:splicewire/beam#900a1305b7654d13ff5d1be5ce2b7cefdb59e4d9&path:/beam-mainframe",
-        "@splicewire/beam-ux": "github:splicewire/beam#cfd76530a6f5c5ce6844da435c44ffca410a29a2&path:/beam-ux",
-        "@splicewire/beam-workflows": "github:splicewire/beam#1b1785c78b914a5ff95ee064bbac28b51abae0ef&path:/beam-workflows",
+        "@splicewire/beam-ux": "github:splicewire/beam#e9b190302a9df54749a33b8688528619d9029c65&path:/beam-ux",
+        "@splicewire/beam-workflows": "github:splicewire/beam#72fc419cc39f3c6ac993144906cf00dfaf029a26&path:/beam-workflows",
         "@splicewire/beam-ux-prototype": "github:splicewire/beam#835d8ef0b937008848c736e99f7793fd0ca72e77&path:/beam-ux-prototype",
         "@tailwindcss/vite": "^4.1.11",
         "@tanstack/react-query": "^5.0.0",
@@ -96,7 +96,7 @@
         "@schemastud/blockdoc": "github:schemastud/js#8f3775e02ac9b96205064de967a9f5c700953231&path:/blockdoc",
         "@schemastud/chat": "github:schemastud/js#de4230a6c8a4691598c339302ea0b9e015b4dbe6&path:/chat",
         "@schemastud/facets": "github:schemastud/js#72e8e8086d55e285ce387cba0032e264c09939fc&path:/facets",
-        "@splicewire/beam-resources": "github:splicewire/beam#0051f3a709b98becce5fc05917058ea21248c2cc&path:/beam-resources"
+        "@splicewire/beam-resources": "github:splicewire/beam#c5e6c528f8296fb6f6864cd9fe481e2618409d94&path:/beam-resources"
     },
     "optionalDependencies": {
         "@rollup/rollup-linux-x64-gnu": "4.9.5",

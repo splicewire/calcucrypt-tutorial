@@ -163,7 +163,10 @@ describe('operator access is unchanged', function (): void {
         app(TeamProvisioner::class)->personalTeamWithFullReachFor($owner);
 
         expect(entitlementsOf($owner->refresh()))->toContain('os.enter', 'os.operate')
-            ->and(entitlementsOf($owner))->toEqualCanonicalizing(app(DefaultEntitlementResolver::class)->entitlementsFor($owner))
+            ->and(entitlementsOf($owner))->toEqualCanonicalizing([
+                ...app(DefaultEntitlementResolver::class)->entitlementsFor($owner),
+                'plans.purchase',
+            ])
             ->and(Gate::forUser($owner)->allows('entitlement:os.operate'))->toBeTrue();
     });
 

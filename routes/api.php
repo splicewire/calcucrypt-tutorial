@@ -53,3 +53,12 @@ Particle::mount('guides', 'guides')
     ->names('api.guides')
     ->only(['index', 'show'])
     ->hookEvents(false);
+
+// The plans on sale (PlanOfferData, read from config/plans.php) and the PurchasePlan operation:
+// `GET /api/plans` and `POST /api/plans/purchase`. The op has no subject, so its URL has no `{id}`;
+// the list is the only other route here, so nothing can swallow it.
+Particle::mount('plans', 'plans')
+    ->names('api.plans')
+    ->only(['index'])
+    ->ops(['purchase'])
+    ->hookEvents(false);

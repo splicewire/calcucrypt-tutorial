@@ -1,0 +1,29 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "Plan purchase result",
+    "properties": {
+        "plan": {
+            "type": "string"
+        },
+        "paid": {
+            "type": "boolean"
+        },
+        "declineCode": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "teamPlan": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "plan",
+        "paid",
+        "declineCode",
+        "teamPlan"
+    ],
+    "$id": "PurchasePlanOutputData"
+}

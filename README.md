@@ -39,6 +39,10 @@ composer dev
 Then open `/calculators`. `composer setup` installs both lockfiles, writes `.env`, creates the
 sqlite database and builds the frontend. Everything it fetches is public.
 
+From chapter 5 on, the pages call `/api` with your session (Sanctum's stateful API). Sanctum
+trusts `localhost` and `127.0.0.1:8000`; if you serve the app anywhere else, set `APP_URL` to that
+origin, or a signed-in reader's widget is treated as a guest.
+
 ## No API keys
 
 The calculators price assets from live market data in Calcucrypt. Here the default connector is

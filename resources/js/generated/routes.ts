@@ -13,6 +13,8 @@ export const defaults: RouteMap = {
     'api.calculators.show': 'api/calculators/{id}',
     'api.guides.index': 'api/guides',
     'api.guides.show': 'api/guides/{id}',
+    'api.plans.index': 'api/plans',
+    'api.plans.purchase': 'api/plans/purchase',
     'beam-docs.search': 'beam/docs/search',
     'beam-ux-entry.body': 'beam-ux-entries/{id}/body',
     'beam-ux-entry.canvas-bindings': 'beam-ux-entries/{id}/canvas-bindings',

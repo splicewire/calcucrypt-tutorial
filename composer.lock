@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "89de7e80c5baa8bedb555c3a0fc9d92b",
+    "content-hash": "624ec8ba335622311660c6954097dab3",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -5289,6 +5289,96 @@
             "time": "2026-10-31T01:47:23+00:00"
         },
         {
+            "name": "rushing/laravel-commerce",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stephenr85/laravel-commerce.git",
+                "reference": "dc884eba1fc957bd196512c77a7139ff729f2c89"
+            },
+            "require": {
+                "illuminate/contracts": "^11.0|^12.0|^13.0",
+                "illuminate/database": "^11.0|^12.0|^13.0",
+                "illuminate/support": "^11.0|^12.0|^13.0",
+                "php": "^8.2",
+                "rushing/laravel-doctor": "dev-main",
+                "rushing/laravel-popcorn": "dev-main",
+                "rushing/laravel-schema-convergence": "dev-main",
+                "rushing/php-popcorn": "dev-main",
+                "schemastud/laravel-data-schemas": "dev-main",
+                "spatie/laravel-data": "^4.0|^5.0",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "orchestra/testbench": "^9.0|^10.0|^11.0",
+                "pestphp/pest": "^2.0|^3.0",
+                "rushing/laravel-data-schemas-scribe": "*",
+                "stripe/stripe-php": "^13.0|^14.0|^15.0|^16.0",
+                "wikimedia/composer-merge-plugin": "^2.1"
+            },
+            "suggest": {
+                "laravel/cashier": "Required only for the `stripe` money-in driver (subscriptions + PaymentIntents). A cost-only tenant using the metering plane does not need it.",
+                "rushing/laravel-data-schemas-scribe": "Resolves the #[RequestFromData] declarations on the ACP HTTP boundary so Scribe publishes the protocol bodies."
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Rushing\\Commerce\\CommerceServiceProvider"
+                    ]
+                },
+                "merge-plugin": {
+                    "include": [
+                        "composer.local.json"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Rushing\\Commerce\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Rushing\\Commerce\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "@php vendor/bin/pest"
+                ],
+                "pint": [
+                    "@php -d memory_limit=512M vendor/bin/pint"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stephen Rushing",
+                    "email": "stephen@rushing.dev"
+                }
+            ],
+            "description": "The shared money-in engine for the ecosystem: a neutral Order -> Payment -> Receipt -> Purchase primitive behind a fake|stripe driver seam, plus billing composition, spend gating, credit/wallet, gifting, and a catalog. Consumed directly by splicewire-app and every satellite. Never merchant-of-record.",
+            "keywords": [
+                "billing",
+                "cashier",
+                "commerce",
+                "laravel",
+                "laravel-data",
+                "payments",
+                "spatie",
+                "stripe"
+            ],
+            "time": "2026-11-05T11:36:36+00:00"
+        },
+        {
             "name": "rushing/laravel-data-filters",
             "version": "dev-main",
             "source": {
@@ -6048,7 +6138,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stephenr85/php-popcorn.git",
-                "reference": "a723a5c4d5b1e66cbcff3a26c7ea4946755a1e89"
+                "reference": "432ec6ef0eaf53eecc43ecdb7bdaebf48d12d59a"
             },
             "require": {
                 "php": "^8.3",
@@ -6107,7 +6197,7 @@
                 "registry",
                 "strategy"
             ],
-            "time": "2026-10-19T17:24:56+00:00"
+            "time": "2026-11-05T12:17:27+00:00"
         },
         {
             "name": "schemastud/laravel-blockdoc",
@@ -16840,6 +16930,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "rushing/laravel-commerce": 20,
         "rushing/laravel-surgeon": 20,
         "schemastud/laravel-data-schema-org": 20,
         "schemastud/laravel-data-schemas": 20,

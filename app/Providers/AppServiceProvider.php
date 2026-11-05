@@ -20,6 +20,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Rushing\PermissionCascade\Contracts\EntitlementResolver;
 use Rushing\PermissionCascade\Support\CascadePolicyRegistrar;
+use Schemastud\Frame\Contracts\ResourceSchemaResolver;
 use Splicewire\Beam\Authorization\SeatGate;
 use Splicewire\Beam\Doctor\BeamDoctorManifest;
 use Splicewire\Beam\Nav\NavAudience;
@@ -30,7 +31,6 @@ use Splicewire\Beam\Seed\BeamSeedManifest;
 use Splicewire\Beam\Ux\Doctor\OrphanedNavItemAudit;
 use Splicewire\Beam\Ux\Frame\RouteContextPlan;
 use Splicewire\Beam\Ux\Nav\Contracts\NavItemSource;
-use Schemastud\Frame\Contracts\ResourceSchemaResolver;
 use Splicewire\ServiceDeskSla\Contracts\ServiceDeskHost;
 
 class AppServiceProvider extends ServiceProvider

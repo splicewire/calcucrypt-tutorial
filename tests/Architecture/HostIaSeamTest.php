@@ -14,7 +14,6 @@ class HostIaSeamTest extends TestCase
 {
     use AssertsHostIaSeam;
 
-
     protected function hostIaRatchet(): array
     {
         return [

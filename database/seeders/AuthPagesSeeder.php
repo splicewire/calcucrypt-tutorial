@@ -3,11 +3,11 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Splicewire\Beam\Write\AsSystemWriter;
 use Splicewire\Beam\Ux\Models\BeamUxEntry;
-use Splicewire\Beam\Ux\Publish\EntryPublication;
 use Splicewire\Beam\Ux\Provenance\Reasserter;
+use Splicewire\Beam\Ux\Publish\EntryPublication;
 use Splicewire\Beam\Ux\Type\UxType;
+use Splicewire\Beam\Write\AsSystemWriter;
 
 /**
  * Seeds the 7 auth-page `beam_ux_entries` rows (theme-entries-and-authoring STR-03) —

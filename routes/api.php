@@ -35,3 +35,17 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Particle::mount('external-requests', 'external-requests')->only(['index']);
     Particle::mount('service-request-usage', 'service-request-usage')->only(['index']);
 });
+
+// Calcucrypt's public read API. The declarations on CalculatorSpecData and GuideData say what each
+// resource is and who may read it; this file only chooses which routes to expose. The `api.` name
+// stem keeps them clear of the pages' own `calculators.*` / `guides.*` route names, and a public
+// mount advertises no webhook event vocabulary.
+Particle::mount('calculators', 'calculators')
+    ->names('api.calculators')
+    ->only(['index', 'show'])
+    ->hookEvents(false);
+
+Particle::mount('guides', 'guides')
+    ->names('api.guides')
+    ->only(['index', 'show'])
+    ->hookEvents(false);

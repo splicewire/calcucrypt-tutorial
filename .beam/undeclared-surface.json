@@ -1,6 +1,6 @@
 {
     "check": "particle.undeclared-surface",
-    "count": 77,
+    "count": 73,
     "baseline": {
         "environment": "local",
         "php": "8.4",
@@ -9,12 +9,12 @@
     },
     "counts": {
         "by_tier": {
-            "guided": 64,
+            "guided": 60,
             "manual": 13
         },
         "by_origin": {
-            "app": 23,
             "laravel/fortify": 22,
+            "app": 19,
             "splicewire/laravel-beam-ux": 8,
             "schemastud/laravel-frame": 8,
             "laravel/passkeys": 7,
@@ -224,28 +224,6 @@
             "location": "splicewire/laravel-beam-ux/src/Http/Controllers/EntryArtifactController.php:40"
         },
         {
-            "uri": "calculators",
-            "methods": [
-                "GET"
-            ],
-            "name": "calculators.index",
-            "action": "App\\Http\\Controllers\\CalculatorController@index",
-            "tier": "guided",
-            "origin": "app",
-            "location": "app/Http/Controllers/CalculatorController.php:27"
-        },
-        {
-            "uri": "calculators/{calculator}",
-            "methods": [
-                "GET"
-            ],
-            "name": "calculators.show",
-            "action": "App\\Http\\Controllers\\CalculatorController@show",
-            "tier": "guided",
-            "origin": "app",
-            "location": "app/Http/Controllers/CalculatorController.php:40"
-        },
-        {
             "uri": "calculators/{calculator}/resolve",
             "methods": [
                 "GET",
@@ -255,7 +233,7 @@
             "action": "App\\Http\\Controllers\\CalculatorController@resolve",
             "tier": "guided",
             "origin": "app",
-            "location": "app/Http/Controllers/CalculatorController.php:63"
+            "location": "app/Http/Controllers/CalculatorController.php:69"
         },
         {
             "uri": "dashboard",
@@ -399,28 +377,6 @@
             "tier": "guided",
             "origin": "schemastud/laravel-frame",
             "location": "schemastud/laravel-frame/src/Http/Controllers/FrameResourceController.php:109"
-        },
-        {
-            "uri": "guides",
-            "methods": [
-                "GET"
-            ],
-            "name": "guides.index",
-            "action": "App\\Http\\Controllers\\GuideController@index",
-            "tier": "guided",
-            "origin": "app",
-            "location": "app/Http/Controllers/GuideController.php:29"
-        },
-        {
-            "uri": "guides/{post}",
-            "methods": [
-                "GET"
-            ],
-            "name": "guides.show",
-            "action": "App\\Http\\Controllers\\GuideController@show",
-            "tier": "guided",
-            "origin": "app",
-            "location": "app/Http/Controllers/GuideController.php:42"
         },
         {
             "uri": "invitations/{token}",

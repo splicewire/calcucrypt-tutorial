@@ -10,12 +10,15 @@ use App\Data\CalculatorSpecData;
 use App\Data\CalculatorSummaryData;
 use App\Data\GuideData;
 use App\Data\GuideSummaryData;
+use App\Data\Pages\GuideIndexPageData;
+use App\Data\Pages\GuideShowPageData;
 use App\Enums\AssociationMode;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Rushing\DataFilters\Facades\DataFilter;
+use Rushing\LaravelDataSchemasScribe\Attributes\ResponseFromData;
 
 /**
  * Serves Guides — editorial Posts that embed and/or link Calculators. On show, each
@@ -26,6 +29,7 @@ class GuideController extends Controller
 {
     public function __construct(private readonly CalculatorResolver $resolver) {}
 
+    #[ResponseFromData(GuideIndexPageData::class)]
     public function index(Request $request): Response
     {
         $guides = DataFilter::query('guide')
@@ -33,12 +37,13 @@ class GuideController extends Controller
             ->get()
             ->map(GuideSummaryData::fromModel(...));
 
-        return Inertia::render('guides/index', [
-            'guides' => $guides,
-            'filters' => $request->input('filter', []),
-        ]);
+        return Inertia::render('guides/index', new GuideIndexPageData(
+            guides: $guides->all(),
+            filters: $request->input('filter', []),
+        ));
     }
 
+    #[ResponseFromData(GuideShowPageData::class)]
     public function show(Post $post): Response
     {
         abort_unless($post->isPublished(), 404);
@@ -59,7 +64,7 @@ class GuideController extends Controller
             if ($mode === AssociationMode::Embed->value) {
                 $embeds[] = new CalculatorEmbedData(
                     anchor: is_string($anchor) ? $anchor : null,
-                    spec: CalculatorSpecData::fromModel($calculator),
+                    spec: CalculatorSpecData::project($calculator),
                     resolution: $this->resolver->resolve($calculator),
                 );
             } else {
@@ -67,10 +72,10 @@ class GuideController extends Controller
             }
         }
 
-        return Inertia::render('guides/show', [
-            'guide' => GuideData::fromModel($post),
-            'embeds' => $embeds,
-            'links' => $links,
-        ]);
+        return Inertia::render('guides/show', new GuideShowPageData(
+            guide: GuideData::project($post),
+            embeds: $embeds,
+            links: $links,
+        ));
     }
 }

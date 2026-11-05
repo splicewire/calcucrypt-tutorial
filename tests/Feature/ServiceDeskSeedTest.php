@@ -3,12 +3,13 @@
 use App\Workflows\ServiceRequestApproval;
 use Splicewire\Beam\Seed\BeamSeedManifest;
 use Splicewire\Beam\Workflows\Definition\DefinitionStore;
+use Tests\Concerns\RefusesServedDatabase;
 use Tests\TestCase;
 
-uses(TestCase::class);
+uses(TestCase::class, RefusesServedDatabase::class);
 
 beforeEach(function () {
-    expect(config('database.connections.sqlite.database'))->toBe(':memory:');
+    $this->assertScratchDatabase();
     $this->artisan('migrate:fresh')->assertExitCode(0);
 
     // Exercise the host's registered step through the public seed command, without seeding

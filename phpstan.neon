@@ -16,3 +16,21 @@ parameters:
         - routes/
 
     level: 7
+
+    # Scoped baseline (root ruling, starter-ci): the 2026_10_05 reserve-tokens migration has ALREADY
+    # RUN on hosts, so it is kept BYTE-UNCHANGED from main. Its two type-inference errors are not real
+    # defects — larastan cannot see through config('permission.models.role') to the App\Models\Role
+    # type, and the vendor PermissionNamer::names() return is not declared list<string>. These are
+    # entries scoped by message + identifier + path + count=1 for that one file (neon has no line key),
+    # NOT a blanket ignore; every other error (including routes/web.php) stays reported.
+    ignoreErrors:
+        -
+            message: '#Call to an undefined method object::getTable\(\)\.#'
+            identifier: method.notFound
+            count: 1
+            path: database/migrations/2026_10_05_220000_reserve_git_repo_and_beam_schema_tokens.php
+        -
+            message: '#expects Closure\(string\): list<string>, Closure\(string\): array given\.#'
+            identifier: argument.type
+            count: 1
+            path: database/migrations/2026_10_05_220000_reserve_git_repo_and_beam_schema_tokens.php

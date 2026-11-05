@@ -16,16 +16,19 @@ use Splicewire\Beam\Ux\Particle\EntryBodyEnvelope;
 use Splicewire\Beam\Ux\Publish\EntryPublication;
 use Splicewire\Beam\Ux\Release\ReleaseService;
 use Splicewire\Beam\Ux\Seeders\ThemeSeeder;
+use Tests\Concerns\MigratesTenantDirectoryCentrally;
 use Tests\TestCase;
 
 /** Run with the explicitly selected UX source overlay and published Release migrations. */
 class ReleasePrerequisiteTest extends TestCase
 {
+    use MigratesTenantDirectoryCentrally;
     use RefreshDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->migrateTenantDirectoryUnlessCentral();
         \Illuminate\Support\Facades\Storage::fake(config('beam.ux.storage.mirror_disk'));
         // This retained publication suite uses fake mirrors inside the checkout. Never let its
         // optional recorder discover or advance that checkout's real Git branch. Dedicated

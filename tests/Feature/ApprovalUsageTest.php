@@ -4,23 +4,28 @@ namespace Tests\Feature;
 
 use App\Models\ServiceRequest;
 use App\Models\User;
+use App\Support\CommittedApprovals;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Splicewire\Beam\Workflows\Control\TransitionContext;
 use Splicewire\Beam\Workflows\Control\WorkflowActuator;
+use Tests\Concerns\MigratesTenantDirectoryCentrally;
+use Tests\Concerns\WithholdsTables;
 use Tests\TestCase;
 
 class ApprovalUsageTest extends TestCase
 {
+    use MigratesTenantDirectoryCentrally;
     use RefreshDatabase;
+    use WithholdsTables;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->migrateTenantDirectoryUnlessCentral();
         config(['app.key' => 'base64:'.base64_encode(str_repeat('u', 32))]);
         $this->withoutVite();
         $this->seed(\Database\Seeders\ServiceRequestApprovalSeeder::class);
@@ -74,7 +79,8 @@ class ApprovalUsageTest extends TestCase
         $before = $this->business();
         $this->quantity(1);
         $this->getJson('/frame/resources/service-request-usage/records/approvals')->assertOk()->assertJsonPath('data.quantity', 1);
-        $this->getJson('/api/service-request-usage')->assertOk()->assertJsonPath('data.0.quantity', 1)->assertJsonMissingPath('total');
+        // No total is reported: absent (beam's ArrayResponseEnvelope) or null (ResponseBodyEnvelope); json() reads both as null.
+        $this->assertNull($this->getJson('/api/service-request-usage')->assertOk()->assertJsonPath('data.0.quantity', 1)->json('total'));
         $this->postJson('/service-requests/'.$id.'/approve')->assertConflict();
         $this->quantity(1);
         $this->assertSame($before, $this->business());
@@ -184,15 +190,33 @@ class ApprovalUsageTest extends TestCase
         app(WorkflowActuator::class)->transition($this->pending($a), 'approve');
         $this->actingAs($a);
         $before = $this->business();
-        Schema::rename('workflow_transition_facts', 'usage_source_unavailable');
-        try {
-            $this->getJson('/frame/resources/service-request-usage')->assertStatus(500)->assertJsonMissingPath('data');
-            $this->getJson('/frame/resources/service-request-usage/records/approvals')->assertStatus(500)->assertJsonMissingPath('data');
-            $this->getJson('/api/service-request-usage')->assertStatus(500);
-        } finally {
-            Schema::rename('usage_source_unavailable', 'workflow_transition_facts');
+        // Each request meets the missing source on its own, and the table comes back on every driver (WithholdsTables).
+        foreach ([
+            fn () => $this->getJson('/frame/resources/service-request-usage')->assertStatus(500)->assertJsonMissingPath('data'),
+            fn () => $this->getJson('/frame/resources/service-request-usage/records/approvals')->assertStatus(500)->assertJsonMissingPath('data'),
+            fn () => $this->getJson('/api/service-request-usage')->assertStatus(500),
+        ] as $request) {
+            $this->withoutTable('workflow_transition_facts', $request);
         }
         $this->quantity(1);
         $this->assertSame($before, $this->business());
+    }
+
+    public function test_a_fact_counts_only_for_its_exact_request_id_on_every_driver(): void
+    {
+        $a = $this->owner();
+        $row = $this->pending($a);
+        app(WorkflowActuator::class)->transition($row, 'approve', new TransitionContext(actor: 'user:'.$a->id));
+        $fact = (array) DB::table('workflow_transition_facts')->where('subject_id', (string) $row->id)->first();
+        // `subject_id` is a string column and `service_requests.id` an integer. The join compares them as text, so a
+        // numerically equal spelling names another subject. Before the cast, sqlite's affinity counted these and
+        // Postgres refused the comparison (`character varying = bigint`). Raw inserts are intentional source
+        // counterexamples in the isolated test DB, not product writes.
+        foreach (['0'.$row->id, $row->id.'.0', ' '.$row->id] as $spelling) {
+            DB::table('workflow_transition_facts')->insert(array_replace($fact, ['id' => (string) Str::uuid(), 'subject_id' => $spelling]));
+        }
+        $this->assertSame(1, app(CommittedApprovals::class)->forTeam((string) $a->current_team_id));
+        $this->actingAs($a);
+        $this->quantity(1);
     }
 }

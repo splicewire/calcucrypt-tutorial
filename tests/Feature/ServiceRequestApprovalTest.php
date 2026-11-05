@@ -5,15 +5,21 @@ namespace Tests\Feature;
 use App\Models\User;
 use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
+use Tests\Concerns\MigratesTenantDirectoryCentrally;
+use Tests\Concerns\RefusesServedDatabase;
 use Tests\TestCase;
 
 class ServiceRequestApprovalTest extends TestCase
 {
+    use MigratesTenantDirectoryCentrally;
+    use RefusesServedDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
-        $this->assertSame(':memory:', config('database.connections.sqlite.database'));
+        $this->assertScratchDatabase();
         $this->artisan('migrate:fresh')->assertExitCode(0);
+        $this->migrateTenantDirectoryUnlessCentral();
         config(['app.key' => 'base64:'.base64_encode(str_repeat('a', 32))]);
         $this->withoutVite();
         $this->seed(\Database\Seeders\ServiceRequestApprovalSeeder::class);

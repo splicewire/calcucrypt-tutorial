@@ -15,17 +15,22 @@ use Illuminate\Foundation\Bootstrap\LoadConfiguration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Schema;
 use Rushing\Commerce\Events\PurchaseCompleted;
 use Rushing\Commerce\Wallets;
 use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Splicewire\Beam\Workflows\Control\WorkflowActuator;
+use Tests\Concerns\MigratesTenantDirectoryCentrally;
+use Tests\Concerns\RefusesServedDatabase;
+use Tests\Concerns\WithholdsTables;
 use Tests\TestCase;
 
 class TeamApprovalWalletTest extends TestCase
 {
+    use MigratesTenantDirectoryCentrally;
     use RefreshDatabase;
+    use RefusesServedDatabase;
+    use WithholdsTables;
 
     public function createApplication()
     {
@@ -33,11 +38,17 @@ class TeamApprovalWalletTest extends TestCase
         $this->traitsUsedByTest = class_uses_recursive(static::class);
         $app->afterBootstrapping(LoadConfiguration::class, function (Application $app): void {
             $app['config']->set(['team-wallet.enabled' => true, 'team-wallet.sandbox' => true,
-                'commerce.driver' => 'fake', 'commerce.currency' => 'USD', 'commerce.credit.unit' => 'usd']);
+                'commerce.driver' => 'fake', 'commerce.custody' => 'hosted', 'commerce.currency' => 'USD', 'commerce.credit.unit' => 'usd']);
         });
         $app->make(Kernel::class)->bootstrap();
 
         return $app;
+    }
+
+    /** RefreshDatabase migrates in parent::setUp(); refuse a served database before that, not after it. */
+    protected function beforeRefreshingDatabase(): void
+    {
+        $this->assertScratchDatabase();
     }
 
     protected function setUp(): void
@@ -46,12 +57,13 @@ class TeamApprovalWalletTest extends TestCase
             $this->markTestSkipped('Optional Commerce composition is absent.');
         }
         parent::setUp();
-        $this->assertSame(':memory:', DB::connection()->getDatabaseName(), 'Refuse tests against a served DB.');
+        $this->assertScratchDatabase();
         $this->withoutVite();
         // Native published shared migration is a prerequisite, never a fabricated test schema.
         $paths = glob(database_path('migrations/shared/*_create_commerce_credit_entries_table.php'));
         $this->assertCount(1, $paths, 'Publish exact Commerce credit stub before this optional suite.');
         $this->artisan('migrate', ['--path' => $paths, '--realpath' => true, '--force' => true])->assertExitCode(0);
+        $this->migrateTenantDirectoryUnlessCentral();
         $this->seed(\Database\Seeders\ServiceRequestApprovalSeeder::class);
     }
 
@@ -183,13 +195,9 @@ class TeamApprovalWalletTest extends TestCase
         app(WorkflowActuator::class)->transition($this->pending($a), 'approve');
         DB::rollBack();
         $this->assertSame(0.25, $meter->debitedFor($party, 'usd'));
+        // Each missing source is met on its own, and the table comes back on every driver (WithholdsTables).
         foreach (['workflow_transition_facts', 'commerce_credit_entries'] as $table) {
-            Schema::rename($table, $table.'_unavailable');
-            try {
-                $this->getJson('/frame/resources/team-approval-wallet')->assertStatus(500)->assertJsonMissingPath('data');
-            } finally {
-                Schema::rename($table.'_unavailable', $table);
-            }
+            $this->withoutTable($table, fn () => $this->getJson('/frame/resources/team-approval-wallet')->assertStatus(500)->assertJsonMissingPath('data'));
         }
         $this->summary('$0.00', 1, '$0.25', '-$0.25');
         foreach ([['foreign', 'usd'], [$party, 'eur']] as [$requestedParty, $unit]) {

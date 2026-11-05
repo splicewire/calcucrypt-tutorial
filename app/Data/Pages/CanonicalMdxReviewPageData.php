@@ -12,8 +12,8 @@ use Splicewire\Beam\Ux\Data\ReleaseData;
 final class CanonicalMdxReviewPageData extends Data
 {
     /**
-     * @param list<CanonicalMdxVersionChoiceData> $versions
-     * @param list<ReleaseData> $releases
+     * @param  list<CanonicalMdxVersionChoiceData>  $versions
+     * @param  list<ReleaseData>  $releases
      */
     public function __construct(
         public string $entryId,

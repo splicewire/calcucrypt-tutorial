@@ -136,4 +136,26 @@ export default [
             ],
         },
     },
+    {
+        // Node tooling scripts (the co-dev overlay and the examples' build helpers) run on Node, not
+        // the browser, so they need Node globals (process, require, module, __dirname). This is a
+        // globals declaration only, not an ignore. Scoped to these paths only — app and resources
+        // code keep the browser-only environment above.
+        files: ['scripts/**/*.{js,mjs,cjs}', 'examples/**/*.{js,mjs,cjs}'],
+        languageOptions: {
+            globals: {
+                ...globals.node,
+            },
+        },
+    },
+    {
+        // beam-dx bless (row 3a6bf7e2): `.cjs` files are legitimately CommonJS — pnpmfiles and the
+        // pnpm overlay hook (scripts/pnpm-overlay-hook.cjs) must use require()/module.exports, so
+        // converting them to ESM import would break pnpm. Turn OFF only this one rule for *.cjs.
+        // Every other rule, and all app/source/scripts coverage, stays; this is not a path ignore.
+        files: ['**/*.cjs'],
+        rules: {
+            '@typescript-eslint/no-require-imports': 'off',
+        },
+    },
 ];

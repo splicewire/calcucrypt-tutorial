@@ -9,16 +9,14 @@ use Illuminate\Support\Facades\Route;
 | Calcucrypt: the calculators and the Guides that explain them
 |--------------------------------------------------------------------------
 |
-| These are Calcucrypt's routes as the tutorial finds them. Every page passes an inline prop
-| array, and `resolve` is a hand-rolled JSON route that reads `inputs` unvalidated and returns an
-| undeclared shape. The chapters replace that, one declaration at a time.
+| The page routes. Each page renders declared page Data (chapter 2); the JSON surface is the
+| declared API in routes/api.php.
 */
 
-// Calculators (tool pages) and their JSON re-resolution seam.
+// Calculators (tool pages). The widget re-resolves through the `resolve` operation in
+// routes/api.php.
 Route::get('calculators', [CalculatorController::class, 'index'])->name('calculators.index');
 Route::get('calculators/{calculator:slug}', [CalculatorController::class, 'show'])->name('calculators.show');
-Route::match(['get', 'post'], 'calculators/{calculator:slug}/resolve', [CalculatorController::class, 'resolve'])
-    ->name('calculators.resolve');
 
 // Guides: editorial Posts that embed or link Calculators.
 Route::get('guides', [GuideController::class, 'index'])->name('guides.index');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data;
 
+use Schemastud\DataSchemas\Attributes\Title;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -17,6 +18,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * per-row numbers (null where a row's symbol could not be priced) and `vectorFacts` the
  * per-row Facts, both aligned to the collection's row order.
  */
+#[Title('Calculator resolution')]
 #[TypeScript]
 class CalculatorResolutionData extends Data
 {

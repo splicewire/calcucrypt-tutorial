@@ -77,10 +77,10 @@ it('re-resolves via a partial reload query on the show route', function (): void
         ->assertInertia(fn ($page) => $page->where('resolution.seedEnv.sellPrice', 100));
 });
 
-it('returns a resolution envelope from the JSON resolve endpoint', function (): void {
+it('returns a resolution envelope from the resolve operation', function (): void {
     profitCalculator();
 
-    $this->postJson('/calculators/crypto-profit/resolve', ['inputs' => ['asset' => 'ETH']])
+    $this->postJson('/api/calculators/crypto-profit/resolve', ['inputs' => ['asset' => 'ETH']])
         ->assertOk()
         ->assertJsonPath('data.seedEnv.sellPrice', 2500)
         ->assertJsonPath('data.facts.sellPrice.symbol', 'ETH');

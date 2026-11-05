@@ -17,11 +17,11 @@ use Inertia\Response;
 use Rushing\DataFilters\Facades\DataFilter;
 use Rushing\LaravelDataSchemasScribe\Attributes\ResponseFromData;
 use Spatie\LaravelData\Lazy;
-use Splicewire\Beam\Data\ResponseBody;
 
 /**
- * Serves the Crypt's Calculators. `show` renders a tool page grounded in live prices;
- * `resolve` is the JSON re-resolution the widget hits when the asset (a ref input) changes.
+ * Serves the Crypt's Calculators. `show` renders a tool page grounded in live prices for its
+ * first paint; after that the widget re-resolves through the `resolve` operation
+ * (App\Particle\Operations\ResolveCalculator), which calls the same resolver.
  * The server resolves refs; the client evaluates the arithmetic DAG.
  */
 class CalculatorController extends Controller
@@ -64,15 +64,5 @@ class CalculatorController extends Controller
             guides: $guides->map(GuideSummaryData::fromModel(...))->values()->all(),
             primaryGuide: $primary !== null ? GuideSummaryData::fromModel($primary) : null,
         ));
-    }
-
-    public function resolve(Calculator $calculator): ResponseBody
-    {
-        abort_unless($calculator->isPublished(), 404);
-
-        /** @var array<string, mixed> $inputs */
-        $inputs = request()->input('inputs', request()->query());
-
-        return ResponseBody::success($this->resolver->resolve($calculator, $inputs));
     }
 }

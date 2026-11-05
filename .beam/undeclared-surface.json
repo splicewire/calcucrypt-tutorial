@@ -1,6 +1,6 @@
 {
     "check": "particle.undeclared-surface",
-    "count": 73,
+    "count": 72,
     "baseline": {
         "environment": "local",
         "php": "8.4",
@@ -9,12 +9,12 @@
     },
     "counts": {
         "by_tier": {
-            "guided": 60,
+            "guided": 59,
             "manual": 13
         },
         "by_origin": {
             "laravel/fortify": 22,
-            "app": 19,
+            "app": 18,
             "splicewire/laravel-beam-ux": 8,
             "schemastud/laravel-frame": 8,
             "laravel/passkeys": 7,
@@ -222,18 +222,6 @@
             "tier": "guided",
             "origin": "splicewire/laravel-beam-ux",
             "location": "splicewire/laravel-beam-ux/src/Http/Controllers/EntryArtifactController.php:40"
-        },
-        {
-            "uri": "calculators/{calculator}/resolve",
-            "methods": [
-                "GET",
-                "POST"
-            ],
-            "name": "calculators.resolve",
-            "action": "App\\Http\\Controllers\\CalculatorController@resolve",
-            "tier": "guided",
-            "origin": "app",
-            "location": "app/Http/Controllers/CalculatorController.php:69"
         },
         {
             "uri": "dashboard",

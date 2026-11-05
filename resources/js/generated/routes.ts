@@ -8,6 +8,11 @@ export type RouteMap = Record<string, string>;
 
 /** AUTO-GENERATED — the tenant route-name map. */
 export const defaults: RouteMap = {
+    'api.calculators.index': 'api/calculators',
+    'api.calculators.resolve': 'api/calculators/{id}/resolve',
+    'api.calculators.show': 'api/calculators/{id}',
+    'api.guides.index': 'api/guides',
+    'api.guides.show': 'api/guides/{id}',
     'beam-docs.search': 'beam/docs/search',
     'beam-ux-entry.body': 'beam-ux-entries/{id}/body',
     'beam-ux-entry.canvas-bindings': 'beam-ux-entries/{id}/canvas-bindings',

@@ -5,10 +5,10 @@ namespace App\Providers;
 use App\Account\StarterAccountShell;
 use App\Beam\RealmRegistry;
 use App\Data\SitemapData;
-use App\Doctor\OrphanedNavItemAudit;
 use App\Frame\ServiceRequestReadSchemaResolver;
 use App\Models\SitemapRecord;
 use App\Models\User;
+use App\Sitemap\RecordLeaf;
 use App\Support\ServiceDeskSlaHost;
 use App\Support\ServiceRequestTeam;
 use App\Workflows\ServiceRequestApproval;
@@ -29,7 +29,9 @@ use Splicewire\Beam\Nav\NavAudience;
 use Splicewire\Beam\Nav\NavSection;
 use Splicewire\Beam\Nav\NavSectionRegistry;
 use Splicewire\Beam\Seed\BeamSeedManifest;
+use Splicewire\Beam\Ux\Doctor\OrphanedNavItemAudit;
 use Splicewire\Beam\Ux\Frame\RouteContextPlan;
+use Splicewire\Beam\Ux\Nav\Contracts\NavItemSource;
 use Schemastud\Frame\Contracts\ResourceSchemaResolver;
 use Splicewire\ServiceDeskSla\Contracts\ServiceDeskHost;
 
@@ -56,6 +58,9 @@ class AppServiceProvider extends ServiceProvider
             AccountShellProvider::class,
             StarterAccountShell::class,
         );
+
+        // The record leaf is this host's persisted nav: the packaged orphaned-nav doctor check validates its links.
+        $this->app->bind(NavItemSource::class, RecordLeaf::class);
     }
 
     /**
@@ -141,7 +146,7 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register this HOST's doctor audit into beam-core's aggregation manifest — the same seam every
+     * Register the packaged orphaned-nav audit (beam-ux, over the {@see RecordLeaf} source bound above) into beam-core's aggregation manifest — the same seam every
      * beam-* package uses (the manifest is a singleton bound in beam's register phase and read fresh
      * when `splicewire:beam:doctor` runs, so an app registering in boot always lands). Advisory: an
      * orphaned nav link renders yellow but never turns the run red. Guarded on the manifest being

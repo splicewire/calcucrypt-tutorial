@@ -3,11 +3,11 @@
 namespace App\Data;
 
 use App\Models\SitemapRecord;
-use App\Sitemap\NavItem;
 use Schemastud\Frame\Attributes\Column;
 use Schemastud\Frame\Attributes\NotInList;
 use Spatie\LaravelData\Data;
 use Splicewire\Beam\Particle\Attributes\ParticleResource;
+use Splicewire\Beam\Ux\Nav\NavItem;
 use Splicewire\Beam\Write\Contracts\MapsToModelAttributes;
 
 /**

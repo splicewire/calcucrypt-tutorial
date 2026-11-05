@@ -3,11 +3,9 @@
 namespace Tests\Feature;
 
 use App\Data\SitemapData;
-use App\Doctor\OrphanedNavItemAudit;
 use App\Models\SitemapRecord;
 use App\Models\User;
 use App\Sitemap\ContentGlobLeaf;
-use App\Sitemap\NavItem;
 use App\Sitemap\RecordLeaf;
 use App\Sitemap\RootSitemap;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,6 +16,8 @@ use Inertia\Testing\AssertableInertia;
 use Rushing\Doctor\DoctorStatus;
 use Splicewire\Beam\Particle\Backing\EloquentBacking;
 use Splicewire\Beam\Particle\ParticleResourceRegistry;
+use Splicewire\Beam\Ux\Doctor\OrphanedNavItemAudit;
+use Splicewire\Beam\Ux\Nav\NavItem;
 use Tests\TestCase;
 
 /**
@@ -161,7 +161,7 @@ class SitemapRecordFrameTest extends TestCase
     {
         SitemapRecord::create(['payload' => ['label' => 'Dash', 'href' => '/dashboard', 'order' => 1]]);
 
-        [$finding] = (new OrphanedNavItemAudit(app(Router::class)))->run();
+        [$finding] = app(OrphanedNavItemAudit::class)->run();
 
         $this->assertSame(DoctorStatus::Pass, $finding->status);
         $this->assertSame('orphaned nav item', $finding->check);
@@ -172,7 +172,7 @@ class SitemapRecordFrameTest extends TestCase
         SitemapRecord::create(['payload' => ['label' => 'Gone', 'href' => '/no-such-route', 'order' => 1]]);
         SitemapRecord::create(['payload' => ['label' => 'Malformed', 'href' => 'http://:', 'order' => 2]]);
 
-        [$finding] = (new OrphanedNavItemAudit(app(Router::class)))->run();
+        [$finding] = app(OrphanedNavItemAudit::class)->run();
 
         // Advisory: a broken link WARNs (never fails) so the doctor gate stays green.
         $this->assertSame(DoctorStatus::Warn, $finding->status);
@@ -187,7 +187,7 @@ class SitemapRecordFrameTest extends TestCase
             'externalUrl' => 'https://elsewhere.example',
         ]]);
 
-        [$finding] = (new OrphanedNavItemAudit(app(Router::class)))->run();
+        [$finding] = app(OrphanedNavItemAudit::class)->run();
 
         // An off-host target is not the app's to validate — no orphan.
         $this->assertSame(DoctorStatus::Pass, $finding->status);

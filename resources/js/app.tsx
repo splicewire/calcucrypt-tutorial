@@ -2,7 +2,18 @@ import { createInertiaApp } from '@inertiajs/react';
 import { beamInertiaOptions } from '@splicewire/beam-inertia';
 import type { PageModule } from '@splicewire/beam-inertia';
 import { ApiReference, configureDocs } from '@splicewire/beam-docs';
-import { Callout, Card, CardGrid, DoctorOutput, FileTree, Figure, SectionLanding, Step, Steps, Terminal } from '@splicewire/beam-mdx/kit';
+import {
+    Callout,
+    Card,
+    CardGrid,
+    DoctorOutput,
+    FileTree,
+    Figure,
+    SectionLanding,
+    Step,
+    Steps,
+    Terminal,
+} from '@splicewire/beam-mdx/kit';
 import { beamDocsPages } from '@splicewire/beam-docs/pages';
 import '@splicewire/beam-ux/tokens-docs.css';
 import { authFeatures } from './beam';
@@ -27,9 +38,22 @@ const options = beamInertiaOptions({
     // beam-inertia registers SiteNav and ManifestTable, and this starter the beam-mdx kit and the docs pages'
     // ApiReference. config/beam/mdx.php leaves out the two this starter cannot render (artifacts, references).
     mdxHoldsBlocks: import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true',
-    components: import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true'
-        ? { Callout, Steps, Step, Figure, Terminal, SectionLanding, CardGrid, Card, DoctorOutput, FileTree, ApiReference }
-        : {},
+    components:
+        import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true'
+            ? {
+                  Callout,
+                  Steps,
+                  Step,
+                  Figure,
+                  Terminal,
+                  SectionLanding,
+                  CardGrid,
+                  Card,
+                  DoctorOutput,
+                  FileTree,
+                  ApiReference,
+              }
+            : {},
     pages: { ...beamDocsPages, ...pages },
 });
 configureDocs();

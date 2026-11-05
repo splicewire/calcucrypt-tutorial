@@ -98,7 +98,7 @@ class ApprovalUsageTest extends TestCase
             DB::table('workflow_transition_facts')->insert(array_replace($fact, ['id' => (string) Str::uuid()], $changes));
         };
         $insert(['actor' => 'another:actor', 'occurred_at' => '2001-01-01 00:00:00']);
-        foreach ([['subject_type' => 'other'], ['transition' => 'reject'], ['from' => '["approved"]'], ['from' => '["pending","other"]'], ['to' => '["pending"]'], ['to' => '["approved","other"]'], ['subject_id' => '999999999']] as $change) {
+        foreach ([['subject_type' => 'other'], ['transition' => 'reject'], ['from' => '["approved"]'], ['from' => '["pending","other"]'], ['to' => '["pending"]'], ['to' => '["approved","other"]'], ['subject_id' => '999999999'], ['subject_id' => 'not-a-number']] as $change) {
             $insert($change);
         }
         $quarantined = $this->pending($a);

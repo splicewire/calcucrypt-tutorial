@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Account\StarterAccountShell;
-use App\Beam\RealmRegistry;
 use App\Data\SitemapData;
 use App\Frame\ServiceRequestReadSchemaResolver;
 use App\Models\SitemapRecord;
@@ -22,12 +20,12 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Rushing\PermissionCascade\Contracts\EntitlementResolver;
 use Rushing\PermissionCascade\Support\CascadePolicyRegistrar;
-use Splicewire\Beam\Accounts\Contracts\AccountShellProvider;
 use Splicewire\Beam\Authorization\SeatGate;
 use Splicewire\Beam\Doctor\BeamDoctorManifest;
 use Splicewire\Beam\Nav\NavAudience;
 use Splicewire\Beam\Nav\NavSection;
 use Splicewire\Beam\Nav\NavSectionRegistry;
+use Splicewire\Beam\Realm\RealmRegistry;
 use Splicewire\Beam\Seed\BeamSeedManifest;
 use Splicewire\Beam\Ux\Doctor\OrphanedNavItemAudit;
 use Splicewire\Beam\Ux\Frame\RouteContextPlan;
@@ -52,12 +50,8 @@ class AppServiceProvider extends ServiceProvider
             resourcePaths: ['schemas' => 'schema-catalog', 'beam-ux-release-files' => 'release-files'],
         ));
 
-        // Bind the host account-shell provider over beam-accounts' NullAccountShellProvider default,
-        // so the packaged <AccountShell> renders real (neutral demo) plan/profile data OOTB.
-        $this->app->bind(
-            AccountShellProvider::class,
-            StarterAccountShell::class,
-        );
+        // No account-shell binding: beam-accounts' identity-only default fills the profile block (handle, initials, email)
+        // and hides the plan chip. A host with real plans binds its own provider (make-surface 01, owner ruling 2026-11-05).
 
         // The record leaf is this host's persisted nav: the packaged orphaned-nav doctor check validates its links.
         $this->app->bind(NavItemSource::class, RecordLeaf::class);
@@ -189,11 +183,12 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('ux.author', fn (User $user): bool => $user->can('entitlement:ux.author'));
         Gate::define('beam-docs.publish', fn (User $user): bool => $user->can('ux.operator.author'));
 
-        foreach (RealmRegistry::realms() as $realm) {
+        foreach (array_keys(app(RealmRegistry::class)->all()) as $realm) {
+            $ability = "ux.{$realm}.author";
             Gate::define(
-                RealmRegistry::authorAbility($realm),
+                $ability,
                 fn (User $user): bool => in_array(
-                    RealmRegistry::authorAbility($realm),
+                    $ability,
                     app(EntitlementResolver::class)->entitlementsFor($user),
                     true,
                 ),

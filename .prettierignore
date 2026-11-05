@@ -3,3 +3,6 @@ resources/views/mail/*
 resources/js/generated/**
 # PHP Data generator output; authored registry/lifecycle schemas remain checked.
 resources/schemas/App/**
+# Frozen vendor-published snapshots, kept byte-for-byte (composer setup republishes these from the
+# pinned beam-mcp package; hand-formatting would re-dirty the tree on the next fresh setup).
+resources/beam-mcp/docs/history/**

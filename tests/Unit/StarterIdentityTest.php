@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -32,12 +33,48 @@ class StarterIdentityTest extends TestCase
             $this->markTestSkipped('No origin remote here (an export or a fresh `git init`), so only the declaration is checked.');
         }
 
-        $this->assertSame($this->starter()['repository'], preg_replace('#\.git$#', '', $origin));
+        $this->assertSame($this->starter()['repository'], $this->normaliseOrigin($origin));
+    }
+
+    /**
+     * CI's "Configure git to use the installation token" step rewrites origin to embed the minted
+     * GitHub App token as userinfo, e.g. https://x-access-token:TOKEN@github.com/splicewire/....
+     * The identity check must see through that: the declared repository is still the real remote.
+     *
+     * @return array<string, array{0: string}>
+     */
+    public static function credentialBearingOrigins(): array
+    {
+        return [
+            'token userinfo' => ['https://x-access-token:ghs_EXAMPLETOKEN@github.com/splicewire/laravel-beam-starter'],
+            'token userinfo with .git' => ['https://x-access-token:ghs_EXAMPLETOKEN@github.com/splicewire/laravel-beam-starter.git'],
+            'user:pass userinfo' => ['https://user:pass@github.com/splicewire/laravel-beam-starter.git'],
+            'plain with .git' => ['https://github.com/splicewire/laravel-beam-starter.git'],
+            'plain already clean' => ['https://github.com/splicewire/laravel-beam-starter'],
+        ];
+    }
+
+    #[DataProvider('credentialBearingOrigins')]
+    public function test_origin_normalisation_strips_credentials_and_dot_git(string $origin): void
+    {
+        $this->assertSame($this->starter()['repository'], $this->normaliseOrigin($origin));
     }
 
     public function test_setup_dev_and_test_are_the_scripts_the_docs_name(): void
     {
         $this->assertSame([], array_values(array_diff(['setup', 'dev', 'test'], array_keys($this->composer()['scripts'] ?? []))));
+    }
+
+    /**
+     * Normalise a `git remote get-url origin` value to a comparable canonical repository URL:
+     * strip any `userinfo@` credentials (CI embeds the installation token as
+     * `x-access-token:TOKEN@`) and any trailing `.git`.
+     */
+    private function normaliseOrigin(string $origin): string
+    {
+        $origin = (string) preg_replace('#^(https?://)[^/@]*@#', '$1', $origin);
+
+        return (string) preg_replace('#\.git$#', '', $origin);
     }
 
     /** @return array<string, mixed> */

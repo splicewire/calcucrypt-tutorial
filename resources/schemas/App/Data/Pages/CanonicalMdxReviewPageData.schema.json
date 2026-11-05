@@ -1,0 +1,285 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "CanonicalMdxReviewPageData",
+    "properties": {
+        "entryId": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string"
+        },
+        "versions": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/CanonicalMdxVersionChoiceData"
+            }
+        },
+        "releases": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/ReleaseData"
+            }
+        }
+    },
+    "required": [
+        "entryId",
+        "title",
+        "versions",
+        "releases"
+    ],
+    "$id": "CanonicalMdxReviewPageData",
+    "$defs": {
+        "CanonicalMdxVersionChoiceData": {
+            "type": "object",
+            "title": "CanonicalMdxVersionChoiceData",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "label"
+            ]
+        },
+        "ReleaseMemberData": {
+            "type": "object",
+            "title": "Release member",
+            "properties": {
+                "entryId": {
+                    "type": "string"
+                },
+                "versionId": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "observedPin": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "redirectTarget": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "stale": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "entryId",
+                "versionId",
+                "observedPin",
+                "redirectTarget",
+                "stale"
+            ]
+        },
+        "WorkflowProjectionData": {
+            "type": "object",
+            "title": "WorkflowProjectionData",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "places": {
+                    "type": "array"
+                },
+                "transitions": {
+                    "type": "array"
+                },
+                "current": {
+                    "type": "string"
+                },
+                "available": {
+                    "type": "array"
+                }
+            },
+            "required": [
+                "type",
+                "places",
+                "transitions",
+                "current",
+                "available"
+            ]
+        },
+        "ReleaseRecordingData": {
+            "type": "object",
+            "title": "Release recording",
+            "properties": {
+                "releaseId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "sha": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "noChange": {
+                    "type": "boolean"
+                },
+                "canRetry": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "releaseId",
+                "status",
+                "sha",
+                "noChange",
+                "canRetry",
+                "message"
+            ]
+        },
+        "ReleaseData": {
+            "type": "object",
+            "title": "Release",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "x-stud-widget-contexts": {
+                        "list-column": {
+                            "participates": true,
+                            "sort": 0,
+                            "label": "Title"
+                        }
+                    }
+                },
+                "realm": {
+                    "type": "string",
+                    "x-stud-widget-contexts": {
+                        "list-column": {
+                            "participates": true,
+                            "sort": 2,
+                            "label": "Realm"
+                        }
+                    }
+                },
+                "status": {
+                    "type": "string",
+                    "x-stud-widget-contexts": {
+                        "list-column": {
+                            "participates": true,
+                            "sort": 1,
+                            "label": "Status"
+                        }
+                    }
+                },
+                "reviewedBy": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/ReleaseMemberData"
+                    }
+                },
+                "workflow": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/WorkflowProjectionData"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "canSchedule": {
+                    "type": "boolean"
+                },
+                "reviewRequired": {
+                    "type": "boolean"
+                },
+                "recording": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ReleaseRecordingData"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "filesMemberId": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "filesHref": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "previewLinksEnabled": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "previewLink": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "previewHref": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "canManagePreviewLinks": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "redirects": {
+                    "type": "array",
+                    "default": []
+                }
+            },
+            "required": [
+                "id",
+                "title",
+                "realm",
+                "status",
+                "reviewedBy",
+                "members",
+                "workflow",
+                "canSchedule",
+                "reviewRequired",
+                "recording",
+                "filesMemberId",
+                "filesHref",
+                "previewLinksEnabled",
+                "previewLink",
+                "previewHref",
+                "canManagePreviewLinks",
+                "redirects"
+            ]
+        }
+    }
+}

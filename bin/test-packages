@@ -1,0 +1,64 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Run the tier packages' OWN test suites — not bespoke app tests.
+ *
+ * When the co-dev overlay is active (`composer.local.json` present), the tier's local packages are
+ * symlinked into `vendor/`. This runner walks `vendor/`, finds every symlinked package whose own
+ * composer.json declares a `test` script, and runs `composer test` IN THAT PACKAGE'S CHECKOUT — so
+ * each package boots through its own orchestra/testbench harness (which is why they can't be phpunit
+ * `<directory>`-registered from here: they'd double-boot the framework).
+ *
+ * A package regression thus surfaces in this starter's CI. Usage: `php bin/test-packages`
+ * (or `composer test:packages`). Exit non-zero if any package suite fails.
+ */
+
+$vendor = __DIR__ . '/../vendor';
+if (! is_dir($vendor)) {
+    fwrite(STDERR, "vendor/ not found — run `composer install` first.\n");
+    exit(1);
+}
+
+$targets = [];
+foreach (glob($vendor . '/*/*', GLOB_ONLYDIR) as $pkgDir) {
+    // Only co-dev symlinks (the local tier packages), not git-installed dist copies.
+    if (! is_link($pkgDir)) {
+        continue;
+    }
+    $composer = $pkgDir . '/composer.json';
+    if (! is_file($composer)) {
+        continue;
+    }
+    $manifest = json_decode((string) file_get_contents($composer), true);
+    $name = $manifest['name'] ?? basename(dirname($pkgDir)) . '/' . basename($pkgDir);
+    if (! isset($manifest['scripts']['test'])) {
+        continue;
+    }
+    $targets[$name] = realpath($pkgDir) ?: $pkgDir;
+}
+
+if ($targets === []) {
+    fwrite(STDERR, "No co-dev symlinked packages with a `test` script found. Is the overlay active?\n");
+    fwrite(STDERR, "Activate it: cp composer.local.json.dist composer.local.json && composer update\n");
+    exit(0);
+}
+
+ksort($targets);
+$failed = [];
+foreach ($targets as $name => $dir) {
+    fwrite(STDOUT, "\n\033[1m▶ {$name}\033[0m  ({$dir})\n");
+    $code = 0;
+    passthru(sprintf('cd %s && composer test', escapeshellarg($dir)), $code);
+    if ($code !== 0) {
+        $failed[] = $name;
+    }
+}
+
+fwrite(STDOUT, "\n" . str_repeat('─', 60) . "\n");
+if ($failed !== []) {
+    fwrite(STDOUT, "\033[31mFAILED package suites:\033[0m\n - " . implode("\n - ", $failed) . "\n");
+    exit(1);
+}
+fwrite(STDOUT, "\033[32mAll " . count($targets) . " tier package suites passed.\033[0m\n");
+exit(0);

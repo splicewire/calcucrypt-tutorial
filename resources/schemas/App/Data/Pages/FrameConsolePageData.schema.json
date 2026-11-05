@@ -1,0 +1,25 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "FrameConsolePageData",
+    "properties": {
+        "realm": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "basename": {
+            "type": "string"
+        },
+        "manifestUrl": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "realm",
+        "basename",
+        "manifestUrl"
+    ],
+    "$id": "FrameConsolePageData"
+}

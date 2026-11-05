@@ -1,0 +1,19 @@
+includes:
+    - phpstan.optional.php
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+
+parameters:
+    # Package migration stubs are NOT listed here. phpstan.migration-stubs.neon analyses them in a
+    # process of their own (run by tests/Feature/MigrationStubAnalysisTest.php). A published copy
+    # under database/ is often byte-identical to its stub, and PHPStan hands byte-identical files in
+    # one process the same AST, so one file's anonymous-class PHPDocs get filed under the other's
+    # name and vanish (missingType.iterableValue on correct code). Two processes cannot collide.
+    paths:
+        - app/
+        - bootstrap/app.php
+        - config/
+        - database/
+        - routes/
+
+    level: 7

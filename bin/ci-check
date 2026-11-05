@@ -1,0 +1,464 @@
+<?php
+
+/**
+ * The composite gate — every check runs, nothing masks anything else.
+ *
+ * Composer script arrays run through ProcessExecutor and ABORT ON THE FIRST NON-ZERO. There is no
+ * `continue-on-error`, so aggregation is not expressible in composer at all. That is why this file
+ * exists: `composer ci:check` is one step (`@php bin/ci-check`) and the aggregation is an explicit
+ * loop here, over a FLAT gate list with exactly one aggregation point.
+ *
+ * The history this removes: `ci:check` ran eslint first and `composer test` nested pint + phpstan
+ * ahead of `artisan test`, so a style failure at EITHER level reported a red CI having executed
+ * zero tests. `composer test` is now the suite and only the suite; pint and phpstan are reachable
+ * as `composer lint:check` / `composer types:check`, and this runner is the only composite.
+ *
+ * The suite runs FIRST, deliberately. Nothing is skipped, so ordering costs nothing — but an
+ * interrupted run then banks the most informative gate instead of the least, and any future
+ * short-circuit can only ever mask style.
+ *
+ * Usage: `composer ci:check` (or `php bin/ci-check`). This file has NO SHEBANG — byte 0 is `<?php` —
+ * so it is not executable as a bare path at all and needs no exec bit, one less mode bit a fresh
+ * clone can lose. An earlier version of this docblock claimed `@php` protected against a
+ * shebang-follow to the 128M system interpreter. Both halves were false and the correction is the
+ * MEMORY section below: there is no shebang to follow, and composer's `@php` interpreter here IS
+ * the 128M system PHP.
+ *
+ * EXIT — three states, not two:
+ *
+ *   0  every gate ran and passed
+ *   1  every gate ran; at least one FAILED                — a verdict
+ *   2  a gate could not be MEASURED                       — NOT a verdict; dominates 1
+ *
+ * `2` covers UNSPAWNED (proc_open returned false), SILENT (a non-zero exit having written ZERO
+ * BYTES, which is what laravel/pao does on a fatal) and TRUNCATED (a run that exited 0 without ever
+ * printing a summary — memory death and SIGPIPE both exit 0). "phpstan is missing from vendor" and
+ * "phpstan found 11 errors" must never be the same byte. Anything testing `!= 0` is correct;
+ * anything testing `== 1` would miss the unmeasured state.
+ *
+ * RECORD — every run, whatever it concluded, writes `storage/app/beam/ci-check.json`:
+ *
+ *   {"exit": <0|1|2>, "at": "<iso8601>", "commit": "<HEAD sha, or null>"}
+ *
+ * That file is the ONLY thing `beam.install.desired-state` R3 can read. The audit deliberately never
+ * shells out to this runner (a multi-minute doctor is a doctor nobody runs), so with nothing writing
+ * the record R3 reported "unmeasured" on every host forever — the honest spelling of a requirement
+ * with no instrument, and useless. See {@see ci_finish}: all three exit states are recorded as
+ * themselves, and the write can never change the exit code it is reporting.
+ *
+ * TRUNCATED is decided by `splicewire:beam:dev:witness-run --assert`, from the `require-dev`
+ * splicewire/laravel-beam-dev. Dev deps do not cascade, so a `--no-dev` install cannot run the
+ * witness and `php:test` reports UNMEASURED rather than a green it has not earned.
+ *
+ * UNSPAWNED vs TRUNCATED — they are DIFFERENT FAULTS and must not print the same word. TRUNCATED
+ * means the witness ran and judged the log summary-less. UNSPAWNED means the witness itself could
+ * not be executed, which is the `--no-dev` case: telling that operator to hunt a truncated suite
+ * sends them after a defect that is not there. The witness is probed ONCE, before any gate, with
+ * `--help`; an artisan command that does not exist exits non-zero HAVING WRITTEN AN ERROR, so it
+ * would otherwise read FAIL rather than UNSPAWNED and the distinction has to be made deliberately.
+ * `CI_CHECK_WITNESS_COMMAND` renames the witness so that branch can be exercised on a dev install
+ * without breaking vendor — a fix nobody has watched work is not a fix.
+ *
+ * TEST COUNT — the row prints the number of tests the suite actually ran, parsed from the summary
+ * line, because bytes cannot tell 2 tests from 92: a deleted `tests/Feature`, a broken testsuite
+ * glob or a stray `--filter` all write a plausible log and exit 0. There is DELIBERATELY NO FLOOR
+ * and no threshold — a bound sitting above both the defect and the fix passes identically either
+ * way. The count is printed so a shrink is visible on every run, and an unparseable summary prints
+ * `tests UNCOUNTED`, never `0`.
+ *
+ * MEMORY — measured 2026-09-06 at this starter, not assumed:
+ *
+ *   composer's own process        1536M   (composer raises its own limit at runtime)
+ *   every child it spawns          128M   /opt/homebrew/Cellar/php/8.4.8/bin/php, the system default
+ *
+ * So `@php` hands this runner the interpreter whose 128M ceiling is where a large run dies with no
+ * summary, and PHP_BINARY propagated that to every PHP gate. `herd php` is not the repair — it is a
+ * local dev binary and this is the template every host is cut from, so it does not exist in CI or
+ * in the Dockerfile. The limit is raised on spawn instead, IN TWO WAYS, because one is not enough:
+ *
+ *   -d memory_limit=1G     reaches the process this runner spawns, and shows in the printed
+ *                          command line. It DIES AT A RESPAWN.
+ *   PHP_INI_SCAN_DIR       reaches every DESCENDANT, because it is an environment variable and is
+ *                          inherited. This is what the suite gate actually needs.
+ *
+ * Measured, `artisan test --filter=…` with a probe test printing `ini_get('memory_limit')`:
+ *
+ *   php -d memory_limit=1G artisan test   →  128M inside the suite   ← the ini flag is LOST
+ *   PHP_INI_SCAN_DIR=":<dir>" artisan test →   1G inside the suite   ← survives
+ *
+ * `artisan test` is a wrapper: Laravel's TestCommand respawns phpunit as `[PHP_BINARY, phpunit]`
+ * and forwards no ini flags, which is the same fan-out that loses `-d` at a parallel runner's
+ * workers. The scan dir is written per-pid under the system temp dir and removed on exit; the
+ * value is PREPENDED with a leading PATH_SEPARATOR so PHP still reads its normal conf.d and every
+ * extension stays loaded (verified with `php -m` under the same env).
+ *
+ * Environment, per gate:
+ *   XDEBUG_MODE=off  everywhere — an ENV VAR, never an ini flag, because a parallel runner respawns
+ *                    each worker from PHP_BINARY and `-d` flags die at the fan-out.
+ *   PHP_INI_SCAN_DIR on every PHP gate — see MEMORY above.
+ *   PAO_DISABLE=1    on `php:test` ONLY (owner ruling 2026-09-06). pao has hidden an error phpunit
+ *                    reported, and on a fatal it prints nothing at all — an empty log with exit 1,
+ *                    which is undiagnosable. The other gates keep their pao output.
+ *                    Consequence for anyone reading the captured log: `php:test`'s summary is a
+ *                    pest/phpunit line while pint and phpstan still emit pao JSON, so READ THE
+ *                    "tool" VALUE rather than counting JSON lines.
+ *
+ * Every command is spawned with an ARGV ARRAY and no shell, so no quoting rule applies to any of it.
+ */
+$root = dirname(__DIR__);
+$php = PHP_BINARY;
+
+/**
+ * The memory limit, delivered both ways (see MEMORY in the docblock). `$phpRun` is the argv prefix
+ * for anything spawned as PHP directly; `$phpEnv` is what carries the same value past a respawn.
+ */
+$memoryLimit = '1G';
+$phpRun = [$php, '-d', 'memory_limit='.$memoryLimit];
+
+$scanDir = sys_get_temp_dir().'/ci-check-ini-'.getmypid();
+$phpEnv = [];
+if (@mkdir($scanDir, 0o700, true) || is_dir($scanDir)) {
+    if (@file_put_contents($scanDir.'/99-ci-check.ini', "memory_limit={$memoryLimit}\n") !== false) {
+        // Leading separator = "the normal scan dir, THEN this one", so every extension stays loaded.
+        $phpEnv['PHP_INI_SCAN_DIR'] = ((string) getenv('PHP_INI_SCAN_DIR')).PATH_SEPARATOR.$scanDir;
+    }
+}
+register_shutdown_function(static function () use ($scanDir) {
+    @unlink($scanDir.'/99-ci-check.ini');
+    @rmdir($scanDir);
+});
+
+if (! isset($phpEnv['PHP_INI_SCAN_DIR'])) {
+    fwrite(STDERR, "\033[33mNOTE\033[0m — could not write a scan dir under ".sys_get_temp_dir()
+        .'; the suite gate will run at its default memory limit.'."\n");
+}
+
+/** Prelude — not a gate. A stale config cache invalidates every gate below it rather than failing one. */
+$prelude = [...$phpRun, 'artisan', 'config:clear', '--ansi'];
+
+/**
+ * The gate list. The `<stack>:<gate>` prefix exists only here — the underlying `types:check` names
+ * in composer.json and package.json stay as they are, so consumers' muscle memory and the sibling
+ * starters' scripts are untouched. Note that `types:check` names TWO DIFFERENT GATES: the composer
+ * one is phpstan, the npm one is tsc. Both print, so neither can be mistaken for the other.
+ */
+$gates = [
+    'php:test' => [
+        'cmd' => [...$phpRun, 'artisan', 'test'],
+        'env' => ['PAO_DISABLE' => '1'] + $phpEnv,
+        'witness' => true,
+        'count' => true,
+    ],
+    'php:lint' => ['cmd' => [...$phpRun, 'vendor/bin/pint', '--parallel', '--test'], 'env' => $phpEnv],
+    'php:types' => ['cmd' => [...$phpRun, 'vendor/bin/phpstan', 'analyse'], 'env' => $phpEnv],
+    'js:lint' => ['cmd' => ['npm', 'run', 'lint:check']],
+    'js:format' => ['cmd' => ['npm', 'run', 'format:check']],
+    'js:types' => ['cmd' => ['npm', 'run', 'types:check']],
+];
+
+/**
+ * Run one command, streaming its output while counting the bytes it wrote.
+ *
+ * @param  list<string>  $cmd
+ * @param  array<string, string>  $env
+ * @return array{status: string, code: int|null, bytes: int}
+ */
+function ci_run(array $cmd, string $cwd, array $env, ?string $logPath = null, bool $echo = true): array
+{
+    $log = $logPath === null ? null : fopen($logPath, 'w');
+    $spec = [0 => ['file', '/dev/null', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
+    $pipes = [];
+    $process = @proc_open($cmd, $spec, $pipes, $cwd, array_merge(getenv(), ['XDEBUG_MODE' => 'off'], $env));
+
+    if (! is_resource($process)) {
+        return ['status' => 'UNSPAWNED', 'code' => null, 'bytes' => 0];
+    }
+
+    stream_set_blocking($pipes[1], false);
+    stream_set_blocking($pipes[2], false);
+    $bytes = 0;
+
+    while (true) {
+        $open = array_filter([$pipes[1], $pipes[2]], fn ($p) => ! feof($p));
+        if ($open === []) {
+            break;
+        }
+        $read = array_values($open);
+        $write = $except = [];
+        if (stream_select($read, $write, $except, 1) === false) {
+            break;
+        }
+        foreach ($read as $pipe) {
+            $chunk = fread($pipe, 8192);
+            if ($chunk === false || $chunk === '') {
+                continue;
+            }
+            $bytes += strlen($chunk);
+            if ($echo) {
+                fwrite(STDOUT, $chunk);
+            }
+            if ($log !== false && $log !== null) {
+                fwrite($log, $chunk);
+            }
+        }
+    }
+
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+    if ($log !== false && $log !== null) {
+        fclose($log);
+    }
+    $code = proc_close($process);
+
+    if ($code === 0) {
+        return ['status' => 'PASS', 'code' => 0, 'bytes' => $bytes];
+    }
+
+    // A non-zero exit having written nothing is not a verdict — it is a gate that could not report.
+    return ['status' => $bytes === 0 ? 'SILENT' : 'FAIL', 'code' => $code, 'bytes' => $bytes];
+}
+
+/**
+ * How many tests did the suite actually run?
+ *
+ * Parsed from the summary line of the captured log, ANSI-stripped first — `colors="true"` in
+ * phpunit.xml colourizes even when STDOUT is a file, and every pattern below anchors on the line's
+ * first character. Returns null when NO summary shape matched, which the caller must print as
+ * UNCOUNTED; `0` is returned only for the shapes that positively say "this run selected nothing".
+ */
+function ci_test_count(?string $logPath): ?int
+{
+    if ($logPath === null || ! is_file($logPath)) {
+        return null;
+    }
+
+    $log = (string) file_get_contents($logPath);
+    $log = preg_replace('/\e\[[0-9;?]*[ -\/]*[@-~]/', '', $log) ?? $log;
+
+    // laravel/pao JSON, for a consumer that lifts PAO_DISABLE. Match the SUITE's tool, never pint's.
+    if (preg_match('/"tool":"(?:phpunit|pest)"[^\n]*?"tests":(\d+)/', $log, $m) === 1) {
+        return (int) $m[1];
+    }
+
+    // phpunit, all green:  OK (92 tests, 509 assertions)
+    if (preg_match('/^OK \((\d+) test/m', $log, $m) === 1) {
+        return (int) $m[1];
+    }
+
+    // phpunit, failure or "OK, but" summary:  Tests: 92, Assertions: 509, Skipped: 1.
+    if (preg_match('/^Tests:\s*(\d+),\s*Assertions:/m', $log, $m) === 1) {
+        return (int) $m[1];
+    }
+
+    // pest / artisan test:  Tests:  2 failed, 90 passed (509 assertions)  — every bucket counts.
+    if (preg_match('/^\s*Tests:\s+(\d+\s+\w+(?:,\s*\d+\s+\w+)*)/m', $log, $m) === 1) {
+        preg_match_all('/(\d+)\s+\w+/', $m[1], $all);
+
+        return array_sum(array_map('intval', $all[1]));
+    }
+
+    // An empty selection that FINISHED. A real zero, and the witness treats it as unmeasured anyway.
+    if (preg_match('/^No tests executed!/m', $log) === 1 || preg_match('/^\s*Tests:\s+No tests/m', $log) === 1) {
+        return 0;
+    }
+
+    return null;
+}
+
+/**
+ * This tree's HEAD, as a sha, read straight out of `.git` rather than by shelling out to git.
+ *
+ * The algorithm is a DELIBERATE MIRROR of `InstallDesiredStateAudit::headCommit()`, because the two
+ * are the only readers of this value and R3 spells a disagreement between them "STALE". A second,
+ * cleverer implementation here (git-the-binary, or a packed-refs fallback) would resolve a sha in
+ * cases the audit resolves null, and the record would then read as a pass from another commit — the
+ * audit reporting drift that is really an instrument mismatch. Null when the sha cannot be read; the
+ * record carries `null`, never a guess, and R3 warns rather than passing on it.
+ */
+function ci_head_commit(string $root): ?string
+{
+    $head = $root.'/.git/HEAD';
+
+    if (! is_readable($head)) {
+        return null;
+    }
+
+    $contents = trim((string) file_get_contents($head));
+
+    if (! str_starts_with($contents, 'ref: ')) {
+        return preg_match('/^[0-9a-f]{40}$/', $contents) === 1 ? $contents : null;
+    }
+
+    $ref = $root.'/.git/'.trim(substr($contents, 5));
+
+    return is_readable($ref) ? trim((string) file_get_contents($ref)) : null;
+}
+
+/**
+ * Write the record `beam.install.desired-state` R3 reads, then exit with the aggregate code.
+ *
+ * R3 never runs this gate — a multi-minute doctor is a doctor nobody runs — so it reads a RECORD
+ * instead, and until this function existed nothing in the estate wrote one: the requirement reported
+ * `inconclusive` on every host, forever, which is the "measured nothing" spelling working correctly
+ * and saying nothing.
+ *
+ * THREE STATES, not two. The recorded `exit` is the real aggregate, 2 included: R3 already words 2 as
+ * *"a gate could not be measured, which is not a verdict"*, and collapsing it to 1 here would take
+ * that reading away from the only consumer that has it. `$code` is whatever this run concluded and is
+ * never adjusted.
+ *
+ * THE WRITE MAY NOT FAIL THE RUN. A gate result is a fact about the repo; the ability to create a
+ * directory under `storage/` is a fact about the filesystem, and letting the second overwrite the
+ * first would be this file's own UNSPAWNED/FAIL confusion one layer out. Every failure path prints a
+ * NOTE and returns the aggregate exit unchanged.
+ *
+ * The path mirrors the audit's default (`storage/app/beam/ci-check.json`). A host that repoints
+ * `beam.core.install.desired_state.ci_check_record` must point `CI_CHECK_RECORD_PATH` at the same
+ * file: this runner does not boot the framework, so it cannot read that config key, and a record
+ * written where nothing looks is indistinguishable from no record at all.
+ */
+function ci_finish(int $code, string $root): never
+{
+    $path = getenv('CI_CHECK_RECORD_PATH') ?: $root.'/storage/app/beam/ci-check.json';
+    $dir = dirname($path);
+
+    $record = json_encode([
+        'exit' => $code,
+        'at' => date(DATE_ATOM),
+        'commit' => ci_head_commit($root),
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+    if (! is_dir($dir) && ! @mkdir($dir, 0o775, true) && ! is_dir($dir)) {
+        fwrite(STDOUT, "\n\033[33mNOTE\033[0m — could not create {$dir}; the ci:check record was NOT written, so "
+            ."`beam.install.desired-state` R3 will keep reading \"no record\". Exit {$code} is unchanged.\n");
+
+        exit($code);
+    }
+
+    if ($record === false || @file_put_contents($path, $record."\n") === false) {
+        fwrite(STDOUT, "\n\033[33mNOTE\033[0m — could not write {$path}; the ci:check record was NOT written, so "
+            ."`beam.install.desired-state` R3 will keep reading \"no record\". Exit {$code} is unchanged.\n");
+
+        exit($code);
+    }
+
+    fwrite(STDOUT, "\nRecorded exit {$code} at {$path} — read by `beam.install.desired-state` R3.\n");
+
+    exit($code);
+}
+
+/**
+ * Is the witness reachable at all? Probed ONCE, with `--help`, before any gate runs.
+ *
+ * `splicewire/laravel-beam-dev` is a `require-dev` and dev deps do not cascade, so a `--no-dev`
+ * install has no witness. An artisan command that is not registered exits non-zero HAVING WRITTEN
+ * an error, so without this probe that case is indistinguishable from "the witness ran and judged
+ * the log truncated" — which is the wrong thing to tell an operator.
+ */
+$witnessCommand = getenv('CI_CHECK_WITNESS_COMMAND') ?: 'splicewire:beam:dev:witness-run';
+$witnessAvailable = ci_run([...$phpRun, 'artisan', $witnessCommand, '--help'], $root, $phpEnv, null, false)['status'] === 'PASS';
+
+fwrite(STDOUT, "\n\033[1m▶ prelude  config:clear\033[0m\n");
+$pre = ci_run($prelude, $root, []);
+if ($pre['status'] !== 'PASS') {
+    fwrite(STDERR, "\n\033[31mUNMEASURED\033[0m — the prelude (config:clear) did not succeed ({$pre['status']}).\n");
+    fwrite(STDERR, "A stale config cache invalidates every gate, so no gate was run.\n");
+    ci_finish(2, $root);
+}
+
+$results = [];
+foreach ($gates as $name => $gate) {
+    fwrite(STDOUT, "\n\033[1m▶ {$name}\033[0m  ".implode(' ', $gate['cmd'])."\n");
+
+    $logPath = empty($gate['witness']) ? null : tempnam(sys_get_temp_dir(), 'ci-check-'.getmypid().'-');
+    $results[$name] = ci_run($gate['cmd'], $root, $gate['env'] ?? [], $logPath);
+
+    if ($logPath === null) {
+        continue;
+    }
+
+    /**
+     * A truncated run EXITS 0 — memory death and SIGPIPE both do — so a zero here is not yet a pass.
+     * Ask the witness whether the captured log carries a real summary line. Only a zero exit needs
+     * asking: a non-zero one has already reported, and a zero-byte one is SILENT above.
+     *
+     * The witness is invoked in its `--assert` form, against a log this runner captured, NEVER by
+     * wrapping the suite as `artisan witness-run -- artisan test`. Measured 2026-09-06 at this
+     * starter: the wrapping form is an artisan command, so it boots the framework, `.env` puts
+     * `APP_ENV=local` into the process environment, and phpunit.xml's non-forced `<env>` entries
+     * cannot override an already-set variable — the suite then runs in `local`, CSRF is live, and
+     * 21 tests fail with 419 that pass every other way. The guard corrupted the run it witnessed.
+     */
+    if ($results[$name]['status'] === 'PASS') {
+        if (! $witnessAvailable) {
+            // The witness itself could not be executed. NOT a truncated log — nothing judged it.
+            $results[$name] = ['status' => 'UNSPAWNED', 'code' => 0, 'bytes' => $results[$name]['bytes']];
+        } else {
+            $witness = ci_run(
+                [...$phpRun, 'artisan', $witnessCommand, '--assert='.$logPath, '--exit-code=0'],
+                $root,
+                $phpEnv,
+            );
+
+            if ($witness['status'] === 'UNSPAWNED') {
+                $results[$name] = ['status' => 'UNSPAWNED', 'code' => 0, 'bytes' => $results[$name]['bytes']];
+            } elseif ($witness['status'] !== 'PASS') {
+                $results[$name] = ['status' => 'TRUNCATED', 'code' => 0, 'bytes' => $results[$name]['bytes']];
+            }
+        }
+    }
+
+    if (! empty($gate['count'])) {
+        $results[$name]['tests'] = ci_test_count($logPath);
+        $results[$name]['counted'] = true;
+    }
+
+    @unlink($logPath);
+}
+
+fwrite(STDOUT, "\n".str_repeat('─', 72)."\n");
+
+$failed = $unmeasured = [];
+foreach ($results as $name => $r) {
+    $label = match ($r['status']) {
+        'PASS' => "\033[32mPASS\033[0m",
+        'FAIL' => "\033[31mFAIL\033[0m",
+        default => "\033[33m{$r['status']}\033[0m",
+    };
+    $code = $r['code'] === null ? 'no exit' : "exit {$r['code']}";
+
+    // Bytes cannot tell 2 tests from 92, so a counted gate says how many it ran — or says it cannot.
+    $tests = '';
+    if (! empty($r['counted'])) {
+        $tests = $r['tests'] === null
+            ? ", \033[33mtests UNCOUNTED\033[0m (no summary line parsed)"
+            : sprintf(', %d tests', $r['tests']);
+    }
+
+    fwrite(STDOUT, sprintf("  %-6s %-10s %s, %d bytes%s\n", $label, $name, $code, $r['bytes'], $tests));
+
+    match ($r['status']) {
+        'PASS' => null,
+        'FAIL' => $failed[] = $name,
+        default => $unmeasured[] = $name,
+    };
+}
+
+fwrite(STDOUT, str_repeat('─', 72)."\n");
+
+if ($unmeasured !== []) {
+    fwrite(STDOUT, "\n\033[33mUNMEASURED\033[0m: ".implode(', ', $unmeasured)."\n");
+    fwrite(STDOUT, "This is not a verdict — those gates did not report. Exit 2.\n");
+    if ($failed !== []) {
+        fwrite(STDOUT, '(Also failing: '.implode(', ', $failed).")\n");
+    }
+    ci_finish(2, $root);
+}
+
+if ($failed !== []) {
+    fwrite(STDOUT, "\n\033[31mFAILED\033[0m: ".implode(', ', $failed)."\n");
+    ci_finish(1, $root);
+}
+
+fwrite(STDOUT, "\n\033[32mAll ".count($gates)." gates passed.\033[0m\n");
+ci_finish(0, $root);

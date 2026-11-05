@@ -1,0 +1,5 @@
+resources/js/components/ui/*
+resources/views/mail/*
+resources/js/generated/**
+# PHP Data generator output; authored registry/lifecycle schemas remain checked.
+resources/schemas/App/**

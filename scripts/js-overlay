@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# scripts/js-overlay on|off|status — the local JS co-dev overlay. See js-overlay.mjs for what it does and why.
+exec node "$(dirname "$0")/js-overlay.mjs" "$@"

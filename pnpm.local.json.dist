@@ -1,0 +1,9 @@
+{
+    "_comment": "Local co-dev overlay, like composer.local.json: copy to gitignored pnpm.local.json and edit paths. Each release must exactly match a full-SHA Git dependency in the committed package.json; npm versions are not migrated. Never commit pnpm.local.json or .pnpmfile.cjs. Run scripts/pnpm-overlay on, then off before changing canonical dependency inputs.",
+    "packages": {
+        "@splicewire/beam-ux": {
+            "release": "github:splicewire/beam#0000000000000000000000000000000000000000&path:/beam-ux",
+            "path": "../../../js/packages/beam/beam-ux"
+        }
+    }
+}

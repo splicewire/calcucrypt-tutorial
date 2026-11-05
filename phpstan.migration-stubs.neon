@@ -1,0 +1,16 @@
+# Package migration stubs, analysed under this application's rules before they are published.
+# Kept out of phpstan.neon on purpose, see the note there: this must always run as its own process.
+# tests/Feature/MigrationStubAnalysisTest.php runs it (so `composer ci:check` does, via php:test)
+# and fails if it stops reaching the stubs or starts reaching the published copies.
+# By hand, give it a fresh cache: TMPDIR="$(mktemp -d)" vendor/bin/phpstan analyse -c phpstan.migration-stubs.neon
+# (a PHPStan cache written while stubs were still in phpstan.neon can hold a wrong PHPDoc map for a stub).
+includes:
+    - phpstan.neon
+
+parameters:
+    fileExtensions:
+        - php
+        - php.stub
+
+    paths!:
+        - vendor/splicewire/laravel-beam-accounts/database/migrations/

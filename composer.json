@@ -1,0 +1,311 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "splicewire/laravel-beam-starter",
+    "type": "project",
+    "description": "The Beam starter: a Laravel, Inertia and React app with the Beam spine wired in.",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
+    "license": "MIT",
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-docs.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-mcp.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-mdx.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-ux-prototype.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-ux.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-analytics.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-accounts.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-sitemap.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-taxonomy.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-workflows.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-data-nav.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-data-schemas-scribe.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-permission-cascade.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-marquee.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-provision.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/schemastud/laravel-frame.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/schemastud/laravel-doctor.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/schemastud/laravel-data-schemas.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/schemastud/laravel-data-schema-org.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/schemastud/laravel-json-reference.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-popcorn.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/php-package-topology.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-graphine.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/php-popcorn.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-doctor.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/php-graphine.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-surgeon.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/php-package-topology.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-dev.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/codegen.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-data-filters.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-mcp-registry.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-pipeline-registry.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-schema-convergence.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-versioning.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/schemastud/laravel-json-ns.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/schemastud/php-json-ns.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/splicewire/laravel-beam-sync.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/schemastud/laravel-blockdoc.git"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "inertiajs/inertia-laravel": "^3.0",
+        "laravel/chisel": "^0.1.0",
+        "laravel/fortify": "^1.37.2",
+        "laravel/framework": "^13.17",
+        "laravel/tinker": "^3.0",
+        "spatie/laravel-typescript-transformer": "^3.3",
+        "splicewire/laravel-beam": "dev-main",
+        "splicewire/laravel-beam-mcp": "dev-main",
+        "splicewire/laravel-beam-mdx": "*",
+        "splicewire/laravel-beam-ux": "*",
+        "splicewire/laravel-beam-accounts": "*",
+        "splicewire/laravel-beam-sitemap": "*",
+        "splicewire/laravel-beam-ux-prototype": "*",
+        "schemastud/laravel-frame": "*",
+        "schemastud/laravel-data-schema-org": "dev-main",
+        "schemastud/laravel-data-schemas": "dev-main",
+        "wikimedia/composer-merge-plugin": "^2.1",
+        "splicewire/laravel-beam-docs": "dev-main"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.24",
+        "larastan/larastan": "^3.9",
+        "laravel/pail": "^1.2.5",
+        "laravel/pao": "^1.0.6",
+        "laravel/pint": "^1.27",
+        "laravel/sail": "^1.53",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.9.3",
+        "pestphp/pest": "^4.0",
+        "phpunit/phpunit": "^12.5.23",
+        "rushing/laravel-surgeon": "dev-main",
+        "rushing/php-package-topology": "*",
+        "splicewire/laravel-beam-dev": "dev-main",
+        "splicewire/laravel-beam-provision": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "setup": [
+            "composer install",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan key:generate",
+            "@php artisan splicewire:beam:install --no-interaction",
+            "pnpm install",
+            "@php artisan splicewire:beam:ux:compile",
+            "pnpm run build"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan dev"
+        ],
+        "lint": [
+            "@php -d memory_limit=1G vendor/bin/pint --parallel"
+        ],
+        "lint:check": [
+            "@php -d memory_limit=1G vendor/bin/pint --parallel --test"
+        ],
+        "ci:check": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php bin/ci-check"
+        ],
+        "types:generate": "@php artisan typescript:transform",
+        "types:check": [
+            "@php -d memory_limit=1G vendor/bin/phpstan analyse"
+        ],
+        "test": [
+            "@php artisan config:clear --ansi",
+            "@php -d memory_limit=1G artisan test"
+        ],
+        "test:packages": [
+            "@php bin/test-packages"
+        ],
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi",
+            "@php artisan popcorn:registries:cache --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ],
+        "pre-package-uninstall": [
+            "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "docs": "@php artisan splicewire:beam:docs:generate"
+    },
+    "extra": {
+        "splicewire": {
+            "starter": {
+                "repository": "https://github.com/splicewire/laravel-beam-starter",
+                "published": false
+            }
+        },
+        "merge-plugin": {
+            "include": [
+                "composer.local.json"
+            ]
+        },
+        "laravel": {
+            "dont-discover": [],
+            "installer": {
+                "post-create-project": []
+            }
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true,
+            "wikimedia/composer-merge-plugin": true,
+            "spatie/laravel-package-tools": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

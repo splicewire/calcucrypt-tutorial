@@ -1,0 +1,770 @@
+{
+    "check": "particle.undeclared-surface",
+    "count": 66,
+    "baseline": {
+        "environment": "local",
+        "php": "8.4",
+        "dev_dependencies_installed": true,
+        "generated_by": "splicewire:beam:undeclared-surface"
+    },
+    "counts": {
+        "by_tier": {
+            "guided": 53,
+            "manual": 13
+        },
+        "by_origin": {
+            "laravel/fortify": 24,
+            "app": 19,
+            "schemastud/laravel-frame": 8,
+            "laravel/passkeys": 7,
+            "inertiajs/inertia-laravel": 4,
+            "splicewire/laravel-beam-ux": 2,
+            "splicewire/laravel-beam-mcp": 1,
+            "laravel/framework": 1
+        }
+    },
+    "excluded": {
+        "dev_only": {
+            "count": 0,
+            "reason": "The package shipping the action is require-dev, so the row is present or absent depending on --no-dev and on the developer's own tooling. A ratchet exists to be compared across two machines; an environment-dependent number cannot be.",
+            "packages": []
+        },
+        "production_vendor": {
+            "policy": "IN",
+            "reason": "They ship, a caller can hit them, and mounting them was a host composition decision (see beam-facade ticket 119). Bucketed by origin rather than dropped, so a delta names its own cause."
+        }
+    },
+    "surfaces": [
+        {
+            "uri": ".well-known/passkey-endpoints",
+            "methods": [
+                "GET"
+            ],
+            "name": "well-known.passkeys",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [well-known.passkeys]"
+        },
+        {
+            "uri": "/",
+            "methods": [
+                "GET"
+            ],
+            "name": "home",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [home]"
+        },
+        {
+            "uri": "_inertia/devtools/entries",
+            "methods": [
+                "GET"
+            ],
+            "name": null,
+            "action": "Inertia\\DevTools\\Http\\EntriesController@index",
+            "tier": "guided",
+            "origin": "inertiajs/inertia-laravel",
+            "location": "inertiajs/inertia-laravel/src/DevTools/Http/EntriesController.php:17"
+        },
+        {
+            "uri": "_inertia/devtools/entries/{id}",
+            "methods": [
+                "GET"
+            ],
+            "name": null,
+            "action": "Inertia\\DevTools\\Http\\EntriesController@show",
+            "tier": "guided",
+            "origin": "inertiajs/inertia-laravel",
+            "location": "inertiajs/inertia-laravel/src/DevTools/Http/EntriesController.php:37"
+        },
+        {
+            "uri": "_prototype/{any?}",
+            "methods": [
+                "GET"
+            ],
+            "name": null,
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [_prototype/{any?}]"
+        },
+        {
+            "uri": "account/team",
+            "methods": [
+                "GET"
+            ],
+            "name": "account.team",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [account.team]"
+        },
+        {
+            "uri": "account/theme",
+            "methods": [
+                "GET"
+            ],
+            "name": "account.theme",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [account.theme]"
+        },
+        {
+            "uri": "account/tokens",
+            "methods": [
+                "GET"
+            ],
+            "name": "account.tokens",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [account.tokens]"
+        },
+        {
+            "uri": "api/user",
+            "methods": [
+                "GET"
+            ],
+            "name": "api.user",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [api.user]"
+        },
+        {
+            "uri": "beam/mcp/manifest.json",
+            "methods": [
+                "GET"
+            ],
+            "name": "beam.mcp.manifest",
+            "action": "Splicewire\\Beam\\Mcp\\Http\\Controllers\\McpManifestController",
+            "tier": "guided",
+            "origin": "splicewire/laravel-beam-mcp",
+            "location": "splicewire/laravel-beam-mcp/src/Http/Controllers/McpManifestController.php:34"
+        },
+        {
+            "uri": "beam/ux/artifacts/{entry}/{version?}",
+            "methods": [
+                "GET"
+            ],
+            "name": "beam.ux.site.artifact",
+            "action": "Splicewire\\Beam\\Ux\\Http\\Controllers\\EntryArtifactController",
+            "tier": "guided",
+            "origin": "splicewire/laravel-beam-ux",
+            "location": "splicewire/laravel-beam-ux/src/Http/Controllers/EntryArtifactController.php:39"
+        },
+        {
+            "uri": "dashboard",
+            "methods": [
+                "GET"
+            ],
+            "name": "dashboard",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [dashboard]"
+        },
+        {
+            "uri": "email/verification-notification",
+            "methods": [
+                "POST"
+            ],
+            "name": "verification.send",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\EmailVerificationNotificationController@store",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/EmailVerificationNotificationController.php:19"
+        },
+        {
+            "uri": "email/verify",
+            "methods": [
+                "GET"
+            ],
+            "name": "verification.notice",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\EmailVerificationPromptController@__invoke",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/EmailVerificationPromptController.php:18"
+        },
+        {
+            "uri": "email/verify/{id}/{hash}",
+            "methods": [
+                "GET"
+            ],
+            "name": "verification.verify",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\VerifyEmailController@__invoke",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/VerifyEmailController.php:18"
+        },
+        {
+            "uri": "forgot-password",
+            "methods": [
+                "GET"
+            ],
+            "name": "password.request",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\PasswordResetLinkController@create",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/PasswordResetLinkController.php:22"
+        },
+        {
+            "uri": "forgot-password",
+            "methods": [
+                "POST"
+            ],
+            "name": "password.email",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\PasswordResetLinkController@store",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/PasswordResetLinkController.php:30"
+        },
+        {
+            "uri": "frame/manifest",
+            "methods": [
+                "GET"
+            ],
+            "name": "frame.manifest",
+            "action": "Schemastud\\Frame\\Http\\Controllers\\FrameManifestController",
+            "tier": "guided",
+            "origin": "schemastud/laravel-frame",
+            "location": "schemastud/laravel-frame/src/Http/Controllers/FrameManifestController.php:38"
+        },
+        {
+            "uri": "frame/resources/sitemap",
+            "methods": [
+                "GET"
+            ],
+            "name": "frame.resources.sitemap",
+            "action": "App\\Http\\Controllers\\SitemapResourceController",
+            "tier": "guided",
+            "origin": "app",
+            "location": "app/Http/Controllers/SitemapResourceController.php:23"
+        },
+        {
+            "uri": "frame/resources/{resource}",
+            "methods": [
+                "GET"
+            ],
+            "name": "frame.resources.index",
+            "action": "Schemastud\\Frame\\Http\\Controllers\\FrameResourceController@index",
+            "tier": "guided",
+            "origin": "schemastud/laravel-frame",
+            "location": "schemastud/laravel-frame/src/Http/Controllers/FrameResourceController.php:69"
+        },
+        {
+            "uri": "frame/resources/{resource}",
+            "methods": [
+                "POST"
+            ],
+            "name": "frame.resources.store",
+            "action": "Schemastud\\Frame\\Http\\Controllers\\FrameResourceController@store",
+            "tier": "guided",
+            "origin": "schemastud/laravel-frame",
+            "location": "schemastud/laravel-frame/src/Http/Controllers/FrameResourceController.php:136"
+        },
+        {
+            "uri": "frame/resources/{resource}/records/{id}",
+            "methods": [
+                "DELETE"
+            ],
+            "name": "frame.resources.destroy",
+            "action": "Schemastud\\Frame\\Http\\Controllers\\FrameResourceController@destroy",
+            "tier": "guided",
+            "origin": "schemastud/laravel-frame",
+            "location": "schemastud/laravel-frame/src/Http/Controllers/FrameResourceController.php:157"
+        },
+        {
+            "uri": "frame/resources/{resource}/records/{id}",
+            "methods": [
+                "GET"
+            ],
+            "name": "frame.resources.show",
+            "action": "Schemastud\\Frame\\Http\\Controllers\\FrameResourceController@show",
+            "tier": "guided",
+            "origin": "schemastud/laravel-frame",
+            "location": "schemastud/laravel-frame/src/Http/Controllers/FrameResourceController.php:129"
+        },
+        {
+            "uri": "frame/resources/{resource}/records/{id}",
+            "methods": [
+                "PUT"
+            ],
+            "name": "frame.resources.update",
+            "action": "Schemastud\\Frame\\Http\\Controllers\\FrameResourceController@update",
+            "tier": "guided",
+            "origin": "schemastud/laravel-frame",
+            "location": "schemastud/laravel-frame/src/Http/Controllers/FrameResourceController.php:144"
+        },
+        {
+            "uri": "frame/resources/{resource}/schema",
+            "methods": [
+                "GET"
+            ],
+            "name": "frame.resources.schema",
+            "action": "Schemastud\\Frame\\Http\\Controllers\\FrameResourceController@schema",
+            "tier": "guided",
+            "origin": "schemastud/laravel-frame",
+            "location": "schemastud/laravel-frame/src/Http/Controllers/FrameResourceController.php:88"
+        },
+        {
+            "uri": "login",
+            "methods": [
+                "GET"
+            ],
+            "name": "login",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\AuthenticatedSessionController@create",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/AuthenticatedSessionController.php:47"
+        },
+        {
+            "uri": "login",
+            "methods": [
+                "POST"
+            ],
+            "name": "login.store",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\AuthenticatedSessionController@store",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/AuthenticatedSessionController.php:58"
+        },
+        {
+            "uri": "logout",
+            "methods": [
+                "POST"
+            ],
+            "name": "logout",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\AuthenticatedSessionController@destroy",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/AuthenticatedSessionController.php:100"
+        },
+        {
+            "uri": "operator",
+            "methods": [
+                "GET"
+            ],
+            "name": "operator.home",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [operator.home]"
+        },
+        {
+            "uri": "operator/frame/manifest",
+            "methods": [
+                "GET"
+            ],
+            "name": "operator.frame.manifest",
+            "action": "Schemastud\\Frame\\Http\\Controllers\\FrameManifestController",
+            "tier": "guided",
+            "origin": "schemastud/laravel-frame",
+            "location": "schemastud/laravel-frame/src/Http/Controllers/FrameManifestController.php:38"
+        },
+        {
+            "uri": "operator/{frameRoute}",
+            "methods": [
+                "GET"
+            ],
+            "name": "operator.frame.console",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [operator.frame.console]"
+        },
+        {
+            "uri": "os",
+            "methods": [
+                "GET"
+            ],
+            "name": "os.shell",
+            "action": "\\Inertia\\Controller",
+            "tier": "guided",
+            "origin": "inertiajs/inertia-laravel",
+            "location": "inertiajs/inertia-laravel/src/Controller.php:13"
+        },
+        {
+            "uri": "passkeys/confirm",
+            "methods": [
+                "POST"
+            ],
+            "name": "passkey.confirm",
+            "action": "Laravel\\Passkeys\\Http\\Controllers\\PasskeyConfirmationController@store",
+            "tier": "guided",
+            "origin": "laravel/passkeys",
+            "location": "laravel/passkeys/src/Http/Controllers/PasskeyConfirmationController.php:50"
+        },
+        {
+            "uri": "passkeys/confirm/options",
+            "methods": [
+                "GET"
+            ],
+            "name": "passkey.confirm-options",
+            "action": "Laravel\\Passkeys\\Http\\Controllers\\PasskeyConfirmationController@index",
+            "tier": "guided",
+            "origin": "laravel/passkeys",
+            "location": "laravel/passkeys/src/Http/Controllers/PasskeyConfirmationController.php:27"
+        },
+        {
+            "uri": "passkeys/login",
+            "methods": [
+                "POST"
+            ],
+            "name": "passkey.login",
+            "action": "Laravel\\Passkeys\\Http\\Controllers\\PasskeyLoginController@store",
+            "tier": "guided",
+            "origin": "laravel/passkeys",
+            "location": "laravel/passkeys/src/Http/Controllers/PasskeyLoginController.php:43"
+        },
+        {
+            "uri": "passkeys/login/options",
+            "methods": [
+                "GET"
+            ],
+            "name": "passkey.login-options",
+            "action": "Laravel\\Passkeys\\Http\\Controllers\\PasskeyLoginController@index",
+            "tier": "guided",
+            "origin": "laravel/passkeys",
+            "location": "laravel/passkeys/src/Http/Controllers/PasskeyLoginController.php:27"
+        },
+        {
+            "uri": "register",
+            "methods": [
+                "GET"
+            ],
+            "name": "register",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\RegisteredUserController@create",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/RegisteredUserController.php:41"
+        },
+        {
+            "uri": "register",
+            "methods": [
+                "POST"
+            ],
+            "name": "register.store",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\RegisteredUserController@store",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/RegisteredUserController.php:53"
+        },
+        {
+            "uri": "reset-password",
+            "methods": [
+                "POST"
+            ],
+            "name": "password.update",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\NewPasswordController@store",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/NewPasswordController.php:56"
+        },
+        {
+            "uri": "reset-password/{token}",
+            "methods": [
+                "GET"
+            ],
+            "name": "password.reset",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\NewPasswordController@create",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/NewPasswordController.php:45"
+        },
+        {
+            "uri": "settings",
+            "methods": [
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "OPTIONS"
+            ],
+            "name": null,
+            "action": "\\Illuminate\\Routing\\RedirectController",
+            "tier": "guided",
+            "origin": "laravel/framework",
+            "location": "laravel/framework/src/Illuminate/Routing/RedirectController.php:19"
+        },
+        {
+            "uri": "settings/appearance",
+            "methods": [
+                "GET"
+            ],
+            "name": "appearance.edit",
+            "action": "\\Inertia\\Controller",
+            "tier": "guided",
+            "origin": "inertiajs/inertia-laravel",
+            "location": "inertiajs/inertia-laravel/src/Controller.php:13"
+        },
+        {
+            "uri": "settings/password",
+            "methods": [
+                "PUT"
+            ],
+            "name": "user-password.update",
+            "action": "App\\Http\\Controllers\\Settings\\SecurityController@update",
+            "tier": "guided",
+            "origin": "app",
+            "location": "app/Http/Controllers/Settings/SecurityController.php:67"
+        },
+        {
+            "uri": "settings/profile",
+            "methods": [
+                "DELETE"
+            ],
+            "name": "profile.destroy",
+            "action": "App\\Http\\Controllers\\Settings\\ProfileController@destroy",
+            "tier": "guided",
+            "origin": "app",
+            "location": "app/Http/Controllers/Settings/ProfileController.php:56"
+        },
+        {
+            "uri": "settings/profile",
+            "methods": [
+                "GET"
+            ],
+            "name": "profile.edit",
+            "action": "App\\Http\\Controllers\\Settings\\ProfileController@edit",
+            "tier": "guided",
+            "origin": "app",
+            "location": "app/Http/Controllers/Settings/ProfileController.php:22"
+        },
+        {
+            "uri": "settings/profile",
+            "methods": [
+                "PATCH"
+            ],
+            "name": "profile.update",
+            "action": "App\\Http\\Controllers\\Settings\\ProfileController@update",
+            "tier": "guided",
+            "origin": "app",
+            "location": "app/Http/Controllers/Settings/ProfileController.php:38"
+        },
+        {
+            "uri": "settings/security",
+            "methods": [
+                "GET"
+            ],
+            "name": "security.edit",
+            "action": "App\\Http\\Controllers\\Settings\\SecurityController@edit",
+            "tier": "guided",
+            "origin": "app",
+            "location": "app/Http/Controllers/Settings/SecurityController.php:20"
+        },
+        {
+            "uri": "storage/{path}",
+            "methods": [
+                "GET"
+            ],
+            "name": "storage.local",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [storage.local]"
+        },
+        {
+            "uri": "storage/{path}",
+            "methods": [
+                "PUT"
+            ],
+            "name": "storage.local.upload",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [storage.local.upload]"
+        },
+        {
+            "uri": "two-factor-challenge",
+            "methods": [
+                "GET"
+            ],
+            "name": "two-factor.login",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\TwoFactorAuthenticatedSessionController@create",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/TwoFactorAuthenticatedSessionController.php:41"
+        },
+        {
+            "uri": "two-factor-challenge",
+            "methods": [
+                "POST"
+            ],
+            "name": "two-factor.login.store",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\TwoFactorAuthenticatedSessionController@store",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/TwoFactorAuthenticatedSessionController.php:56"
+        },
+        {
+            "uri": "user/confirm-password",
+            "methods": [
+                "GET"
+            ],
+            "name": "password.confirm",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\ConfirmablePasswordController@show",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/ConfirmablePasswordController.php:40"
+        },
+        {
+            "uri": "user/confirm-password",
+            "methods": [
+                "POST"
+            ],
+            "name": "password.confirm.store",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\ConfirmablePasswordController@store",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/ConfirmablePasswordController.php:51"
+        },
+        {
+            "uri": "user/confirmed-password-status",
+            "methods": [
+                "GET"
+            ],
+            "name": "password.confirmation",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\ConfirmedPasswordStatusController@show",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/ConfirmedPasswordStatusController.php:17"
+        },
+        {
+            "uri": "user/confirmed-two-factor-authentication",
+            "methods": [
+                "POST"
+            ],
+            "name": "two-factor.confirm",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\ConfirmedTwoFactorAuthenticationController@store",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/ConfirmedTwoFactorAuthenticationController.php:19"
+        },
+        {
+            "uri": "user/passkeys",
+            "methods": [
+                "POST"
+            ],
+            "name": "passkey.store",
+            "action": "Laravel\\Passkeys\\Http\\Controllers\\PasskeyRegistrationController@store",
+            "tier": "guided",
+            "origin": "laravel/passkeys",
+            "location": "laravel/passkeys/src/Http/Controllers/PasskeyRegistrationController.php:48"
+        },
+        {
+            "uri": "user/passkeys/options",
+            "methods": [
+                "GET"
+            ],
+            "name": "passkey.registration-options",
+            "action": "Laravel\\Passkeys\\Http\\Controllers\\PasskeyRegistrationController@index",
+            "tier": "guided",
+            "origin": "laravel/passkeys",
+            "location": "laravel/passkeys/src/Http/Controllers/PasskeyRegistrationController.php:29"
+        },
+        {
+            "uri": "user/passkeys/{passkey}",
+            "methods": [
+                "DELETE"
+            ],
+            "name": "passkey.destroy",
+            "action": "Laravel\\Passkeys\\Http\\Controllers\\PasskeyRegistrationController@destroy",
+            "tier": "guided",
+            "origin": "laravel/passkeys",
+            "location": "laravel/passkeys/src/Http/Controllers/PasskeyRegistrationController.php:68"
+        },
+        {
+            "uri": "user/two-factor-authentication",
+            "methods": [
+                "DELETE"
+            ],
+            "name": "two-factor.disable",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\TwoFactorAuthenticationController@destroy",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/TwoFactorAuthenticationController.php:44"
+        },
+        {
+            "uri": "user/two-factor-authentication",
+            "methods": [
+                "POST"
+            ],
+            "name": "two-factor.enable",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\TwoFactorAuthenticationController@store",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/TwoFactorAuthenticationController.php:22"
+        },
+        {
+            "uri": "user/two-factor-qr-code",
+            "methods": [
+                "GET"
+            ],
+            "name": "two-factor.qr-code",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\TwoFactorQrCodeController@show",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/TwoFactorQrCodeController.php:16"
+        },
+        {
+            "uri": "user/two-factor-recovery-codes",
+            "methods": [
+                "GET"
+            ],
+            "name": "two-factor.recovery-codes",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\RecoveryCodeController@index",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/RecoveryCodeController.php:19"
+        },
+        {
+            "uri": "user/two-factor-recovery-codes",
+            "methods": [
+                "POST"
+            ],
+            "name": "two-factor.regenerate-recovery-codes",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\RecoveryCodeController@store",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/RecoveryCodeController.php:38"
+        },
+        {
+            "uri": "user/two-factor-secret-key",
+            "methods": [
+                "GET"
+            ],
+            "name": "two-factor.secret-key",
+            "action": "Laravel\\Fortify\\Http\\Controllers\\TwoFactorSecretKeyController@show",
+            "tier": "guided",
+            "origin": "laravel/fortify",
+            "location": "laravel/fortify/src/Http/Controllers/TwoFactorSecretKeyController.php:17"
+        },
+        {
+            "uri": "{frameRoute}",
+            "methods": [
+                "GET"
+            ],
+            "name": "frame.console",
+            "action": "Closure",
+            "tier": "manual",
+            "origin": "app",
+            "location": "closure route [frame.console]"
+        },
+        {
+            "uri": "{path}",
+            "methods": [
+                "GET"
+            ],
+            "name": "beam.ux.site.show",
+            "action": "Splicewire\\Beam\\Ux\\Http\\Controllers\\PublicEntryController",
+            "tier": "guided",
+            "origin": "splicewire/laravel-beam-ux",
+            "location": "splicewire/laravel-beam-ux/src/Http/Controllers/PublicEntryController.php:103"
+        }
+    ]
+}

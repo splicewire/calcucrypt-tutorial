@@ -1,0 +1,51 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "BuyerEntitlementInspectionData",
+    "properties": {
+        "entitlementId": {
+            "type": "string"
+        },
+        "productId": {
+            "type": "integer"
+        },
+        "listing": {
+            "type": "string"
+        },
+        "buyerRef": {
+            "type": "string"
+        },
+        "scopeRef": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "status": {
+            "type": "string"
+        },
+        "paymentRef": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "licenseId": {
+            "type": [
+                "string",
+                "null"
+            ]
+        }
+    },
+    "required": [
+        "entitlementId",
+        "productId",
+        "listing",
+        "buyerRef",
+        "scopeRef",
+        "status",
+        "paymentRef",
+        "licenseId"
+    ],
+    "$id": "BuyerEntitlementInspectionData"
+}

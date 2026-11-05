@@ -1,0 +1,27 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "Service request",
+    "properties": {
+        "title": {
+            "type": "string",
+            "maxLength": 200
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "open",
+                "closed"
+            ],
+            "examples": [
+                "open"
+            ],
+            "default": "open"
+        }
+    },
+    "required": [
+        "title",
+        "status"
+    ],
+    "$id": "ServiceRequestInputData"
+}

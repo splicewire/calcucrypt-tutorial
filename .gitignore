@@ -1,0 +1,71 @@
+/.phpunit.cache
+/bootstrap/ssr
+/node_modules
+/public/build
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/resources/js/actions
+/resources/js/routes
+/resources/js/wayfinder
+/resources/js/generated/App/
+/resources/js/generated/Schemastud/
+/resources/js/generated/Illuminate/
+/resources/js/generated/Spatie/
+/resources/js/generated/Splicewire/
+# The transformer's own hash manifest of what it just emitted — a build cache, not a registry.
+# aliases.ts and routes.ts above it ARE committed (ADR 0218 names routes.ts a committed registry);
+# these per-vendor type directories are not, and were the only ones left neither tracked nor ignored.
+/resources/js/generated/typescript-transformer-manifest.json
+/vendor
+.DS_Store
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/auth.json
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+
+# Local co-dev overlay (path repos for base-beam packages) — never commit
+composer.local.json
+js.local.json
+
+# Ecosystem-local orientation pointer — never commit
+CLAUDE.md
+
+# Scribe generator output — the OpenAPI artifact is generated in the DEPLOYED environment
+# (docker/entrypoint.sh), never committed. `scribe:generate` also emits an intermediate cache and,
+# because Scribe publishes them unconditionally, the HTML docs assets/views this tier does not serve
+# (`scribe.laravel.add_routes` is false — beam core owns `beam/openapi.{yaml,json}`; see
+# beam-docs-satellite 38). The artifact itself is already covered by storage/app/private/.gitignore.
+/.scribe
+/public/vendor
+/resources/views/scribe
+
+# Local Git-release overlay, beside composer.local.json — never commit machine paths or the hook.
+/pnpm.local.json
+/.pnpmfile.cjs
+
+# Explicitly prepared optional local marketplace example (source in examples/).
+/resources/js/pages/examples/local-marketplace.tsx
+
+/composer.market.json
+/composer.market.lock
+
+/composer.paid.json
+/composer.paid.lock
+
+# Optional isolated team-wallet dependency context
+/composer.wallet.json
+/composer.wallet.lock

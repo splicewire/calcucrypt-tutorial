@@ -1,0 +1,56 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "SitemapData",
+    "properties": {
+        "label": {
+            "type": "string",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 0,
+                    "label": "Label"
+                }
+            }
+        },
+        "href": {
+            "type": "string",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 1,
+                    "label": "Path"
+                }
+            }
+        },
+        "order": {
+            "type": "integer",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 2,
+                    "label": "Order"
+                }
+            },
+            "default": 0
+        },
+        "externalUrl": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": false
+                }
+            }
+        }
+    },
+    "required": [
+        "label",
+        "href",
+        "order",
+        "externalUrl"
+    ],
+    "$id": "SitemapData"
+}

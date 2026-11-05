@@ -1,0 +1,42 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "LocalMarketplacePageData",
+    "properties": {
+        "cacheScope": {
+            "type": "string"
+        },
+        "creator": {
+            "type": "boolean"
+        },
+        "hostOperator": {
+            "type": "boolean"
+        },
+        "reviewer": {
+            "type": "boolean"
+        },
+        "simulatedCallback": {
+            "type": "boolean"
+        },
+        "buyer": {
+            "type": "boolean"
+        },
+        "paymentSandbox": {
+            "type": "boolean"
+        },
+        "buyerEntitlements": {
+            "type": "array"
+        }
+    },
+    "required": [
+        "cacheScope",
+        "creator",
+        "hostOperator",
+        "reviewer",
+        "simulatedCallback",
+        "buyer",
+        "paymentSandbox",
+        "buyerEntitlements"
+    ],
+    "$id": "LocalMarketplacePageData"
+}

@@ -1,0 +1,91 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: '22'
+
+      # splicewire/laravel-beam-docs is PRIVATE and resolves with no dist, so `composer install` must
+      # git-clone it; anonymously that dies on "Authentication failed". The beam tier's other
+      # first-party packages are public, but one private package is enough to need the token. Same App
+      # and same two steps as laravel-satellite-starter's tests.yml and this repo's deploy.yml.
+      #
+      # ⚠️ Fork pull requests get no org secret, so the mint fails there and the run stays red.
+      - name: Mint a GitHub App installation token (private family repos)
+        id: gh-app
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          # `owner` is load-bearing and easy to leave off: without it the action logs "Inputs
+          # 'owner' and 'repositories' are not set. Creating token for this repository" and mints a
+          # token scoped to the STARTER alone — which authenticates, so the clone fails with
+          # "Invalid username or token" rather than anything naming the scope. The packages being
+          # cloned are siblings in the same org, so the token has to be org-wide.
+          owner: ${{ github.repository_owner }}
+
+      - name: Configure git to use the installation token
+        run: git config --global url."https://x-access-token:${{ steps.gh-app.outputs.token }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Enable pnpm
+        # `composer setup` step 5 is `pnpm install`, and the ubuntu runner image ships npm and yarn
+        # only. corepack reads package.json's `packageManager` pin, so CI and a developer's machine
+        # resolve the SAME pnpm — an unpinned corepack pulls latest, which has already broken
+        # `pnpm.overrides` once (prove-the-beam-starter 09).
+        run: corepack enable && pnpm --version
+
+      - name: Setup Application
+        run: composer setup
+
+      # A starter's promise is that `composer setup` from a fresh clone leaves a CLEAN tree: everything
+      # it publishes or generates is either tracked or ignored, so anything left over is real signal.
+      # That was proven by hand once, and within days new untracked output reappeared unnoticed — a
+      # promise nobody checks is not being kept. This records the tree instead of failing on the spot,
+      # so a stray file cannot also cost the test suite's signal; the job fails at the end.
+      - name: Record what setup left behind
+        id: setup-tree
+        run: git status --porcelain --untracked-files=all > "$RUNNER_TEMP/setup-tree.txt"
+
+      - name: Run CI Checks
+        run: composer ci:check
+
+      # `always()` so a failing ci:check still reports a dirty tree too; the outcome guard so a setup
+      # that never finished cannot produce a misleading "dirty tree" failure on top of its real one.
+      # This step, not SchemaArtifactDriftTest, fails CI on stale or missing committed schema projections:
+      # setup regenerates resources/schemas before ci:check, so the test sees a freshly generated tree here.
+      - name: Setup must leave a clean tree
+        if: always() && steps.setup-tree.outcome == 'success'
+        run: |
+          if [ -s "$RUNNER_TEMP/setup-tree.txt" ]; then
+            echo "::error::composer setup left files that are neither tracked nor ignored, or modified tracked files."
+            echo "Commit what setup legitimately produces, ignore what it should not, or fix the step that wrote it:"
+            cat "$RUNNER_TEMP/setup-tree.txt"
+            exit 1
+          fi
+          echo "setup left a clean tree"

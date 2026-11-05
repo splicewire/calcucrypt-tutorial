@@ -1,0 +1,63 @@
+{
+  "schema": "service-desk-current-preview/v1",
+  "shippingLockChanged": false,
+  "hostBehaviorBase": "6e9be8bc038b5a8231e437454022cc71a365fc5a",
+  "php": {
+    "schemastud/laravel-frame": "f94c047b261c890098b62ae7054f594da66694bd",
+    "splicewire/laravel-beam-ux": "c27259a5fe60af3efb07204fd07e368abaea1e37",
+    "splicewire/laravel-beam-workflows": "0ea706d7b2722691d141af8e6a79ff46b8b435f9",
+    "splicewire/laravel-beam-mdx": "c168813b8bae73d98e7b2b6a5053fd6871f565c2"
+  },
+  "javascript": {
+    "beam": "5e41347f78dcd1eb0a765ab3188a2c38b6af946d",
+    "schemastud": "5ac791e79ceb2be846b8f880f4da04979123f795",
+    "splicewire/_resources": "f3ab73f4e5cbf4bc15415d262f961a231c217764"
+  },
+  "compiler": {
+    "@mdx-js/mdx": "3.1.1",
+    "esbuild": "0.28.2"
+  },
+  "alternateRuntime": {
+    "records": 225,
+    "additions": 0,
+    "removals": 0,
+    "shippingRecordChanges": {
+      "schemastud/laravel-frame": "source checkpoint above",
+      "splicewire/laravel-beam-ux": "source checkpoint above",
+      "splicewire/laravel-beam-workflows": "source checkpoint above",
+      "league/commonmark": "2.10.0 -> 2.10.4",
+      "symfony/http-foundation": "8.1.6 -> 8.1.9"
+    },
+    "otherFullRecordsUnchanged": 220
+  },
+  "flags": {
+    "BEAM_CANONICAL_MDX_REVIEW_ENABLED": false
+  },
+  "delivery": "Supplied isolated preview source/input packet; unpublished checkpoints, not a released main-only install. Exact derived manifest/lock, transport maps, per-owner build inputs and receipts accompany the packet. Do not solve wider dependencies or modify shipping locks.",
+  "tool": {
+    "ref": "b4b2825ef0d3e938806d1e2a263589fc37753f44",
+    "delivery": "complete ecosystem-b4.bundle; clone locally offline; not assumed origin-main reachability"
+  },
+  "packetFiles": {
+    "ecosystem-b4.bundle": {
+      "sha256": "dbe13229a0be7420a88f1dad340235482e20e9a5bfade26d0829ca085f55e1dd",
+      "bytes": 413947001
+    },
+    "composer.example.json": {
+      "sha256": "a2ec51376393d237c4d01316fdb3a3f17981e20408f96616dc830dd300bc6b62",
+      "bytes": 20264
+    },
+    "composer.example.lock": {
+      "sha256": "d068b696eebde6f2de90ce5a50e6b06afcbc7175281cdc58025b1bfbaf4e3dc2",
+      "bytes": 631350
+    },
+    "RECIPE.md": {
+      "sha256": "bdbe0953a56a91917a0c4ee6e351fd1a8b12d092f07b63798a9103e4447a768b",
+      "bytes": 11024
+    },
+    "recipe-commands.json": {
+      "sha256": "8926803abd9bdd19a4e8e2a3d5755ae04b57c86e1e8d763bbea9fcc3505c1b38",
+      "bytes": 2664
+    }
+  }
+}

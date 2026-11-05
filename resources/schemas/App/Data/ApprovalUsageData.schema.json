@@ -1,0 +1,63 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "Approval usage",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "ID"
+        },
+        "meter": {
+            "type": "string",
+            "title": "Meter",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 0,
+                    "label": "Meter"
+                }
+            }
+        },
+        "quantity": {
+            "type": "integer",
+            "title": "Quantity",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 1,
+                    "label": "Quantity"
+                }
+            }
+        },
+        "unit": {
+            "type": "string",
+            "title": "Unit",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 2,
+                    "label": "Unit"
+                }
+            }
+        },
+        "period": {
+            "type": "string",
+            "title": "Period",
+            "x-stud-widget-contexts": {
+                "list-column": {
+                    "participates": true,
+                    "sort": 3,
+                    "label": "Period"
+                }
+            }
+        }
+    },
+    "required": [
+        "id",
+        "meter",
+        "quantity",
+        "unit",
+        "period"
+    ],
+    "$id": "ApprovalUsageData"
+}

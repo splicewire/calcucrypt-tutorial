@@ -1,0 +1,30 @@
+{
+    "links": [
+        "dep:@splicewire/beam-inertia=~/Workspaces/js/packages/beam/beam-inertia",
+        "override:@splicewire/beam-inertia=~/Workspaces/js/packages/beam/beam-inertia",
+        "dep:@splicewire/beam-ux=~/Workspaces/js/packages/beam/beam-ux",
+        "override:@splicewire/beam-ux=~/Workspaces/js/packages/beam/beam-ux",
+        "dep:@splicewire/beam-accounts=~/Workspaces/js/packages/beam/beam-accounts",
+        "override:@splicewire/beam-accounts=~/Workspaces/js/packages/beam/beam-accounts",
+        "dep:@schemastud/seam=~/Workspaces/js/packages/schemastud/seam",
+        "override:@schemastud/seam=~/Workspaces/js/packages/schemastud/seam",
+        "dep:@schemastud/frame=~/Workspaces/js/packages/schemastud/frame",
+        "override:@schemastud/frame=~/Workspaces/js/packages/schemastud/frame",
+        "dep:@schemastud/ui=~/Workspaces/js/packages/schemastud/ui",
+        "override:@schemastud/ui=~/Workspaces/js/packages/schemastud/ui",
+        "dep:@schemastud/nav=~/Workspaces/js/packages/schemastud/nav",
+        "override:@schemastud/nav=~/Workspaces/js/packages/schemastud/nav",
+        "dep:@schemastud/mainframe=~/Workspaces/js/packages/schemastud/mainframe",
+        "override:@schemastud/mainframe=~/Workspaces/js/packages/schemastud/mainframe",
+        "dep:@schemastud/frame-remote=~/Workspaces/js/packages/schemastud/frame-remote",
+        "override:@schemastud/frame-remote=~/Workspaces/js/packages/schemastud/frame-remote",
+        "dep:@splicewire/beam-mainframe=~/Workspaces/js/packages/beam/beam-mainframe",
+        "override:@splicewire/beam-mainframe=~/Workspaces/js/packages/beam/beam-mainframe",
+        "dep:@splicewire/beam-docs=~/Workspaces/js/packages/beam/beam-docs",
+        "override:@splicewire/beam-docs=~/Workspaces/js/packages/beam/beam-docs",
+        "dep:@splicewire/beam-ux-prototype=~/Workspaces/js/packages/beam/beam-ux-prototype",
+        "override:@splicewire/beam-ux-prototype=~/Workspaces/js/packages/beam/beam-ux-prototype",
+        "override:@schemastud/facets=~/Workspaces/js/packages/schemastud/facets",
+        "override:@splicewire/beam-resources=~/Workspaces/js/packages/beam/beam-resources"
+    ]
+}

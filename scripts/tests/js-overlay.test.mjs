@@ -35,7 +35,11 @@ function scratch({ links } = {}) {
     scratchRoots.push(root);
     const repo = join(root, 'starter');
     mkdirSync(join(repo, 'scripts'), { recursive: true });
-    for (const file of ['package.json', 'pnpm-lock.yaml', '.npmrc', 'pnpm-workspace.yaml']) writeFileSync(join(repo, file), committed(file));
+
+    for (const file of ['package.json', 'pnpm-lock.yaml', '.npmrc', 'pnpm-workspace.yaml']) {
+writeFileSync(join(repo, file), committed(file));
+}
+
     // The rollout (slice 02) gitignores js.local.json in each starter; the fixture does the same.
     writeFileSync(join(repo, '.gitignore'), `${committed('.gitignore')}js.local.json\n`);
     cpSync(join(SCRIPTS, 'js-overlay'), join(repo, 'scripts', 'js-overlay'));
@@ -49,6 +53,7 @@ function scratch({ links } = {}) {
         mkdirSync(join(root, 'pkgs', dir), { recursive: true });
         writeFileSync(join(root, 'pkgs', dir, 'package.json'), JSON.stringify({ name, version: '9.9.9' }));
     }
+
     writeFileSync(
         join(repo, 'js.local.json'),
         JSON.stringify({ links: links ?? [`dep:@splicewire/beam-inertia=${root}/pkgs/beam-inertia`, `override:@schemastud/seam=${root}/pkgs/seam`] }),
@@ -68,6 +73,7 @@ function scratch({ links } = {}) {
     const manifest = () => JSON.parse(readFileSync(join(repo, 'package.json'), 'utf8'));
     const hidden = () => g('ls-files', '-v', 'package.json', 'pnpm-lock.yaml').split('\n').filter(Boolean).map((l) => l[0]);
     const pnpmCalls = () => readFileSync(log, 'utf8').split('\n').filter(Boolean);
+
     return { root, repo, g, run, manifest, hidden, pnpmCalls };
 }
 
@@ -253,10 +259,12 @@ describe('scripts/js-overlay with a real pnpm', { skip: process.env.JS_OVERLAY_R
     it('links beam-inertia and override-pinned seam, and off restores the published install', () => {
         const s = scratch();
         const live = { 'beam-inertia': join(homedir(), 'Workspaces/js/packages/beam/beam-inertia'), seam: join(homedir(), 'Workspaces/js/packages/schemastud/seam') };
+
         for (const [dir, src] of Object.entries(live)) {
             rmSync(join(s.root, 'pkgs', dir), { recursive: true, force: true });
             cpSync(src, join(s.root, 'pkgs', dir), { recursive: true, filter: (p) => !p.includes('/node_modules') && !p.includes('/.git') });
         }
+
         const env = { JS_OVERLAY_PNPM: 'pnpm' };
 
         const on = s.run('on', env);

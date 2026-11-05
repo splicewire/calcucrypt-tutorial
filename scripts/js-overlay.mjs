@@ -52,42 +52,66 @@ const isOn = () => existsSync(recordedPath());
 
 function readLinks() {
     const file = join(ROOT, 'js.local.json');
+
     if (!existsSync(file)) {
         fail('no js.local.json. Copy js.local.json.dist to js.local.json and edit the paths for this machine.');
     }
+
     const links = JSON.parse(readFileSync(file, 'utf8')).links ?? [];
-    if (!Array.isArray(links) || links.length === 0) fail('js.local.json lists no links.');
+
+    if (!Array.isArray(links) || links.length === 0) {
+fail('js.local.json lists no links.');
+}
 
     return links.map((entry) => {
         const match = /^(dep|override):(.+?)=(.+)$/.exec(entry);
-        if (!match) fail(`unreadable link "${entry}" (expected dep:<name>=<path> or override:<name>=<path>)`);
+
+        if (!match) {
+fail(`unreadable link "${entry}" (expected dep:<name>=<path> or override:<name>=<path>)`);
+}
+
         const [, kind, name, raw] = match;
         const path = raw.startsWith('~/') ? join(homedir(), raw.slice(2)) : isAbsolute(raw) ? raw : resolve(ROOT, raw);
-        if (!existsSync(join(path, 'package.json'))) fail(`${name}: no package at ${path}`);
+
+        if (!existsSync(join(path, 'package.json'))) {
+fail(`${name}: no package at ${path}`);
+}
+
         return { kind, name, path };
     });
 }
 
 // Where a link lives in the manifest: [section, name] pairs a guard may treat as the overlay's own.
 function slots(manifest, link) {
-    if (link.kind === 'override') return [['pnpm.overrides', link.name]];
+    if (link.kind === 'override') {
+return [['pnpm.overrides', link.name]];
+}
+
     return ['dependencies', 'devDependencies'].filter((s) => manifest[s]?.[link.name] !== undefined).map((s) => [s, link.name]);
 }
 
 function applyLinks(manifest, links) {
     const out = structuredClone(manifest);
+
     for (const link of links) {
         const spec = `link:${link.path}`;
+
         if (link.kind === 'override') {
             out.pnpm ??= {};
             out.pnpm.overrides ??= {};
             out.pnpm.overrides[link.name] = spec;
             continue;
         }
+
         const section = ['dependencies', 'devDependencies'].find((s) => out[s]?.[link.name] !== undefined);
-        if (!section) fail(`${link.name}: not a dependency of this starter (use override: for a transitive package)`);
+
+        if (!section) {
+fail(`${link.name}: not a dependency of this starter (use override: for a transitive package)`);
+}
+
         out[section][link.name] = spec;
     }
+
     return out;
 }
 
@@ -96,26 +120,40 @@ const get = (obj, dotted) => dotted.split('.').reduce((o, k) => (o == null ? und
 // Every JSON path where a and b differ, ignoring the overlay's own link: entries.
 function driftPaths(recorded, current, links) {
     const ignored = new Set();
+
     for (const link of links) {
         for (const [section, name] of slots(recorded, link)) {
             const now = get(current, section)?.[name];
-            if (typeof now === 'string' && now.startsWith('link:')) ignored.add(`${section}.${name}`);
+
+            if (typeof now === 'string' && now.startsWith('link:')) {
+ignored.add(`${section}.${name}`);
+}
         }
     }
+
     const paths = [];
     const walk = (a, b, at) => {
-        if (ignored.has(at)) return;
+        if (ignored.has(at)) {
+return;
+}
+
         const objects = a && b && typeof a === 'object' && typeof b === 'object' && !Array.isArray(a) && !Array.isArray(b);
+
         if (!objects) {
-            if (JSON.stringify(a) !== JSON.stringify(b)) paths.push(at || '(root)');
+            if (JSON.stringify(a) !== JSON.stringify(b)) {
+paths.push(at || '(root)');
+}
+
             return;
         }
+
         for (const key of new Set([...Object.keys(a), ...Object.keys(b)])) {
             // pnpm.overrides and the dependency sections hold names with dots, so join with a separator the ignore set uses.
             walk(a[key], b[key], at ? `${at}.${key}` : key);
         }
     };
     walk(recorded, current, '');
+
     return paths;
 }
 
@@ -130,7 +168,11 @@ function guard({ checkLock = true } = {}) {
     // when `on` got as far as recording the lock; an `on` whose install failed has nothing to compare against.
     const lockDrift =
         checkLock && existsSync(recordedLockPath()) && readFileSync(join(ROOT, LOCK), 'utf8') !== readFileSync(recordedLockPath(), 'utf8');
-    if (lockDrift) drift.push(LOCK);
+
+    if (lockDrift) {
+drift.push(LOCK);
+}
+
     if (drift.length > 0) {
         fail(
             `package.json or ${LOCK} has changes beyond the overlay's link: entries, and off would discard them:\n` +
@@ -149,13 +191,17 @@ function guard({ checkLock = true } = {}) {
 function pnpm(args, hint = '') {
     const bin = process.env.JS_OVERLAY_PNPM || 'pnpm';
     const run = spawnSync(bin, args, { cwd: ROOT, stdio: 'inherit' });
-    if (run.status !== 0) fail(`${bin} ${args.join(' ')} failed (exit ${run.status}).${hint ? ` ${hint}` : ''}`);
+
+    if (run.status !== 0) {
+fail(`${bin} ${args.join(' ')} failed (exit ${run.status}).${hint ? ` ${hint}` : ''}`);
+}
 }
 
 const setHidden = (on) => git('update-index', on ? '--skip-worktree' : '--no-skip-worktree', ...HIDDEN);
 
 function refuseGitReleaseOverlay() {
     const state = resolve(ROOT, git('rev-parse', '--git-path', 'pnpm-local-overlay').trim());
+
     if (existsSync(state) || existsSync(join(ROOT, '.pnpmfile.cjs'))) {
         fail('pnpm-overlay or another pnpmfile hook is present; disable it before using legacy js-overlay. Nothing was changed.');
     }
@@ -164,13 +210,17 @@ function refuseGitReleaseOverlay() {
 function on() {
     refuseGitReleaseOverlay();
     const links = readLinks();
+
     if (isOn()) {
         // A second `on` re-applies cleanly, but never over a change. It checks the lock too: re-recording drift silently would
         // make it the baseline the next `off` discards (build.qa, against 5499f3b). --accept-lock is the operator saying so.
         guard({ checkLock: !process.argv.slice(3).includes('--accept-lock') });
     } else {
         const changed = git('status', '--porcelain', '--', ...HIDDEN).trim();
-        if (changed) fail(`uncommitted changes in ${HIDDEN.join(' / ')}; commit or revert them first, or the overlay would hide them:\n${changed}`);
+
+        if (changed) {
+fail(`uncommitted changes in ${HIDDEN.join(' / ')}; commit or revert them first, or the overlay would hide them:\n${changed}`);
+}
     }
 
     const base = JSON.parse(git('show', `:${MANIFEST}`));
@@ -190,10 +240,13 @@ function on() {
 
 function off() {
     refuseGitReleaseOverlay();
+
     if (!isOn()) {
         say('off already.');
+
         return;
     }
+
     // --discard-lock: an explicit choice to drop lock-only drift (never a package.json change), which off would restore anyway.
     guard({ checkLock: !process.argv.slice(3).includes('--discard-lock') });
 
@@ -203,20 +256,30 @@ function off() {
     pnpm(['install', '--frozen-lockfile']);
 
     const left = git('status', '--porcelain', '--', ...HIDDEN).trim();
-    if (left) fail(`off finished but git still shows changes:\n${left}`);
+
+    if (left) {
+fail(`off finished but git still shows changes:\n${left}`);
+}
+
     say('off: package.json and the lock are as committed, and the published install is restored.');
 }
 
 function status() {
     if (!isOn()) {
         say('off.');
+
         return;
     }
+
     const links = recordedLinks();
     say(`on: ${links.map((l) => `${l.kind}:${l.name} -> ${l.path}`).join(', ')}`);
 }
 
 const commands = { on, off, status };
 const command = commands[process.argv[2]];
-if (!command) fail('usage: scripts/js-overlay on|off|status');
+
+if (!command) {
+fail('usage: scripts/js-overlay on|off|status');
+}
+
 command();

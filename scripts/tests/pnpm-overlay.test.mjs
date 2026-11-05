@@ -31,10 +31,15 @@ fs.writeFileSync('pnpm-lock.yaml','lockfileVersion: 9.0\\npnpmfileChecksum: loca
 `); chmodSync(stub, 0o755);
     const run = (verb, env = {}) => spawnSync(process.execPath, [join(repo, 'scripts/pnpm-overlay.mjs'), verb], { cwd: repo, encoding: 'utf8', env: { ...process.env, PNPM_OVERLAY_PNPM: stub, PNPM_TEST_LOG: join(root, 'calls'), ...env } });
     const read = f => readFileSync(join(repo, f), 'utf8');
+
     return { root, repo, local, git, run, read, manifest };
 }
-function succeeds(p) { assert.equal(p.status, 0, p.stderr + p.stdout); }
-function refuses(p, re) { assert.notEqual(p.status, 0); assert.match(p.stderr, re); }
+function succeeds(p) {
+ assert.equal(p.status, 0, p.stderr + p.stdout); 
+}
+function refuses(p, re) {
+ assert.notEqual(p.status, 0); assert.match(p.stderr, re); 
+}
 test('enable/disable leaves manifest and index flags alone and restores exact canonical lock', () => {
     const f=fixture(); succeeds(f.run('on')); assert.equal(f.read('package.json'),f.manifest); assert.match(f.read('pnpm-lock.yaml'),/pnpmfileChecksum/);
     assert.deepEqual(f.git('ls-files','-v','package.json','pnpm-lock.yaml').split('\n').map(x=>x[0]),['H','H']);
@@ -47,16 +52,34 @@ test('hook covers transitive and optional exact specs without rewriting peer ran
     const o=h.readPackage(p); assert.equal(o.dependencies['@splicewire/beam-ux'],`link:${realpathSync(f.local)}`); assert.equal(o.optionalDependencies['@splicewire/beam-ux'],`link:${realpathSync(f.local)}`); assert.equal(o.peerDependencies['@splicewire/beam-ux'],'^0.5.0'); assert.equal(p.dependencies['@splicewire/beam-ux'],release);
     assert.throws(()=>h.readPackage({dependencies:{'@splicewire/beam-ux':'^0.5.0'}}),/exact|release/);
 });
-for (const file of ['package.json','pnpm-lock.yaml','pnpm.local.json','.pnpmfile.cjs']) test(`disable refuses ${file} drift without changing it`, () => {
+
+for (const file of ['package.json','pnpm-lock.yaml','pnpm.local.json','.pnpmfile.cjs']) {
+test(`disable refuses ${file} drift without changing it`, () => {
     const f=fixture(); succeeds(f.run('on')); const modified=f.read(file)+'\n ';writeFileSync(join(f.repo,file),modified);refuses(f.run('off'),/drift/);assert.equal(f.read(file),modified);assert.ok(existsSync(join(f.repo,'.pnpmfile.cjs')));
 });
+}
+
 test('refuses registry inputs, first-party overrides, wrong package names and non-full refs', () => {
     refuses(fixture({spec:'^0.5.0'}).run('on'),/exact|release/);refuses(fixture({overrides:true}).run('on'),/overrides/);
     const f=fixture();writeFileSync(join(f.local,'package.json'),'{"name":"wrong"}');refuses(f.run('on'),/name/);
     const g=fixture();writeFileSync(join(g.repo,'pnpm.local.json'),JSON.stringify({packages:{'@splicewire/beam-ux':{release:'github:splicewire/beam#abc',path:g.local}}}));refuses(g.run('on'),/full|exact/);
 });
 test('refuses dirty, staged and hidden-index canonical inputs', () => {
-    for(const mode of ['dirty','staged','skip','assume']) {const f=fixture();if(mode==='dirty'||mode==='staged'){writeFileSync(join(f.repo,'package.json'),f.manifest+'\n');if(mode==='staged')f.git('add','package.json');}else f.git('update-index',mode==='skip'?'--skip-worktree':'--assume-unchanged','package.json');refuses(f.run('on'),/clean|hidden|index/);assert.ok(!existsSync(join(f.repo,'.pnpmfile.cjs')));}
+    for(const mode of ['dirty','staged','skip','assume']) {
+const f=fixture();
+
+if(mode==='dirty'||mode==='staged'){
+writeFileSync(join(f.repo,'package.json'),f.manifest+'\n');
+
+if(mode==='staged'){
+f.git('add','package.json');
+}
+}else {
+f.git('update-index',mode==='skip'?'--skip-worktree':'--assume-unchanged','package.json');
+}
+
+refuses(f.run('on'),/clean|hidden|index/);assert.ok(!existsSync(join(f.repo,'.pnpmfile.cjs')));
+}
 });
 test('does not overwrite an existing hook or run over legacy overlay', () => {
     const f=fixture();writeFileSync(join(f.repo,'.pnpmfile.cjs'),'// owner hook');refuses(f.run('on'),/hook|exists/);assert.equal(f.read('.pnpmfile.cjs'),'// owner hook');

@@ -1,0 +1,157 @@
+import { Head, Link } from '@inertiajs/react';
+import { type ReactNode } from 'react';
+import { CalculatorWidget } from '@/components/calculators/calculator-widget';
+
+type Guide = App.Data.GuideData;
+type Embed = App.Data.CalculatorEmbedData;
+type CalculatorSummary = App.Data.CalculatorSummaryData;
+
+const bodyClass =
+    'max-w-none text-foreground [&_h2]:mt-8 [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-semibold [&_p]:my-4 [&_p]:leading-7 [&_p]:text-muted-foreground [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6 [&_li]:my-1 [&_a]:text-terminal-dim [&_a]:underline';
+
+const EMBED_MARKER = /<div data-embed="([^"]*)"><\/div>/g;
+
+function readingTime(html: string): number {
+    const words = html.replace(/<[^>]+>/g, ' ').trim().split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.round(words / 200));
+}
+
+function formatDate(iso: string | null): string | null {
+    if (!iso) return null;
+    const date = new Date(iso);
+    return Number.isNaN(date.getTime()) ? null : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function renderBody(html: string, embeds: Embed[]): ReactNode[] {
+    const byAnchor = new Map(embeds.map((embed) => [embed.anchor ?? '', embed]));
+    const used = new Set<string>();
+    const parts: ReactNode[] = [];
+    let lastIndex = 0;
+    let key = 0;
+    let match: RegExpExecArray | null;
+
+    EMBED_MARKER.lastIndex = 0;
+    while ((match = EMBED_MARKER.exec(html)) !== null) {
+        const before = html.slice(lastIndex, match.index);
+        if (before.trim()) {
+            parts.push(<div key={key++} className={bodyClass} dangerouslySetInnerHTML={{ __html: before }} />);
+        }
+        const embed = byAnchor.get(match[1]);
+        if (embed) {
+            used.add(match[1]);
+            parts.push(<EmbeddedCalculator key={key++} embed={embed} />);
+        }
+        lastIndex = EMBED_MARKER.lastIndex;
+    }
+
+    const rest = html.slice(lastIndex);
+    if (rest.trim()) {
+        parts.push(<div key={key++} className={bodyClass} dangerouslySetInnerHTML={{ __html: rest }} />);
+    }
+
+    for (const embed of embeds) {
+        if (!used.has(embed.anchor ?? '')) {
+            parts.push(<EmbeddedCalculator key={key++} embed={embed} />);
+        }
+    }
+
+    return parts;
+}
+
+function EmbeddedCalculator({ embed }: { embed: Embed }) {
+    return (
+        <section className="my-8 rounded-xl border border-border bg-muted/30 p-4 sm:p-5">
+            <div className="mb-4 flex items-center justify-between">
+                <p className="font-mono text-[11px] tracking-widest text-terminal-dim uppercase">{embed.spec.name}</p>
+                <Link href={`/calculators/${embed.spec.slug}`} className="font-mono text-xs text-muted-foreground hover:text-foreground">
+                    Open full tool ↗
+                </Link>
+            </div>
+            <CalculatorWidget spec={embed.spec} resolution={embed.resolution} />
+        </section>
+    );
+}
+
+// The brand promise, rendered as the dark green callout from the prototype.
+function CitedCallout({ calculator }: { calculator?: CalculatorSummary }) {
+    return (
+        <aside className="my-10 flex flex-col gap-4 rounded-xl border border-readout-border bg-readout p-6 text-readout-foreground sm:flex-row sm:items-center sm:justify-between">
+            <p className="max-w-md text-sm">
+                <span className="font-semibold text-terminal">Never stale, always cited.</span> If a number can't prove where it
+                came from, we don't show it as live.
+            </p>
+            <Link
+                href={calculator ? `/calculators/${calculator.slug}` : '/calculators'}
+                className="inline-flex w-fit items-center rounded-md bg-terminal px-4 py-2 text-sm font-medium text-terminal-foreground transition-opacity hover:opacity-90"
+            >
+                Open the full tool
+            </Link>
+        </aside>
+    );
+}
+
+function LinkCta({ calculator }: { calculator: CalculatorSummary }) {
+    return (
+        <Link href={`/calculators/${calculator.slug}`} className="block rounded-lg border border-border bg-card p-4 transition-colors hover:border-terminal">
+            <p className="font-mono text-[10px] tracking-widest text-terminal-dim uppercase">Tool</p>
+            <h3 className="mt-1 text-base font-semibold text-foreground">Open the full tool: {calculator.name}</h3>
+            <p className="mt-1.5 text-sm text-muted-foreground">{calculator.summary}</p>
+        </Link>
+    );
+}
+
+export default function GuideShow({ guide, embeds, links }: { guide: Guide; embeds: Embed[]; links: CalculatorSummary[] }) {
+    const published = formatDate(guide.publishedAt);
+    const minutes = guide.bodyHtml ? readingTime(guide.bodyHtml) : null;
+    const calloutTool = embeds[0]
+        ? { slug: embeds[0].spec.slug, name: embeds[0].spec.name, summary: embeds[0].spec.summary, computation: embeds[0].spec.computation, category: embeds[0].spec.category }
+        : links[0];
+
+    return (
+        <>
+            <Head title={guide.title} />
+            <article className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
+                <nav className="mb-6 font-mono text-xs text-muted-foreground">
+                    <Link href="/" className="hover:text-foreground">
+                        The Crypt
+                    </Link>
+                    <span className="px-1.5">/</span>
+                    <Link href="/guides" className="hover:text-foreground">
+                        Guides
+                    </Link>
+                    {guide.category && (
+                        <>
+                            <span className="px-1.5">/</span>
+                            <span className="text-foreground">{guide.category}</span>
+                        </>
+                    )}
+                </nav>
+
+                <header className="mb-8 border-b border-border pb-8">
+                    <p className="font-mono text-[11px] tracking-widest text-terminal-dim uppercase">
+                        Guide{guide.category ? ` · ${guide.category}` : ''}
+                    </p>
+                    <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">{guide.title}</h1>
+                    {guide.teaser && <p className="mt-3 text-lg text-muted-foreground">{guide.teaser}</p>}
+                    <p className="mt-4 font-mono text-xs text-muted-foreground">
+                        By the calcucrypt team
+                        {minutes ? ` · ${minutes} min read` : ''}
+                        {published ? ` · Updated ${published}` : ''}
+                    </p>
+                </header>
+
+                {guide.bodyHtml ? renderBody(guide.bodyHtml, embeds) : <p className="text-muted-foreground">This guide has no content yet.</p>}
+
+                <CitedCallout calculator={calloutTool ?? undefined} />
+
+                {links.length > 0 && (
+                    <div className="space-y-3 border-t border-border pt-8">
+                        {links.map((calculator) => (
+                            <LinkCta key={calculator.slug} calculator={calculator} />
+                        ))}
+                    </div>
+                )}
+            </article>
+        </>
+    );
+}

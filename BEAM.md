@@ -1,16 +1,15 @@
 ---
-satellite: laravel-beam-starter
+satellite: calcucrypt-tutorial
 variant: inertia-react
 adopts: [account]
 deviations: []
 deltas: []
 ---
 
-# laravel-beam-starter — Beam Manifest
+# calcucrypt-tutorial — Beam Manifest
 
-This manifest identifies `splicewire/laravel-beam-starter`, the beam-tier application template.
-An application created from it must set `satellite` to its own identity and review the adopted
-surfaces and deviations for its deployment.
+This manifest identifies `splicewire/calcucrypt-tutorial`, an application created from
+`splicewire/laravel-beam-starter`. It keeps the starter's adopted surfaces unchanged.
 
 The manifest follows the beam runbook's `references/conformance.md`: it records intentional
 departures and detected base-flow gaps. The empty lists above do not attest to a completed

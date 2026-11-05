@@ -5,7 +5,10 @@ import { ApiReference, configureDocs } from '@splicewire/beam-docs';
 import { Callout, Card, CardGrid, DoctorOutput, FileTree, Figure, SectionLanding, Step, Steps, Terminal } from '@splicewire/beam-mdx/kit';
 import { beamDocsPages } from '@splicewire/beam-docs/pages';
 import '@splicewire/beam-ux/tokens-docs.css';
+// The 14-segment LCD face behind Calcucrypt's readout and wordmark.
+import 'dseg/css/dseg.css';
 import { authFeatures } from './beam';
+import SiteLayout from './layouts/site-layout';
 import { ServiceDeskTheme } from './service-desk-theme';
 
 const pages = import.meta.glob<PageModule>([
@@ -38,6 +41,11 @@ configureDocs();
 createInertiaApp({
     ...options,
     layout: (name) => {
+        // Calcucrypt's public pages wear its own site chrome (layouts/site-layout.tsx).
+        if (name.startsWith('calculators/') || name.startsWith('guides/')) {
+            return SiteLayout;
+        }
+
         const layouts = options.layout(name);
 
         if (name !== 'frame/console') {

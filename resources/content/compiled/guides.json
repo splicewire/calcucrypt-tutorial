@@ -1,0 +1,42 @@
+[
+  {
+    "slug": "crypto-taxes-end-to-end",
+    "frontmatter": {
+      "title": "Crypto taxes, end to end",
+      "teaser": "Cost basis, holding period, and capital gains — the three numbers behind a crypto tax bill, and how they fit together.",
+      "category": "tax",
+      "status": "published",
+      "publishedAt": "2026-07-02T00:00:00Z",
+      "calculators": [
+        {
+          "slug": "crypto-capital-gains",
+          "mode": "embed",
+          "anchor": "capital-gains"
+        },
+        {
+          "slug": "crypto-profit",
+          "mode": "link"
+        }
+      ]
+    },
+    "html": "<h2>Three numbers, in order</h2>\n<p>A crypto tax estimate is a short chain. You start from what you paid — your <strong>cost basis</strong>. You measure how long you held, because the <strong>holding period</strong> decides whether a gain is taxed at the higher short-term rate or the lower long-term one. Then you apply the rate to the gain to get the <strong>tax owed</strong>.</p>\n<p>Get the order right and the arithmetic is simple. Get it wrong and you can misjudge a bill by the entire difference between the two rate bands.</p>\n<h2>Put it together</h2>\n<p>The capital-gains calculator runs the whole chain: proceeds minus basis is the gain, the days you held pick the rate, and the tax comes out with your net proceeds beside it.</p>\n<div data-embed=\"capital-gains\"></div>\n<h2>The supporting numbers</h2>\n<p>Two more numbers feed the estimate above. When you have bought in several lots, work out a single <strong>cost basis</strong> and average per-unit basis first. When a sale is close to the one-year line, check the <strong>holding period</strong> to see whether waiting moves you into long-term treatment.</p>\n<p>If you only want the plain gain or loss against a live price — before any tax treatment — the profit calculator is the quickest read. Prices it shows carry their source and as-of time, so you know exactly when each figure was observed.</p>"
+  },
+  {
+    "slug": "how-crypto-profit-works",
+    "frontmatter": {
+      "title": "How crypto profit really works",
+      "teaser": "The simple formula behind every gain and loss — and why a cited, live price is the only one worth trusting.",
+      "category": "profit",
+      "status": "published",
+      "publishedAt": "2026-07-08T00:00:00Z",
+      "calculators": [
+        {
+          "slug": "crypto-profit",
+          "mode": "embed",
+          "anchor": "profit"
+        }
+      ]
+    },
+    "html": "<h2>The formula behind profit</h2>\n<p>Your profit is what your holdings are worth right now minus what they cost you. Cost is the amount you bought multiplied by your buy price; current value is that same amount multiplied by the live market price.</p>\n<p>Try it with a real, live price below — change the amount or your buy price and watch it recompute instantly:</p>\n<div data-embed=\"profit\"></div>\n<h2>Why &quot;cited&quot; matters</h2>\n<p>The sell price above is a live fact: it carries its source and the moment it was observed. When you cite every number, &quot;never stale&quot; and &quot;always trustworthy&quot; come for free — you can see exactly where each figure came from.</p>"
+  }
+]

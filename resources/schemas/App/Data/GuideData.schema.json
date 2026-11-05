@@ -1,0 +1,46 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "GuideData",
+    "properties": {
+        "slug": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string"
+        },
+        "teaser": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "bodyHtml": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "category": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "publishedAt": {
+            "type": [
+                "string",
+                "null"
+            ]
+        }
+    },
+    "required": [
+        "slug",
+        "title",
+        "teaser",
+        "bodyHtml",
+        "category",
+        "publishedAt"
+    ],
+    "$id": "GuideData"
+}

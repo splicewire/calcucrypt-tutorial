@@ -31,28 +31,8 @@ jobs:
         with:
           node-version: '22'
 
-      # splicewire/laravel-beam-docs is PRIVATE and resolves with no dist, so `composer install` must
-      # git-clone it; anonymously that dies on "Authentication failed". The beam tier's other
-      # first-party packages are public, but one private package is enough to need the token. Same App
-      # and same two steps as laravel-satellite-starter's tests.yml and this repo's deploy.yml.
-      #
-      # ⚠️ Fork pull requests get no org secret, so the mint fails there and the run stays red.
-      - name: Mint a GitHub App installation token (private family repos)
-        id: gh-app
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        with:
-          app-id: ${{ vars.GH_APP_ID }}
-          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-          # `owner` is load-bearing and easy to leave off: without it the action logs "Inputs
-          # 'owner' and 'repositories' are not set. Creating token for this repository" and mints a
-          # token scoped to the STARTER alone — which authenticates, so the clone fails with
-          # "Invalid username or token" rather than anything naming the scope. The packages being
-          # cloned are siblings in the same org, so the token has to be org-wide.
-          owner: ${{ github.repository_owner }}
-
-      - name: Configure git to use the installation token
-        run: git config --global url."https://x-access-token:${{ steps.gh-app.outputs.token }}@github.com/".insteadOf "https://github.com/"
-
+      # Every dependency is public, so the install needs no token: a stranger's clone installs the
+      # same way this job does.
       - name: Enable pnpm
         # `composer setup` step 5 is `pnpm install`, and the ubuntu runner image ships npm and yarn
         # only. corepack reads package.json's `packageManager` pin, so CI and a developer's machine
@@ -72,8 +52,10 @@ jobs:
         id: setup-tree
         run: git status --porcelain --untracked-files=all > "$RUNNER_TEMP/setup-tree.txt"
 
-      - name: Run CI Checks
-        run: composer ci:check
+      # The chapter's suites: Pest on sqlite :memory: and Vitest over the calculator engine. Both run
+      # keyless; the default FACTS_DRIVER=fixture prices every calculator offline.
+      - name: Run the tests
+        run: composer test && pnpm test
 
       # `always()` so a failing ci:check still reports a dirty tree too; the outcome guard so a setup
       # that never finished cannot produce a misleading "dirty tree" failure on top of its real one.

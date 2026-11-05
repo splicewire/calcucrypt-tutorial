@@ -12,6 +12,9 @@
  */
 @import '@splicewire/beam-ux/theme.css';
 
+/* Calcucrypt's LCD face, terminal green and device-screen tokens. */
+@import './calcucrypt.css';
+
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 

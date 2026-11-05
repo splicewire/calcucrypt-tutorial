@@ -34,6 +34,7 @@ class UngatedWriteTest extends TestCase
             'POST beam/accounts/tokens' => 'APP-08b: a user\'s own API tokens; declare the self-service ability',
             'POST beam/accounts/tokens/{id}/renew' => 'APP-08b: a user\'s own API tokens; declare the self-service ability',
             'POST beam/accounts/tokens/{id}/rotate' => 'APP-08b: a user\'s own API tokens; declare the self-service ability',
+            'POST calculators/{calculator}/resolve' => 'tutorial chapter 3: the hand-rolled resolve route, replaced by the declared calculators.resolve operation',
             'PUT beam/accounts/members/{id}/role' => 'gated in the handler: assertOwner (team owner only), which the audit cannot see; APP-08b: express it as an ability',
             'PUT settings/password' => 'self-service by design: the caller\'s own profile and password (the starter kit\'s settings)',
         ];

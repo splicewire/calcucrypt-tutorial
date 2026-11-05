@@ -1,37 +1,32 @@
-> You are in **splicewire/laravel-beam-starter** — the Laravel + React starter kit for scaffolding new beam-tier applications.
+> You are in **splicewire/calcucrypt-tutorial**: Calcucrypt's calculators, rebuilt on
+> `splicewire/laravel-beam-starter` one chapter at a time. This repository is the tutorial's code;
+> each chapter is one commit and one tag.
 
-A Laravel starter kit (Inertia + React 19 + TypeScript + Tailwind + shadcn/ui) that scaffolds new
-applications on the `splicewire/laravel-beam` stack, installed via the beam-tier installer
-(`composer setup` → `splicewire:beam:install`).
+## Layout of the history
+
+| tag | what the commit does |
+|---|---|
+| `start` | The starter, plus Calcucrypt's calculator engine (PHP and TypeScript, supplied as is), four calculators, two Guides, a keyless `FixtureConnector`, and the hand-rolled controller the tutorial replaces. |
+| `ch-02` | Declare the `calculators` and `guides` particle resources; the pages render their projections. |
+| `ch-03` | `resolve` becomes the declared, validated `calculators.resolve` operation; the widget calls the generated client. |
+| `ch-04` | Team plans: paid calculators carry an entitlement key, and a host resolver grants the current team's plan. |
+| `ch-05` | Gate the data: a locked calculator ships no graph and no resolution, and `resolve` answers 403. |
+| `ch-06` | Sell a plan on the commerce fake rail. |
+
+**A chapter is a commit, so history is rewritten only by re-tagging.** Change a chapter by amending
+its commit and rebasing the later chapters onto it, then move every later tag. Never add a fix-up
+commit between two chapter tags: the tutorial's code blocks are read against `git show ch-NN`.
+
+## Rules
+
+- No private package and no API key. `composer.lock` and `pnpm-lock.yaml` resolve from public
+  sources only, and the default `FACTS_DRIVER=fixture` prices every calculator offline.
+- Run PHP through your PHP 8.4 (`composer test`). The suite runs on sqlite `:memory:`.
+- `scripts/parity-check` compares this app at `ch-06` with Calcucrypt for the four calculators. It
+  needs a Calcucrypt checkout, so it is a maintainer tool; readers never need it.
 
 ## Vendored family-package conventions
 
 Any repo that vendors another family repo's code (composer `vendor/<vendor>/<pkg>/`, npm
 `node_modules/<vendor>/<pkg>/`) checks that vendored repo's own `AGENTS.md` for conventions it
 ships with itself before editing through into it.
-
-## Starter lineage — you are the head of the chain
-
-```
-laravel-beam-starter  →  laravel-satellite-starter  →  laravel-tower-starter
-```
-
-This is real git ancestry, not a convention: each child's history sits on top of its parent's, so a
-child propagates with `git merge upstream/main`. It was not always so — the children were originally
-squashed scaffolds whose fork lineage existed only in their first commit message. It was restored by
-replaying each child onto its parent (beam-docs-satellite ticket 12).
-
-**Propagation is strictly downstream. Nothing merges upward.** A fix that applies beyond its own
-tier lands *here* first and rides down. Authoring it on satellite or tower strands it: this repo can
-never merge it back, and the next catch-up merge will fight it.
-
-Downstream repos each carry `upstream` pointing at their parent, and run:
-
-```bash
-git fetch upstream && git merge upstream/main
-```
-
-A catch-up merge **takes everything**, including files for packages that tier doesn't require —
-packages gate behaviour, so an inert file is not a wrong file. Rejecting content to keep a tier
-"clean" is what makes every later merge re-propose the same files. The genuine tier deltas are each
-repo's `composer.json`, `composer.local.json.dist`, `AGENTS.md`, `README.md`, and its own tier code.

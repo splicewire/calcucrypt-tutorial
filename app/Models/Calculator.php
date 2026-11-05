@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Carbon;
+use Splicewire\Beam\Accounts\Entitlements\BundleRegistry;
 
 /**
  * A reusable, embeddable micro-tool modelled as a graph of Steps (CONTEXT.md "Calculator").
@@ -23,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property string $computation
  * @property array<string, mixed> $graph
  * @property CalculatorStatus $status
+ * @property string|null $entitlement the key a plan must hold to use it; null when it is free
  * @property string|null $primary_post_id
  * @property Carbon|null $published_at
  * @property Carbon|null $expired_at
@@ -73,6 +75,27 @@ class Calculator extends Model
     public function primaryGuide(): BelongsTo
     {
         return $this->belongsTo(Post::class, 'primary_post_id');
+    }
+
+    /**
+     * The cheapest plan that unlocks this calculator: the first bundle declared in
+     * `config/beam/accounts.php` that lists its entitlement. Null for a free calculator.
+     */
+    public function requiredPlan(): ?string
+    {
+        if ($this->entitlement === null) {
+            return null;
+        }
+
+        $bundles = app(BundleRegistry::class);
+
+        foreach ($bundles->names() as $plan) {
+            if (in_array($this->entitlement, $bundles->keysFor($plan), true)) {
+                return $plan;
+            }
+        }
+
+        return null;
     }
 
     public function isPublished(): bool

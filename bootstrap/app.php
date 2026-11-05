@@ -45,6 +45,12 @@ return Application::configure(basePath: dirname(__DIR__))
             // the tenant key. ~/Herd/schemastud does the equivalent through `frame.middleware`.
             'splicewire.team',
         ]);
+
+        // `/api/*` is stateless by default, so a signed-in browser calling the API would arrive as a
+        // guest, and a paying user would be refused a paid calculator. `statefulApi()` lets requests
+        // from this site's own pages (Sanctum's stateful domains) carry the session cookie and its
+        // CSRF token, while every other caller stays stateless.
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Never flash the camel secrets back into old input on a validation failure (the snake ones are framework defaults).

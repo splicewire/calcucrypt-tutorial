@@ -23,6 +23,15 @@
                 "string",
                 "null"
             ]
+        },
+        "locked": {
+            "type": "boolean"
+        },
+        "requiredPlan": {
+            "type": [
+                "string",
+                "null"
+            ]
         }
     },
     "required": [
@@ -30,7 +39,9 @@
         "name",
         "summary",
         "computation",
-        "category"
+        "category",
+        "locked",
+        "requiredPlan"
     ],
     "$id": "CalculatorSummaryData"
 }

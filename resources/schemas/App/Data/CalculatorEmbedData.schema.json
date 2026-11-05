@@ -13,7 +13,14 @@
             "$ref": "#/$defs/CalculatorSpecData"
         },
         "resolution": {
-            "$ref": "#/$defs/CalculatorResolutionData"
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/CalculatorResolutionData"
+                },
+                {
+                    "type": "null"
+                }
+            ]
         }
     },
     "required": [
@@ -49,7 +56,19 @@
                     ]
                 },
                 "graph": {
-                    "type": "object"
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "locked": {
+                    "type": "boolean"
+                },
+                "requiredPlan": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -58,7 +77,9 @@
                 "summary",
                 "computation",
                 "category",
-                "graph"
+                "graph",
+                "locked",
+                "requiredPlan"
             ]
         },
         "FactData": {

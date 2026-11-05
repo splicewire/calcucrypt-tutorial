@@ -1,6 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
 import { type ReactNode } from 'react';
 import { CalculatorWidget } from '@/components/calculators/calculator-widget';
+import { LockedCalculator } from '@/components/calculators/locked-calculator';
+import { LockBadge } from '@/components/crypt/cards';
 
 type Guide = App.Data.GuideData;
 type Embed = App.Data.CalculatorEmbedData;
@@ -67,7 +69,11 @@ function EmbeddedCalculator({ embed }: { embed: Embed }) {
                     Open full tool ↗
                 </Link>
             </div>
-            <CalculatorWidget spec={embed.spec} resolution={embed.resolution} />
+            {embed.spec.locked || embed.resolution === null ? (
+                <LockedCalculator spec={embed.spec} compact />
+            ) : (
+                <CalculatorWidget spec={embed.spec} resolution={embed.resolution} />
+            )}
         </section>
     );
 }
@@ -93,7 +99,10 @@ function CitedCallout({ calculator }: { calculator?: CalculatorSummary }) {
 function LinkCta({ calculator }: { calculator: CalculatorSummary }) {
     return (
         <Link href={`/calculators/${calculator.slug}`} className="block rounded-lg border border-border bg-card p-4 transition-colors hover:border-terminal">
-            <p className="font-mono text-[10px] tracking-widest text-terminal-dim uppercase">Tool</p>
+            <div className="flex items-start justify-between gap-2">
+                <p className="font-mono text-[10px] tracking-widest text-terminal-dim uppercase">Tool</p>
+                {calculator.locked && <LockBadge plan={calculator.requiredPlan} />}
+            </div>
             <h3 className="mt-1 text-base font-semibold text-foreground">Open the full tool: {calculator.name}</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">{calculator.summary}</p>
         </Link>
@@ -103,9 +112,8 @@ function LinkCta({ calculator }: { calculator: CalculatorSummary }) {
 export default function GuideShow({ guide, embeds, links }: { guide: Guide; embeds: Embed[]; links: CalculatorSummary[] }) {
     const published = formatDate(guide.publishedAt);
     const minutes = guide.bodyHtml ? readingTime(guide.bodyHtml) : null;
-    const calloutTool = embeds[0]
-        ? { slug: embeds[0].spec.slug, name: embeds[0].spec.name, summary: embeds[0].spec.summary, computation: embeds[0].spec.computation, category: embeds[0].spec.category }
-        : links[0];
+    // A spec carries every field of a summary, so an embed can stand in for a link card here.
+    const calloutTool: CalculatorSummary | undefined = embeds[0]?.spec ?? links[0];
 
     return (
         <>

@@ -92,6 +92,7 @@ class ContentSync extends Command
                 'name' => $definition->name(),
                 'summary' => $definition->summary(),
                 'computation' => $definition->computation(),
+                'entitlement' => $definition->entitlement(),
                 'category_id' => $categories[$definition->category()]->getKey(),
                 'status' => $definition->status(),
                 'graph' => $definition->graph(),

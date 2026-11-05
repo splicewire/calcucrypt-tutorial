@@ -11,13 +11,10 @@ use Spatie\Activitylog\Facades\LogBatch;
 use Spatie\Activitylog\Models\Activity;
 use Splicewire\Beam\Taxonomy\Models\Silo;
 use Splicewire\Beam\Taxonomy\Models\Tag;
-use Tests\Concerns\MigratesTenantDirectoryCentrally;
 use Tests\TestCase;
 
 class LocalMarketplaceDependenciesTest extends TestCase
 {
-    use MigratesTenantDirectoryCentrally;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -26,7 +23,6 @@ class LocalMarketplaceDependenciesTest extends TestCase
         }
         $this->assertSame(':memory:', config('database.connections.sqlite.database'));
         $this->artisan('migrate:fresh')->assertExitCode(0);
-        $this->migrateTenantDirectoryUnlessCentral();
         $this->artisan('migrate', ['--path' => 'examples/local-marketplace/migrations'])->assertExitCode(0);
         config(['app.key' => 'base64:'.base64_encode(str_repeat('m', 32)), 'scout.driver' => 'collection', 'scout.queue' => false, 'scout.prefix' => 'marketplace-proof_']);
         Language::factory()->create(['code' => 'en', 'default' => true]);

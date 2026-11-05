@@ -7,13 +7,11 @@ use App\Models\User;
 use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Splicewire\Beam\Workflows\Control\WorkflowHistory;
-use Tests\Concerns\MigratesTenantDirectoryCentrally;
 use Tests\Concerns\RefusesServedDatabase;
 use Tests\TestCase;
 
 class RequestApprovalInspectionTest extends TestCase
 {
-    use MigratesTenantDirectoryCentrally;
     use RefusesServedDatabase;
 
     protected function setUp(): void
@@ -21,7 +19,6 @@ class RequestApprovalInspectionTest extends TestCase
         parent::setUp();
         $this->assertScratchDatabase();
         $this->artisan('migrate:fresh')->assertExitCode(0);
-        $this->migrateTenantDirectoryUnlessCentral();
         config(['app.key' => 'base64:'.base64_encode(str_repeat('i', 32))]);
         $this->withoutVite();
         $this->seed(\Database\Seeders\ServiceRequestApprovalSeeder::class);

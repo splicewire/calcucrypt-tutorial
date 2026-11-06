@@ -4,6 +4,7 @@ namespace App\Data;
 
 use App\Models\Calculator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Gate;
 use Schemastud\DataSchemas\Attributes\Title;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -19,6 +20,10 @@ use Splicewire\Beam\Particle\Attributes\ParticleResource;
  *
  * The attribute declares; the host routes. `routes/api.php` mounts it, and the tool page renders
  * the same projection.
+ *
+ * A paid calculator the reader's plan does not cover is **locked**: it is still listed and
+ * described, but its `graph` is null, so the math never leaves the server. The page, the API and
+ * a Guide's embed all read this one projection, so none of them can show more than it does.
  */
 #[ParticleResource(
     key: 'calculators',
@@ -36,7 +41,7 @@ use Splicewire\Beam\Particle\Attributes\ParticleResource;
 class CalculatorSpecData extends Data
 {
     /**
-     * @param  array<string, mixed>  $graph
+     * @param  array<string, mixed>|null  $graph  null when the calculator is locked
      */
     public function __construct(
         public string $slug,
@@ -44,7 +49,9 @@ class CalculatorSpecData extends Data
         public ?string $summary,
         public string $computation,
         public ?string $category,
-        public array $graph,
+        public ?array $graph,
+        public bool $locked,
+        public ?string $requiredPlan,
     ) {}
 
     /**
@@ -58,15 +65,23 @@ class CalculatorSpecData extends Data
         return $query->published();
     }
 
+    /**
+     * The reader is whoever is signed in; a guest is null. `CalculatorPolicy::resolve()` decides
+     * who may use the calculator, so seeing the graph and resolving it follow one rule.
+     */
     public static function project(Calculator $calculator): self
     {
+        $locked = Gate::denies('resolve', $calculator);
+
         return new self(
             slug: $calculator->slug,
             name: $calculator->name,
             summary: $calculator->summary,
             computation: $calculator->computation,
             category: $calculator->category?->name,
-            graph: $calculator->graph,
+            graph: $locked ? null : $calculator->graph,
+            locked: $locked,
+            requiredPlan: $calculator->requiredPlan(),
         );
     }
 }

@@ -38,6 +38,11 @@ class PositionSizeCalculator extends CalculatorDefinition
         return 'trader';
     }
 
+    public function entitlement(): ?string
+    {
+        return 'calculators.'.$this->slug();
+    }
+
     public function primaryGuide(): ?string
     {
         return 'trade-like-a-risk-manager';

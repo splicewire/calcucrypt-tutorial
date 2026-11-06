@@ -61,6 +61,16 @@ return [
     'entitlements' => [
         'bundles' => [
             'staff' => ['ux.author', 'os.enter', 'os.operate'],
+            // The plans a team can hold. Each bundle lists the entitlement keys its plan unlocks; `free`
+            // has no bundle, so a free team holds no calculator keys. The resolver is
+            // App\Auth\CalcucryptEntitlementResolver.
+            'trader' => [
+                'calculators.crypto-position-size',
+            ],
+            'pro' => [
+                'calculators.crypto-position-size',
+                'calculators.crypto-capital-gains',
+            ],
         ],
         'default_staff_bundle' => 'staff',
         'staff_roles' => ['staff', 'operator'],

@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Account\StarterAccountShell;
 use App\Beam\RealmRegistry;
+use App\Content\Calculators\CalculatorDefinition;
+use App\Content\Calculators\CalculatorRegistry;
 use App\Data\SitemapData;
 use App\Doctor\OrphanedNavItemAudit;
 use App\Models\SitemapRecord;
@@ -41,6 +43,26 @@ class AppServiceProvider extends ServiceProvider
             AccountShellProvider::class,
             StarterAccountShell::class,
         );
+
+        $this->registerCalculatorEntitlements();
+    }
+
+    /**
+     * Tell Beam about every paid calculator's entitlement key, so it defines an
+     * `entitlement:calculators.{slug}` gate for each. Beam defines those gates in its own boot(),
+     * so the keys must be in place during register().
+     */
+    protected function registerCalculatorEntitlements(): void
+    {
+        $keys = array_filter(array_map(
+            fn (CalculatorDefinition $definition): ?string => $definition->entitlement(),
+            (new CalculatorRegistry)->all(),
+        ));
+
+        config(['beam.core.entitlements.keys' => array_values(array_unique([
+            ...(array) config('beam.core.entitlements.keys', []),
+            ...$keys,
+        ]))]);
     }
 
     /**

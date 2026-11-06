@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Splicewire\Beam\Ux\Access\EntryRequirement;
 use Splicewire\Beam\Ux\Compile\EntryArtifactStore;
@@ -34,10 +33,6 @@ class HomePreviewTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Publishing writes through beam-ux's disk mirror, a tracked directory (resources/beam-ux/). Fake it before
-        // the first publish, which is when the mirror resolves its disk, so these cases leave no page file in the
-        // checkout (the EntryBodyTransportTest convention).
-        Storage::fake(config('beam.ux.storage.mirror_disk', 'beam-ux'));
         $this->home = BeamUxEntry::create(['slug' => 'home', 'type' => UxType::Page, 'format' => 'tsx', 'realm' => 'site',
             'namespace' => config('beam.ux.namespace', 'starter')]);
         $pub = app(EntryPublication::class);
@@ -83,48 +78,6 @@ class HomePreviewTest extends TestCase
         $this->assertStringContainsString('What the Release says.', implode('', $previewed->json('props.head')));
         $this->assertStringNotContainsString('noindex', implode('', $previewed->json('props.head')),
             'a guest-readable requirement is not a reason to suppress the preview head');
-    }
-
-    public function test_the_preview_head_is_composed_from_the_page_at_the_end_of_its_chain(): void
-    {
-        // A home under a parent: the chain is [parent, home], and the head is the home's, never its parent's.
-        $parent = BeamUxEntry::create(['slug' => 'front', 'type' => UxType::Page, 'format' => 'tsx', 'realm' => 'site',
-            'title' => 'The parent page', 'namespace' => config('beam.ux.namespace', 'starter')]);
-        // Published, as the home is: an unpublished parent would hide the chain and test the refusal instead.
-        $pub = app(EntryPublication::class);
-        $pub->publishVersion($parent->fresh(), $pub->recordDraft($parent, [$this->node('The parent page')])->headVersion);
-        $this->home->forceFill(['parent_id' => $parent->getKey()])->save();
-
-        $draft = app(EntryPublication::class)->recordDraft($this->home->fresh(), [$this->node('Previewed home')],
-            pageSettings: new EntryPageSettingsData(title: 'The previewed home'))->headVersion;
-        $cookie = $this->openLink($this->release('Nested', $draft));
-
-        $previewed = $this->withCookie(ResolvePreviewContext::COOKIE, $cookie)->withHeaders($this->inertia())->get('/');
-
-        $previewed->assertOk();
-        $this->assertStringContainsString('The previewed home', $previewed->json('props.head.0'));
-        $this->assertStringNotContainsString('The parent page', $previewed->json('props.head.0'));
-    }
-
-    public function test_a_preview_chain_the_guest_may_not_read_composes_no_head(): void
-    {
-        // The gate refuses the chain (a requirement that denies guests), so no metadata about it is composed.
-        $this->home->forceFill(['requirements' => ['preview-guest-denied']])->save();
-        app()->instance('beam.ux.requirement.preview-guest-denied', new class implements EntryRequirement
-        {
-            public function allows(?Authenticatable $actor, BeamUxEntry $entry): bool
-            {
-                return false;
-            }
-        });
-
-        $draft = app(EntryPublication::class)->recordDraft($this->home->fresh(), [$this->node('Previewed home')],
-            pageSettings: new EntryPageSettingsData(title: 'A refused front door'))->headVersion;
-        $cookie = $this->openLink($this->release('Refused', $draft));
-
-        $previewed = $this->withCookie(ResolvePreviewContext::COOKIE, $cookie)->withHeaders($this->inertia())->get('/');
-
-        $this->assertSame([], $previewed->json('props.head'));
     }
 
     public function test_a_home_the_preview_takes_down_answers_not_found_there_and_stays_live(): void

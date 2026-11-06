@@ -5,17 +5,14 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Splicewire\Beam\Ux\Publish\EntryPublication;
-use Tests\Concerns\RefusesServedDatabase;
 use Tests\TestCase;
 
 final class CanonicalMdxReviewTest extends TestCase
 {
-    use RefusesServedDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->assertScratchDatabase();
+        $this->assertSame(':memory:', config('database.connections.sqlite.database'));
         $this->artisan('migrate:fresh')->assertExitCode(0);
         $this->withoutVite();
     }
@@ -37,7 +34,7 @@ final class CanonicalMdxReviewTest extends TestCase
             $_ENV['BEAM_CANONICAL_MDX_REVIEW_ENABLED'] = 'true';
             $_SERVER['BEAM_CANONICAL_MDX_REVIEW_ENABLED'] = 'true';
             $this->refreshApplication();
-            $this->assertScratchDatabase();
+            $this->assertSame(':memory:', config('database.connections.sqlite.database'));
             $this->artisan('migrate:fresh')->assertExitCode(0);
             $this->withoutVite();
             $this->assertTrue(config('canonical-mdx.enabled'));

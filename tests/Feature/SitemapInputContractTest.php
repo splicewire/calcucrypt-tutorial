@@ -7,7 +7,6 @@ use App\Models\SitemapRecord;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Tests\TestCase;
@@ -27,10 +26,10 @@ class SitemapInputContractTest extends TestCase
     private function databaseRows(): array
     {
         $tables = [];
-        foreach (Schema::getTableListing() as $table) {
-            $rows = DB::table($table)->get()->map(fn ($row) => json_encode($row, JSON_THROW_ON_ERROR))->all();
+        foreach (DB::select("select name from sqlite_master where type = 'table' and name not like 'sqlite_%' order by name") as $table) {
+            $rows = DB::table($table->name)->get()->map(fn ($row) => json_encode($row, JSON_THROW_ON_ERROR))->all();
             sort($rows);
-            $tables[$table] = $rows;
+            $tables[$table->name] = $rows;
         }
 
         return $tables;

@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Data\SitemapData;
+use App\Sitemap\NavItem;
 use App\Sitemap\RecordLeaf;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Rushing\PermissionCascade\Attributes\UseCascadePolicy;
-use Splicewire\Beam\Ux\Nav\NavItem;
 
 /**
  * The record leaf's persistence (kind A). A plain uuid + `payload`/`meta` json store — so a

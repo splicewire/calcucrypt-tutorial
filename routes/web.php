@@ -1,9 +1,12 @@
 <?php
 
+use App\Data\Pages\FrameConsolePageData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Schemastud\Frame\Http\Controllers\FrameManifestController;
 use Splicewire\Beam\Authorization\SeatGate;
+use Splicewire\Beam\Dashboard\RealmDashboard;
 use Splicewire\Beam\Ux\Data\Pages\EntryPageData;
 use Splicewire\Beam\Ux\Head\PageHead;
 use Splicewire\Beam\Ux\Head\PageHeadComposer;
@@ -40,10 +43,8 @@ Route::get('/', function (Request $request) {
     if ($model !== null && $context instanceof PreviewContext) {
         // A preview is an immutable view of the Release's entries and ancestry. Never fall
         // back to live ancestry here: it can differ from the version the guest is previewing.
-        // The chain is root-first and ends at the page, or null when the gate refuses it. Taken as a list, the page
-        // is its last node; an empty or refused chain composes no head, as a refused one always has.
-        $chain = array_values(app(PublicEntryGate::class)->chainForEntry($model, 'site', null, $context) ?? []);
-        $head = $chain === []
+        $chain = app(PublicEntryGate::class)->chainForEntry($model, 'site', null, $context);
+        $head = $chain === null
             ? []
             : app(PageHeadComposer::class)
                 ->compose(
@@ -148,6 +149,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // twice.
     Route::splicewireAccountApiRoutes(middleware: []);
 
+    // The OPERATOR realm's front door (frontend-surfaces.md). It lands on the realm's DASHBOARD LEAF —
+    // `/operator/dashboard`, the `operator-dashboard` read-only resource `splicewire/laravel-beam-ux`
+    // registers for every realm (realm-dashboards ticket 04) and the operator frame console below
+    // serves: a frame list whose rows are the realm's summary cards (live, actor-scoped counts of the
+    // resources the rail seats) and its jump-to tiles (the rail itself, drawn as tiles).
+    //
+    // This replaces the hand-rolled landing: three counts computed inline here (`OperatorStatsData`)
+    // and rendered by the packaged `operator/dashboard` page. Those figures now come from each
+    // resource's summary provider through `GET /frame/resources/operator-dashboard`, gated per resource
+    // by the same reach the rail is, so this host writes no count and no page. The path is derived from
+    // the same constant the leaf is mounted from, not spelled twice.
+    //
+    // Gated on the `os.operate` entitlement — the same gate as the console it redirects into, so the
+    // door is never softer than the room. A non-staff user is 403'd HERE, before the redirect.
+    Route::get('operator', fn () => redirect()->to('/operator/'.RealmDashboard::PATH))
+        ->middleware('can:entitlement:os.operate')
+        ->name('operator.home');
+
     // The OS-SHELL desktop (frontend-surfaces.md). The windowed realm composer. Route-gated on the
     // projected `os.enter` entitlement (`can:entitlement:os.enter`); the shell itself does the fusion pivot
     // off shared `can['os.enter']` (entitled → desktop, else app-first). Staff hold it via the
@@ -219,16 +238,80 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // ── The OPERATOR FRAME CONSOLE mount ────────────────────────────────────────────────────────────────
 //
-// `splicewire/laravel-beam-ux`'s realm-console macro: the operator realm's front door (`operator.home`, a redirect
-// to its dashboard leaf), its manifest (`operator.frame.manifest`, frame's own controller with `defaults('realm')`)
-// and its console (`operator.frame.console`, constrained to the realm's projected leaves and declared seats, with
-// `RealmConsolePageData`'s three props). The door is the realm's own gate (`can:entitlement:os.operate`), so the
-// console cannot be a softer door than the dashboard behind it. Registered BEFORE `Route::beamUxSite()`, whose
-// `{path}` catch-all would otherwise take the realm's URLs.
+// The same packaged page as the tenant console above, mounted a second time for a second realm — which
+// is the shape the foundation already documented and nothing had ever built:
+// `Schemastud\Frame\Registry\NavManifest::realmFor()` reads the matched route's `defaults['realm']`
+// and its docblock says outright that "a host mounts the same controller once per realm".
 //
-// The tenant console above stays hand-mounted: the macro refuses a realm at `/`, whose console is the host's root
-// mount (no prefix, no home, frame's own unscoped manifest, and the absent props `dashboard` shares).
-Route::beamRealmConsole('operator', ['auth', 'verified']);
+// ⚠️ Measured on fresh-tower.test 2026-09-11, and this mount was TRIED AND REVERTED then, on purpose.
+// `RouteContextProjector::hrefs('operator')` projects `/operator/users`, `/operator/users/:id`,
+// `/operator/teams`, `/operator/teams/:id`, and all four 404'd because the console above is built from
+// `hrefs('tenant')` alone. Adding the mount made them serve — and the console rendered "No surface
+// here", because `@splicewire/beam-inertia`'s `pages/frame/console.tsx` fetched a hardcoded
+// `/frame/manifest` and mounted `<BrowserRouter>` with no basename, while this realm's `routeContext`
+// paths are realm-RELATIVE (`users`) and its nav hrefs realm-PREFIXED (`/operator/users`). One packaged
+// console, one manifest URL, one root basename ⇒ exactly one servable realm per host. The client half
+// now takes the three props below, so this is a mount again rather than a half-landed experiment.
+//
+// THREE THINGS, spelled out because they are facts about an EXPOSURE and the route file owns those
+// (api-surface-coherence 141):
+//   · `realm`       — the manifest cache key, so a second realm's console cannot be served the first's
+//                     manifest out of react-query's cache.
+//   · `basename`    — `<BrowserRouter basename>`, so realm-relative leaves match under `/operator`.
+//   · `manifestUrl` — this realm's own manifest mount, below.
+//
+// Gated on the SAME entitlement as `/operator` itself, so the console cannot be a softer door than the
+// dashboard it sits beside. The frame socket behind it is gated independently and per resource by
+// `Splicewire\Beam\Realm\RealmEntitlementResourceGate` — this middleware is the door, not the lock.
+Route::middleware(['auth', 'verified', 'can:entitlement:os.operate'])
+    ->prefix('operator')
+    ->name('operator.frame.')
+    ->group(function (): void {
+        // This realm's manifest. `->defaults('realm', 'operator')` is the whole mechanism:
+        // `NavManifest::realmFor()` reads it off the matched route and `FrameNavContribution` projects
+        // the operator realm's nav and routeContext instead of the `beam.ux.frame_nav.default_realm`
+        // fallback the root mount rides.
+        Route::get('frame/manifest', FrameManifestController::class)
+            ->defaults('realm', 'operator')
+            ->name('manifest');
+
+        // DERIVED, never written down — the same rule as the tenant mount. `hrefs('operator')` returns
+        // realm-PREFIXED hrefs (`/operator/users`), so the base is stripped back off to get the
+        // route-relative segment this prefixed group needs.
+        $hrefs = rescue(function (): array {
+            $paths = array_values(app(Splicewire\Beam\Ux\Frame\RouteContextProjector::class)->hrefs('operator'));
+
+            // Every seat DECLARED for the realm, not the seats some viewer is shown. Routes are registered
+            // once, with no actor, so the gated nav projection here was a GUEST's nav: its section hrefs
+            // mounted only while a resource with no read boundary kept a seat populated for everyone.
+            // Mounting a seat's path serves the console shell; what it lists is the read boundary's call.
+            $sections = array_map(
+                fn (Splicewire\Beam\Nav\NavSection $seat): string => $seat->href,
+                app(Splicewire\Beam\Nav\NavSectionRegistry::class)->for('operator')
+            );
+
+            return array_filter([...$paths, ...$sections]);
+        }, [], false);
+
+        $segments = array_values(array_filter(array_unique(array_map(
+            function (string $href): string {
+                $relative = ltrim(Illuminate\Support\Str::after($href, '/operator'), '/');
+
+                return explode('/', $relative)[0];
+            },
+            $hrefs
+        ))));
+
+        if ($segments !== []) {
+            Route::get('{frameRoute}', fn () => Inertia::render('frame/console', FrameConsolePageData::from([
+                'realm' => 'operator',
+                'basename' => '/operator',
+                'manifestUrl' => '/operator/frame/manifest',
+            ])))
+                ->where('frameRoute', '('.implode('|', array_map(fn (string $s): string => preg_quote($s, '/'), $segments)).')(\/[^\/]+)?')
+                ->name('console');
+        }
+    });
 
 // The PUBLIC ENTRY RENDERER (ADR-0209 §2) — resolves any unclaimed URL against the `site` realm's
 // containment tree and renders the entry through `resources/js/pages/site/entry.tsx`. This is what

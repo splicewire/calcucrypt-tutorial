@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Data\Pages\FrameConsolePageData;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -13,7 +14,6 @@ use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Models\Membership;
 use Splicewire\Beam\Accounts\Models\Team;
 use Splicewire\Beam\Accounts\Sharing\AccessGrants;
-use Splicewire\Beam\Ux\Data\Pages\RealmConsolePageData;
 use Splicewire\Beam\Ux\Models\BeamUxEntry;
 use Tests\TestCase;
 
@@ -151,7 +151,7 @@ class OperatorFrameManifestTest extends TestCase
     }
 
     /**
-     * The console's props are the macro's declared {@see RealmConsolePageData}, and the page's own props are
+     * The console's props are a declared {@see FrameConsolePageData}, and the page's own props are
      * EXACTLY `FrameRealmContext`'s three keys — shared props aside. A key renamed or added on either
      * side then fails here instead of rendering "No surface here" in the browser.
      */
@@ -172,6 +172,6 @@ class OperatorFrameManifestTest extends TestCase
             ['realm' => 'operator', 'basename' => '/operator', 'manifestUrl' => '/operator/frame/manifest'],
             $ownProps,
         );
-        $this->assertSame(array_keys($ownProps), array_keys(RealmConsolePageData::empty()));
+        $this->assertSame(array_keys($ownProps), array_keys(FrameConsolePageData::empty()));
     }
 }

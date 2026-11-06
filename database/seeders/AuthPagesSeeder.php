@@ -2,12 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Beam\RealmRegistry;
 use Illuminate\Database\Seeder;
-use Splicewire\Beam\Ux\Models\BeamUxEntry;
-use Splicewire\Beam\Ux\Provenance\Reasserter;
-use Splicewire\Beam\Ux\Publish\EntryPublication;
-use Splicewire\Beam\Ux\Type\UxType;
 use Splicewire\Beam\Write\AsSystemWriter;
+use Splicewire\Beam\Ux\Models\BeamUxEntry;
+use Splicewire\Beam\Ux\Publish\EntryPublication;
+use Splicewire\Beam\Ux\Provenance\Reasserter;
+use Splicewire\Beam\Ux\Type\UxType;
 
 /**
  * Seeds the 7 auth-page `beam_ux_entries` rows (theme-entries-and-authoring STR-03) —
@@ -33,18 +34,6 @@ use Splicewire\Beam\Write\AsSystemWriter;
 class AuthPagesSeeder extends Seeder
 {
     use AsSystemWriter;
-
-    /**
-     * The realm key the auth pages anchor to. The fold retired `auth` as a KIT realm
-     * ({@see \Splicewire\Beam\Realm\RealmProfiles}: "`account` and `auth` are not realms") and removed
-     * the old `App\Beam\RealmRegistry::REALM_AUTH` constant along with the whole host `RealmRegistry`.
-     * A host still provisions a containment root for its OWN non-kit realm key via
-     * `BeamUxEntry::rootFor()` (a find-or-create that does not validate against the kit realms), so this
-     * host-local seeder now owns the `auth` key itself. Behaviour-preserving: the `auth` realm root is
-     * still provisioned and every entry still carries `realm`/`realms` = `auth`, so the `author-ux-auth`
-     * grant cascade resolves exactly as before — only the dangling dependency on the retired class is gone.
-     */
-    private const REALM_AUTH = 'auth';
 
     /** slug => [entry title (admin label), island component name, heading, description]. */
     private const PAGES = [
@@ -89,7 +78,7 @@ class AuthPagesSeeder extends Seeder
         // realm-grant cascade generally) can never resolve TRUE for anyone, no matter how broad their
         // grant, since `DefaultEntitlementResolver` only composes a realm key a grantee holds `manage`
         // on a REAL root row for.
-        BeamUxEntry::rootFor(self::REALM_AUTH);
+        BeamUxEntry::rootFor(RealmRegistry::REALM_AUTH);
 
         foreach (self::PAGES as $slug => [$title, $island, $heading, $description]) {
             $this->seedOne($slug, $title, $island, $heading, $description);
@@ -107,8 +96,8 @@ class AuthPagesSeeder extends Seeder
                 'type' => UxType::Page,
                 'format' => 'tsx',
                 'title' => $title,
-                'realm' => self::REALM_AUTH,
-                'realms' => [self::REALM_AUTH],
+                'realm' => RealmRegistry::REALM_AUTH,
+                'realms' => [RealmRegistry::REALM_AUTH],
             ],
             $body,
             'package:splicewire/laravel-beam-starter/auth-pages',

@@ -58,7 +58,7 @@ class IntakeAndRegistrationSwitchesTest extends TestCase
         // The rerun: Ref comes only from beam-mdx's root entry, and importing it crashed the starter's bundle on boot.
         $this->assertFalse($kit['ref'], 'the starter has no <Ref> renderer');
         $this->assertStringContainsString('VITE_BEAM_UX_MDX_HOLDS_BLOCKS="${BEAM_UX_MDX_HOLDS_BLOCKS}"', file_get_contents($root.'/.env.example'));
-        $this->assertStringContainsString("components: import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true'", $app);
+        $this->assertStringContainsString($this->squashWhitespace("components: import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true'"), $this->squashWhitespace($app));
         $registered = substr($app, strpos($app, 'components:'), strpos($app, 'pages:') - strpos($app, 'components:'));
         foreach (['Callout', 'Steps', 'Step', 'Figure', 'Terminal', 'SectionLanding', 'CardGrid', 'Card', 'DoctorOutput', 'FileTree'] as $component) {
             $this->assertMatchesRegularExpression('/\b'.$component.'\b/', $registered, "{$component} is registered");
@@ -76,7 +76,7 @@ class IntakeAndRegistrationSwitchesTest extends TestCase
         $root = dirname(__DIR__, 2);
         $app = file_get_contents($root.'/resources/js/app.tsx');
 
-        $this->assertStringContainsString("mdxHoldsBlocks: import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true'", $app);
+        $this->assertStringContainsString($this->squashWhitespace("mdxHoldsBlocks: import.meta.env.VITE_BEAM_UX_MDX_HOLDS_BLOCKS === 'true'"), $this->squashWhitespace($app));
         $registered = substr($app, strpos($app, 'components:'), strpos($app, 'pages:') - strpos($app, 'components:'));
         $this->assertMatchesRegularExpression('/\bApiReference\b/', $registered, 'ApiReference is registered where MDX pages hold blocks');
 
@@ -94,5 +94,16 @@ class IntakeAndRegistrationSwitchesTest extends TestCase
         $this->assertStringContainsString('VITE_ACCOUNT_REGISTRATION="${ACCOUNT_REGISTRATION}"', $env);
         $this->assertStringContainsString("intakeForms: import.meta.env.VITE_BEAM_INTAKE_ENABLED === 'true'", file_get_contents($root.'/resources/js/app.tsx'));
         $this->assertStringContainsString("import.meta.env.VITE_ACCOUNT_REGISTRATION === 'open'", file_get_contents($root.'/resources/js/beam.ts'));
+    }
+
+    /**
+     * Collapse runs of whitespace to a single space so a prettier line-wrap of a long config
+     * expression reads the same as its single-line form. beam-dx 84504222: applied ONLY to the two
+     * formatting-sensitive MDX-config assertions (components: / mdxHoldsBlocks VITE_BEAM_UX_MDX_HOLDS_BLOCKS).
+     * It collapses whitespace, never tokens, so a changed condition or value still fails the assertion.
+     */
+    private function squashWhitespace(string $value): string
+    {
+        return (string) preg_replace('/\s+/', ' ', $value);
     }
 }

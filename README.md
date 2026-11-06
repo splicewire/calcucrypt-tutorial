@@ -89,19 +89,11 @@ See `app/Data/SitemapData.php` for the editable sitemap declaration. This regist
 Frame; a REST API is an explicit host decision using `Particle::mount()` inside the chosen middleware.
 The attribute does not create the model, table or policy and does not mount that REST exposure.
 
-For the historical private-request API/UI checkpoint, follow [Service requests](docs/examples/service-request.md):
-a model/table/policy, separate read and input Data, authenticated create/list/show, generated routes
-and response types, a cookie-free TypeScript client, and schema-driven create/list/read-only-detail
-with automatic list return on a fresh localhost fixture.
-
-Follow the [local team creation and invitation guide](docs/examples/service-desk-team.md)
-for the historical account onboarding checkpoint. Continue with the current
-[shared team queue](docs/examples/service-desk-team-requests.md), including live membership
-authority, creator attribution, outsider denial and migration of the application contract.
-Then inspect [existing Theme entitlements](docs/examples/service-desk-entitlements.md) with
-a guarded local grant/revoke fixture and the separate role/feature boundaries.
-Continue to [resource content branding](docs/examples/service-desk-branding.md) with the existing
-Theme editor and a scoped host token mapping.
+To build an application on this starter end to end, follow the Calcucrypt tutorial: its code is
+[splicewire/calcucrypt-tutorial](https://github.com/splicewire/calcucrypt-tutorial), whose `start`
+tag sits on a commit of this repository and adds one tagged chapter at a time: declared resources
+from the scaffolders, a validated `#[ParticleOp]`, team plans and entitlements, data gated by
+entitlement, and selling a plan on the commerce fake rail.
 
 ## Checks
 
@@ -193,9 +185,6 @@ All contributions to the Starter Kits from now on should be made through [Maestr
 In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
 ## File authoring examples
-
-- [Theme drafts and fixed-version Release publication](docs/examples/service-desk-releases.md): explicit local package adoption, fresh/upgrade recipe and published consumer.
-- [Local Release recording and Files recovery](docs/examples/service-desk-recording.md): member-only Git effects, separate failure, same-receipt retry and history SHA.
 
 - [Canonical MDX body takes](docs/examples/canonical-mdx-file-draft.md): explicit draft replacement, unchanged publication and safe retained-compilation warnings.
 

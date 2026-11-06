@@ -179,19 +179,3 @@
     background-image: radial-gradient(var(--dotted-dot) 1px, transparent 1px);
     background-size: 16px 16px;
 }
-
-/* Console content consumes the published Theme; outer chrome keeps its own tokens.
- * Missing shared values retain this host's existing light/dark primary defaults. */
-.service-desk-theme {
-    display: contents;
-    --primary: var(--desk-accent, oklch(0.205 0 0));
-    --primary-foreground: var(--desk-accent-foreground, oklch(0.985 0 0));
-    /* Tailwind's generated utilities read these aliases; rebind them in this scope. */
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
-}
-
-.dark .service-desk-theme {
-    --primary: var(--desk-dark-accent, oklch(0.985 0 0));
-    --primary-foreground: var(--desk-dark-accent-foreground, oklch(0.205 0 0));
-}

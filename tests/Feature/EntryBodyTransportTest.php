@@ -182,11 +182,11 @@ class EntryBodyTransportTest extends TestCase
 
             public function targetFor(string $recordType, ?int $version = null): array
             {
-                return $recordType === 'service-request' ? $this->schema : [];
+                return $recordType === 'contact-request' ? $this->schema : [];
             }
         });
         $form = ['kind' => 'block', 'name' => 'IntakeForm', 'isComponent' => true, 'dynamic' => false, 'id' => '01a1f000-0000-7000-8000-000000000001',
-            'props' => [['name' => 'captureKey', 'kind' => 'string', 'value' => 'service-request']], 'children' => []];
+            'props' => [['name' => 'captureKey', 'kind' => 'string', 'value' => 'contact-request']], 'children' => []];
         $this->app->instance(\Splicewire\Beam\Ux\Bindings\PublishedBindingDocument::class, new class([$form]) extends \Splicewire\Beam\Ux\Bindings\PublishedBindingDocument
         {
             public function __construct(private array $body) {}
@@ -196,12 +196,12 @@ class EntryBodyTransportTest extends TestCase
                 return $entry->slug === 'home' ? $this->body : [];
             }
         });
-        config(['beam.core.intake.enabled' => true, 'beam.core.intake.public_schemas' => ['service-request'], 'beam.core.intake.honeypot.field' => 'nickname']);
+        config(['beam.core.intake.enabled' => true, 'beam.core.intake.public_schemas' => ['contact-request'], 'beam.core.intake.honeypot.field' => 'nickname']);
 
         $this->get('/')
             ->assertSuccessful()
             ->assertInertia(fn ($page) => $page->where('entry.id', (string) $entry->getKey())
-                ->where('intakeForms', ['service-request' => $schema])
+                ->where('intakeForms', ['contact-request' => $schema])
                 ->where('intakeHoneypotField', 'nickname'));
     }
 

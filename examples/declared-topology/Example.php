@@ -26,7 +26,7 @@ final class IncompleteMeasurement extends \RuntimeException
 /** A bounded teaching example, not a filesystem authorizer or a global graph binding. */
 final class Example
 {
-    public const NAMES = ['fixture/contracts', 'fixture/service-desk'];
+    public const NAMES = ['fixture/contracts', 'fixture/orders'];
 
     public static function directory(string $path): string
     {
@@ -107,7 +107,7 @@ final class Example
         $fixture = self::location($root, $fixture);
         // Walk before any manifest read: a symlinked package directory must not be followed.
         $files = array_keys(self::snapshot($fixture));
-        $expected = ['.openrig-scratch-owner.json', 'canary.txt', 'fixture/contracts/composer.json', 'fixture/service-desk/composer.json'];
+        $expected = ['.openrig-scratch-owner.json', 'canary.txt', 'fixture/contracts/composer.json', 'fixture/orders/composer.json'];
         if ($files !== $expected) {
             throw new InvalidArgumentException('Incomplete or unexpected fixture file scope');
         }
@@ -125,14 +125,14 @@ final class Example
                     throw new InvalidArgumentException('Missing endpoint or unsupported dependency');
                 }
             }
-            if ($name === 'fixture/service-desk') {
+            if ($name === 'fixture/orders') {
                 if (array_keys($require) !== ['fixture/contracts'] || ($manifest['extra']['package-topology'] ?? null) !== [
                     'mustRequire' => ['fixture/contracts'],
-                    'mustBeInstalled' => ['fixture/service-desk', 'fixture/contracts'],
+                    'mustBeInstalled' => ['fixture/orders', 'fixture/contracts'],
                 ]) {
-                    throw new InvalidArgumentException('Expected nonempty service-desk declarations');
+                    throw new InvalidArgumentException('Expected nonempty orders declarations');
                 }
-            } elseif (isset($manifest['extra']) || ! in_array(array_keys($require), [[], ['fixture/service-desk']], true)) {
+            } elseif (isset($manifest['extra']) || ! in_array(array_keys($require), [[], ['fixture/orders']], true)) {
                 throw new InvalidArgumentException('Unexpected contracts declaration');
             }
         }
@@ -147,9 +147,9 @@ final class Example
     {
         $fixture = self::validate($root, $fixture);
         $before = self::snapshot($fixture);
-        $contract = (new DeclaredContractSource($fixture, ['fixture/*']))->contract('service-desk-example');
+        $contract = (new DeclaredContractSource($fixture, ['fixture/*']))->contract('orders-example');
         $source = new ComposerManifestGraphSource($fixture, ['fixture/*'], named: $contract->packagesNamed());
-        $store = $factory === null ? RelationalDriverFactory::make($source, 'service-desk-example') : $factory($source);
+        $store = $factory === null ? RelationalDriverFactory::make($source, 'orders-example') : $factory($source);
         $result = self::measure($contract, $store, $fixture, $source);
         if (self::snapshot($fixture) !== $before) {
             throw new InvalidArgumentException('Fixture changed during inspection');
@@ -201,13 +201,13 @@ final class Example
             || count(scandir($fixture)) !== 3) {
             throw new InvalidArgumentException('Prepare requires an empty registered fixture');
         }
-        mkdir($fixture.'/fixture/service-desk', 0700, true);
+        mkdir($fixture.'/fixture/orders', 0700, true);
         mkdir($fixture.'/fixture/contracts', 0700, true);
-        $desk = ['name' => 'fixture/service-desk', 'require' => ['fixture/contracts' => '*'], 'extra' => ['package-topology' => [
-            'mustRequire' => ['fixture/contracts'], 'mustBeInstalled' => ['fixture/service-desk', 'fixture/contracts'],
+        $orders = ['name' => 'fixture/orders', 'require' => ['fixture/contracts' => '*'], 'extra' => ['package-topology' => [
+            'mustRequire' => ['fixture/contracts'], 'mustBeInstalled' => ['fixture/orders', 'fixture/contracts'],
         ]]];
-        $contracts = ['name' => 'fixture/contracts', 'require' => $cyclic ? ['fixture/service-desk' => '*'] : new \stdClass];
-        file_put_contents($fixture.'/fixture/service-desk/composer.json', json_encode($desk, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)."\n");
+        $contracts = ['name' => 'fixture/contracts', 'require' => $cyclic ? ['fixture/orders' => '*'] : new \stdClass];
+        file_put_contents($fixture.'/fixture/orders/composer.json', json_encode($orders, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)."\n");
         file_put_contents($fixture.'/fixture/contracts/composer.json', json_encode($contracts, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)."\n");
         file_put_contents($fixture.'/canary.txt', "Unrelated fixture bytes stay unchanged.\n");
         self::validate($root, $fixture);

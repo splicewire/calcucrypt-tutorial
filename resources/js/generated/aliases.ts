@@ -5,7 +5,6 @@
 
 // Friendly, non-namespaced re-exports of each return DTO (the `type X = App.Data.Y` bridges).
 
-export type ApprovalUsageData = import("./App/Data").ApprovalUsageData;
 export type AuthUserData = import("./Splicewire/Beam/Accounts/Data").AuthUserData;
 export type BeamUxEntryBodyData = import("./Splicewire/Beam/Ux/Data").BeamUxEntryBodyData;
 export type BeamUxEntryBodyInputData = import("./Splicewire/Beam/Ux/Data").BeamUxEntryBodyInputData;
@@ -13,7 +12,6 @@ export type DocsSearchResultsData = import("./Splicewire/Beam/Docs/Data").DocsSe
 export type EntryMakeEditableOutputData = import("./Splicewire/Beam/Ux/Data").EntryMakeEditableOutputData;
 export type EntryPublicationData = import("./Splicewire/Beam/Ux/Data").EntryPublicationData;
 export type EntrySourceData = import("./Splicewire/Beam/Ux/Data").EntrySourceData;
-export type ExternalRequestData = import("./App/Data").ExternalRequestData;
 export type FileInspectionData = import("./Splicewire/Beam/Ux/Data").FileInspectionData;
 export type FileReconcileResultData = import("./Splicewire/Beam/Ux/Data").FileReconcileResultData;
 export type InvitationAcceptedData = import("./Splicewire/Beam/Accounts/Data").InvitationAcceptedData;
@@ -21,7 +19,4 @@ export type PageEntryRefData = import("./Splicewire/Beam/Ux/Data").PageEntryRefD
 export type ReleaseData = import("./Splicewire/Beam/Ux/Data").ReleaseData;
 export type ReleaseFilesData = import("./Splicewire/Beam/Ux/Data").ReleaseFilesData;
 export type ReleaseRecordingData = import("./Splicewire/Beam/Ux/Data").ReleaseRecordingData;
-export type ReadRequestApprovalHistoryOutputData = import("./App/Data").ReadRequestApprovalHistoryOutputData;
-export type ServiceRequestData = import("./App/Data").ServiceRequestData;
 export type TeamData = import("./Splicewire/Beam/Accounts/Data").TeamData;
-export type WorkflowTransitionAttemptData = import("./Splicewire/Beam/Workflows/Data").WorkflowTransitionAttemptData;

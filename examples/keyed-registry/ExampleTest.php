@@ -68,7 +68,7 @@ final class ExampleTest extends TestCase
     {
         foreach (['reader', 'operator', 'trusted-tooling-reader'] as $fixture) {
             $json = json_encode(Example::view($fixture), JSON_THROW_ON_ERROR);
-            foreach (['Request inspection', 'SLA inspection', 'example/service-desk', 'view-sla', 'Filtered', 'Absent', 'candidates'] as $internal) {
+            foreach (['Request inspection', 'SLA inspection', 'example/orders', 'view-sla', 'Filtered', 'Absent', 'candidates'] as $internal) {
                 self::assertStringNotContainsString($internal, $json);
             }
             self::assertSame(['context', 'fixture', 'visibleKeys', 'nodes', 'edges'], array_keys(Example::view($fixture)));

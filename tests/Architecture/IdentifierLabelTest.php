@@ -63,7 +63,6 @@ class IdentifierLabelTest extends TestCase
             'Splicewire\Beam\Ux\Data\SitemapHealthRowData' => 'APP-09b: declare #[Title] (beam-ux)',
             'Splicewire\Beam\Ux\Type\UxType' => 'APP-09b: declare ProvidesEnumLabel (beam-ux)',
             'Splicewire\Beam\Workflows\Data\WorkflowProjectionData' => 'APP-09b: declare #[Title] (beam-workflows)',
-            'Splicewire\Beam\Workflows\Data\WorkflowTransitionAttemptData' => 'APP-09b: declare #[Title] (beam-workflows)',
             'Splicewire\Beam\Workflows\Data\WorkflowTransitionRequestData' => 'APP-09b: declare #[Title] (beam-workflows)',
         ];
     }

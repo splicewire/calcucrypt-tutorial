@@ -40,17 +40,17 @@ final class ExampleTest extends TestCase
         self::assertSame([], $clean['violations']);
         self::assertSame(Example::NAMES, array_column($clean['nodes'], 'id'));
         self::assertSame([true, true], array_column($clean['nodes'], 'installed'));
-        self::assertSame([['from' => 'fixture/service-desk', 'type' => 'REQUIRES', 'to' => 'fixture/contracts']], $clean['edges']);
+        self::assertSame([['from' => 'fixture/orders', 'type' => 'REQUIRES', 'to' => 'fixture/contracts']], $clean['edges']);
         self::assertSame($before, Example::snapshot($this->fixture));
         $file = $this->fixture.'/fixture/contracts/composer.json';
         $bytes = file_get_contents($file);
-        file_put_contents($file, json_encode(['name' => 'fixture/contracts', 'require' => ['fixture/service-desk' => '*']], JSON_THROW_ON_ERROR));
+        file_put_contents($file, json_encode(['name' => 'fixture/contracts', 'require' => ['fixture/orders' => '*']], JSON_THROW_ON_ERROR));
         $cyclic = Example::inspect($this->root, $this->fixture);
         self::assertCount(2, $cyclic['edges']);
         self::assertNotEmpty($cyclic['violations']);
         self::assertSame('acyclic', $cyclic['violations'][0]['kind']);
         self::assertStringContainsString('fixture/contracts', $cyclic['violations'][0]['message']);
-        self::assertStringContainsString('fixture/service-desk', $cyclic['violations'][0]['message']);
+        self::assertStringContainsString('fixture/orders', $cyclic['violations'][0]['message']);
         file_put_contents($file, $bytes);
         self::assertSame($clean, Example::inspect($this->root, $this->fixture));
         self::assertSame($before, Example::snapshot($this->fixture));
@@ -66,14 +66,14 @@ final class ExampleTest extends TestCase
     public function test_empty_scope_is_not_clean(): void
     {
         unlink($this->fixture.'/fixture/contracts/composer.json');
-        unlink($this->fixture.'/fixture/service-desk/composer.json');
+        unlink($this->fixture.'/fixture/orders/composer.json');
         $this->expectException(InvalidArgumentException::class);
         Example::inspect($this->root, $this->fixture);
     }
 
     public function test_missing_endpoint_refuses_incomplete_input(): void
     {
-        $file = $this->fixture.'/fixture/service-desk/composer.json';
+        $file = $this->fixture.'/fixture/orders/composer.json';
         $data = Example::json($file);
         $data['require'] = ['fixture/missing' => '*'];
         file_put_contents($file, json_encode($data));
@@ -144,14 +144,14 @@ final class ExampleTest extends TestCase
     public function test_duplicate_identity_is_invalid_instead_of_overwritten(): void
     {
         $file = $this->fixture.'/fixture/contracts/composer.json';
-        file_put_contents($file, '{"name":"fixture/service-desk","require":{}}');
+        file_put_contents($file, '{"name":"fixture/orders","require":{}}');
         $this->expectException(InvalidArgumentException::class);
         Example::inspect($this->root, $this->fixture);
     }
 
     public function test_missing_declarations_cannot_pass_on_acyclic_append_alone(): void
     {
-        $file = $this->fixture.'/fixture/service-desk/composer.json';
+        $file = $this->fixture.'/fixture/orders/composer.json';
         $data = Example::json($file);
         unset($data['extra']);
         file_put_contents($file, json_encode($data));

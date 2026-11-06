@@ -30,14 +30,6 @@ return [
 
     'disks' => [
 
-        // Optional licensed-marketplace example: private downloads only through registry auth.
-        'marketplace-registry' => [
-            'driver' => 'local',
-            'root' => env('SERVICE_DESK_MARKETPLACE_REGISTRY_ROOT', storage_path('app/private/marketplace-registry')),
-            'serve' => false,
-            'throw' => true,
-        ],
-
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),

@@ -49,8 +49,8 @@ final class Example
             onKeyDuplicate: OnKeyDuplicate::Reject,
             populationRequirement: PopulationRequirement::Required,
         ));
-        $registry->register('requests.list', 'Request inspection', by: 'example/service-desk');
-        $registry->register('sla.inspect', 'SLA inspection', by: 'example/service-desk', ability: 'view-sla');
+        $registry->register('requests.list', 'Request inspection', by: 'example/orders');
+        $registry->register('sla.inspect', 'SLA inspection', by: 'example/orders', ability: 'view-sla');
         // Ability declarations alone do NOT filter: install the actual native Authorizer.
         $registry->authorizeWith($policy);
 

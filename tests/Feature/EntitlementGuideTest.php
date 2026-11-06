@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Laravel\Sanctum\Sanctum;
 use Rushing\PermissionCascade\Contracts\AccessGrant;
 use Rushing\PermissionCascade\Contracts\EntitlementResolver;
 use Splicewire\Beam\Accounts\Enums\Role;
@@ -28,7 +27,7 @@ class EntitlementGuideTest extends TestCase
         $this->withoutVite();
     }
 
-    public function test_entitlement_aggregates_eligible_teams_while_requests_use_the_selected_team(): void
+    public function test_entitlement_aggregates_eligible_teams_whichever_team_is_selected(): void
     {
         $provisioner = app(TeamProvisioner::class);
         $ownerA = User::factory()->create();
@@ -50,14 +49,6 @@ class EntitlementGuideTest extends TestCase
         $this->assertFalse($member->fresh()->can('ux.author'));
         $this->assertFalse($ownerB->fresh()->can('ux.author'));
         $this->assertNotContains('os.operate', app(EntitlementResolver::class)->entitlementsFor($actor->fresh()));
-        Sanctum::actingAs($ownerA->fresh());
-        $a = $this->postJson('/api/service-requests', ['title' => 'A only'])->assertCreated()->json('data.id');
-        Sanctum::actingAs($ownerB->fresh());
-        $b = $this->postJson('/api/service-requests', ['title' => 'B queue'])->assertCreated()->json('data.id');
-        Sanctum::actingAs($actor->fresh());
-        $this->getJson('/api/service-requests/'.$a)->assertNotFound();
-        $this->getJson('/api/service-requests/'.$b)->assertOk();
-        $this->getJson('/api/service-requests')->assertOk()->assertJsonCount(1, 'data');
     }
 
     public function test_revoke_closes_the_existing_valid_shaped_write_without_body_or_version_changes(): void

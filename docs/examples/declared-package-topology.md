@@ -27,15 +27,15 @@ while reading. Preparation adds an unrelated canary; inspection never writes.
 
 The clean vendor-style tree has exactly two manifests:
 
-`fixture/service-desk/composer.json`:
+`fixture/orders/composer.json`:
 
 ```json
 {
-  "name":"fixture/service-desk",
+  "name":"fixture/orders",
   "require":{"fixture/contracts":"*"},
   "extra":{"package-topology":{
     "mustRequire":["fixture/contracts"],
-    "mustBeInstalled":["fixture/service-desk","fixture/contracts"]
+    "mustBeInstalled":["fixture/orders","fixture/contracts"]
   }}
 }
 ```
@@ -47,7 +47,7 @@ The clean vendor-style tree has exactly two manifests:
 ```
 
 The cyclic fixture changes **only** contracts' require map to
-`{"fixture/service-desk":"*"}`. This is a reverse dependency, not a fabricated
+`{"fixture/orders":"*"}`. This is a reverse dependency, not a fabricated
 violation message. No package version solver runs on these files.
 
 ## Read clean, cyclic, then clean again
@@ -87,9 +87,9 @@ use Rushing\PackageTopology\Evaluator\TopologyEvaluator;
 use Rushing\PackageTopology\Sources\ComposerManifestGraphSource;
 use Rushing\PackageTopology\Sources\DeclaredContractSource;
 
-$contract = (new DeclaredContractSource($fixture, ['fixture/*']))->contract('service-desk-example');
+$contract = (new DeclaredContractSource($fixture, ['fixture/*']))->contract('orders-example');
 $source = new ComposerManifestGraphSource($fixture, ['fixture/*'], named: $contract->packagesNamed());
-$store = RelationalDriverFactory::make($source, 'service-desk-example');
+$store = RelationalDriverFactory::make($source, 'orders-example');
 // The example requires ComputeStore AND EnumerableStore and their advertised capabilities.
 $evaluator = new TopologyEvaluator;
 $violations = $evaluator->evaluate($contract, $store, $fixture, $source);

@@ -47,8 +47,8 @@ $registry = new BasicRegistry(new IsRegistry(
     onKeyDuplicate: OnKeyDuplicate::Reject,
     populationRequirement: PopulationRequirement::Required,
 ));
-$registry->register('requests.list', 'Request inspection', by: 'example/service-desk');
-$registry->register('sla.inspect', 'SLA inspection', by: 'example/service-desk', ability: 'view-sla');
+$registry->register('requests.list', 'Request inspection', by: 'example/orders');
+$registry->register('sla.inspect', 'SLA inspection', by: 'example/orders', ability: 'view-sla');
 $registry->authorizeWith(LocalPolicy::fixture('reader')); // real Authorizer, allowed=[]
 $source = new RegistryGraphSource($registry);
 $store = RelationalDriverFactory::make($source, 'keyed-registry-example');

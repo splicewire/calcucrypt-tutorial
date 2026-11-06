@@ -4,7 +4,6 @@
     "packageManager": "pnpm@9.15.3",
     "type": "module",
     "scripts": {
-        "example:service-request": "node scripts/service-request-client.mjs",
         "build": "pnpm run types:check && vite build",
         "build:ssr": "pnpm run types:check && vite build && vite build --ssr",
         "dev": "composer types:generate && vite",
@@ -13,9 +12,7 @@
         "lint": "eslint . --fix",
         "lint:check": "eslint .",
         "types:check": "composer types:generate && tsc --noEmit && tsc -p tsconfig.generated.json",
-        "beam:verify-prototype-boundary": "beam-verify-prototype-boundary",
-        "example:external-requests": "node scripts/external-request-client.mjs",
-        "example:approval-usage": "node scripts/approval-usage-client.mjs"
+        "beam:verify-prototype-boundary": "beam-verify-prototype-boundary"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
 use Rushing\PermissionCascade\Contracts\AccessGrant;
+use Splicewire\Beam\Accounts\Entitlements\DefaultEntitlementResolver;
 use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Models\Membership;
 use Splicewire\Beam\Accounts\Models\Team;
@@ -58,7 +59,14 @@ class RealmAuthoringGatesTest extends TestCase
         $staff = $staff->fresh();
 
         foreach ($this->realms() as $realm) {
-            $this->assertTrue($staff->can($this->authorAbility($realm)));
+            if (in_array($realm, DefaultEntitlementResolver::SEAT_REALMS, true)) {
+                // A read seat (beam-accounts): its grant composes the realm's view entitlement, never authoring.
+                $this->assertFalse($staff->can($this->authorAbility($realm)), "{$realm} is a read seat, not authored");
+
+                continue;
+            }
+
+            $this->assertTrue($staff->can($this->authorAbility($realm)), "{$realm} is authored by its realm grant");
         }
     }
 

@@ -7,12 +7,12 @@ import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { route } from '@/lib/routes';
 
-type MutationVars = { params?: Record<string, string | number>; body?: unknown };
-type MutationOpts<T> = Omit<Partial<UseMutationOptions<T, Error, MutationVars>>, 'mutationFn'>;
+type MutationOpts<T, V> = Omit<Partial<UseMutationOptions<T, Error, V>>, 'mutationFn'>;
 
-export function useTeamsStore(options?: MutationOpts<import("../Splicewire/Beam/Accounts/Data").TeamData>) {
+export type TeamsStoreVars = { body: import("../Splicewire/Beam/Accounts/Data").CreateTeamInputData };
+export function useTeamsStore(options?: MutationOpts<import("../Splicewire/Beam/Accounts/Data").TeamData, TeamsStoreVars>) {
     return useMutation({
-        mutationFn: async (vars: MutationVars) => {
+        mutationFn: async (vars: TeamsStoreVars) => {
             const res = await api.post(route('teams.store'), vars.body);
             return res.data.data as import("../Splicewire/Beam/Accounts/Data").TeamData;
         },

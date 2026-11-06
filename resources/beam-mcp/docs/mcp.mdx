@@ -1,0 +1,22 @@
+---
+title: MCP Tool Catalog
+segment: mcp
+nav_order: 20
+---
+
+# MCP Tool Catalog
+
+The tools this deployment declares for the Model Context Protocol (MCP), and how to connect an AI client to them.
+
+## Connecting an AI client
+
+{{ mcp_servers }}
+
+A tool listed below is callable only through a mounted server, and only as far as that server and your access allow.
+
+## Declared tools
+
+The tools registered in this deployment. A mounted server decides which of them it exposes; an authenticated caller's
+access may be narrower still.
+
+<ManifestTable endpoint="{{ manifest_url }}" />

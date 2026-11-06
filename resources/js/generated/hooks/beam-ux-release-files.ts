@@ -8,13 +8,13 @@ import { api } from '@/lib/api';
 import { route } from '@/lib/routes';
 
 type QueryOpts<T> = Omit<Partial<UseQueryOptions<T, Error, T>>, 'queryKey' | 'queryFn'>;
-type MutationVars = { params?: Record<string, string | number>; body?: unknown };
-type MutationOpts<T> = Omit<Partial<UseMutationOptions<T, Error, MutationVars>>, 'mutationFn'>;
+type MutationOpts<T, V> = Omit<Partial<UseMutationOptions<T, Error, V>>, 'mutationFn'>;
 
-export function useBeamUxReleaseFilesCommitNow(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").ReleaseRecordingData>) {
+export type BeamUxReleaseFilesCommitNowVars = { params: { id: string | number }; body: import("../Splicewire/Beam/Ux/Data").ReleaseRecordInputData };
+export function useBeamUxReleaseFilesCommitNow(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").ReleaseRecordingData, BeamUxReleaseFilesCommitNowVars>) {
     return useMutation({
-        mutationFn: async (vars: MutationVars) => {
-            const res = await api.post(route('beam-ux-release-files.commit-now', vars.params ?? {}), vars.body);
+        mutationFn: async (vars: BeamUxReleaseFilesCommitNowVars) => {
+            const res = await api.post(route('beam-ux-release-files.commit-now', vars.params), vars.body);
             return res.data.data as import("../Splicewire/Beam/Ux/Data").ReleaseRecordingData;
         },
         ...options,
@@ -32,7 +32,7 @@ export function useBeamUxReleaseFilesIndex(options?: QueryOpts<import("../Splice
     });
 }
 
-export function useBeamUxReleaseFilesInspectFile(params: Record<string, string | number>, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").FileInspectionData>) {
+export function useBeamUxReleaseFilesInspectFile(params: { id: string | number }, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").FileInspectionData>) {
     return useQuery({
         queryKey: ['beam-ux-release-files.inspect-file', params],
         queryFn: async () => {
@@ -43,17 +43,29 @@ export function useBeamUxReleaseFilesInspectFile(params: Record<string, string |
     });
 }
 
-export function useBeamUxReleaseFilesRestoreMissingFile(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").FileReconcileResultData>) {
+export type BeamUxReleaseFilesRemirrorFileVars = { params: { id: string | number }; body: import("../Splicewire/Beam/Ux/Data").FileReconcileInputData };
+export function useBeamUxReleaseFilesRemirrorFile(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").FileReconcileResultData, BeamUxReleaseFilesRemirrorFileVars>) {
     return useMutation({
-        mutationFn: async (vars: MutationVars) => {
-            const res = await api.post(route('beam-ux-release-files.restore-missing-file', vars.params ?? {}), vars.body);
+        mutationFn: async (vars: BeamUxReleaseFilesRemirrorFileVars) => {
+            const res = await api.post(route('beam-ux-release-files.remirror-file', vars.params), vars.body);
             return res.data.data as import("../Splicewire/Beam/Ux/Data").FileReconcileResultData;
         },
         ...options,
     });
 }
 
-export function useBeamUxReleaseFilesShow(params: Record<string, string | number>, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").ReleaseFilesData>) {
+export type BeamUxReleaseFilesRestoreMissingFileVars = { params: { id: string | number }; body: import("../Splicewire/Beam/Ux/Data").FileReconcileInputData };
+export function useBeamUxReleaseFilesRestoreMissingFile(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").FileReconcileResultData, BeamUxReleaseFilesRestoreMissingFileVars>) {
+    return useMutation({
+        mutationFn: async (vars: BeamUxReleaseFilesRestoreMissingFileVars) => {
+            const res = await api.post(route('beam-ux-release-files.restore-missing-file', vars.params), vars.body);
+            return res.data.data as import("../Splicewire/Beam/Ux/Data").FileReconcileResultData;
+        },
+        ...options,
+    });
+}
+
+export function useBeamUxReleaseFilesShow(params: { id: string | number }, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").ReleaseFilesData>) {
     return useQuery({
         queryKey: ['beam-ux-release-files.show', params],
         queryFn: async () => {
@@ -64,10 +76,22 @@ export function useBeamUxReleaseFilesShow(params: Record<string, string | number
     });
 }
 
-export function useBeamUxReleaseFilesTakeFileDraft(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").FileReconcileResultData>) {
+export type BeamUxReleaseFilesTakeAllDraftsVars = { params: { id: string | number }; body: import("../Splicewire/Beam/Ux/Data").FileBatchReconcileInputData };
+export function useBeamUxReleaseFilesTakeAllDrafts(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").FileBatchReconcileResultData, BeamUxReleaseFilesTakeAllDraftsVars>) {
     return useMutation({
-        mutationFn: async (vars: MutationVars) => {
-            const res = await api.post(route('beam-ux-release-files.take-file-draft', vars.params ?? {}), vars.body);
+        mutationFn: async (vars: BeamUxReleaseFilesTakeAllDraftsVars) => {
+            const res = await api.post(route('beam-ux-release-files.take-all-drafts', vars.params), vars.body);
+            return res.data.data as import("../Splicewire/Beam/Ux/Data").FileBatchReconcileResultData;
+        },
+        ...options,
+    });
+}
+
+export type BeamUxReleaseFilesTakeFileDraftVars = { params: { id: string | number }; body: import("../Splicewire/Beam/Ux/Data").FileReconcileInputData };
+export function useBeamUxReleaseFilesTakeFileDraft(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").FileReconcileResultData, BeamUxReleaseFilesTakeFileDraftVars>) {
+    return useMutation({
+        mutationFn: async (vars: BeamUxReleaseFilesTakeFileDraftVars) => {
+            const res = await api.post(route('beam-ux-release-files.take-file-draft', vars.params), vars.body);
             return res.data.data as import("../Splicewire/Beam/Ux/Data").FileReconcileResultData;
         },
         ...options,

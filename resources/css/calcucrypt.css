@@ -1,0 +1,40 @@
+/*
+ * Calcucrypt's own tokens, layered on the starter's theme: the 14-segment LCD face (the `dseg`
+ * package, imported in app.tsx), the terminal green reserved for live signals and the wordmark,
+ * and the calculator "device screen", which is the same dark navy in either theme.
+ */
+@theme {
+    --font-mono:
+        'IBM Plex Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
+        Consolas, 'Liberation Mono', monospace;
+    --font-digital: 'DSEG14-Classic', 'Share Tech Mono', var(--font-mono);
+    --font-wordmark: var(--font-digital);
+
+    --color-terminal: var(--terminal);
+    --color-terminal-foreground: var(--terminal-foreground);
+    --color-terminal-dim: var(--terminal-dim);
+
+    --color-readout: var(--readout);
+    --color-readout-foreground: var(--readout-foreground);
+    --color-readout-border: var(--readout-border);
+}
+
+:root {
+    --terminal: #0aa35f;
+    --terminal-foreground: #ffffff;
+    --terminal-dim: #6b7688;
+
+    --readout: #0f1319;
+    --readout-foreground: #29e08a;
+    --readout-border: #1f2736;
+}
+
+.dark {
+    --terminal: #29e08a;
+    --terminal-foreground: #06110b;
+    --terminal-dim: #8a93a6;
+
+    --readout: #0f1319;
+    --readout-foreground: #29e08a;
+    --readout-border: #273143;
+}

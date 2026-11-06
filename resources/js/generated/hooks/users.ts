@@ -9,7 +9,7 @@ import { route } from '@/lib/routes';
 
 type QueryOpts<T> = Omit<Partial<UseQueryOptions<T, Error, T>>, 'queryKey' | 'queryFn'>;
 
-export function useUsersLoginAs(params: Record<string, string | number>, options?: QueryOpts<import("../Splicewire/Beam/Accounts/Data").AuthUserData>) {
+export function useUsersLoginAs(params: { id: string | number }, options?: QueryOpts<import("../Splicewire/Beam/Accounts/Data").AuthUserData>) {
     return useQuery({
         queryKey: ['users.login-as', params],
         queryFn: async () => {

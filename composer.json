@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "splicewire/laravel-beam-starter",
+    "name": "splicewire/calcucrypt-tutorial",
     "type": "project",
-    "description": "The Beam starter: a Laravel, Inertia and React app with the Beam spine wired in.",
+    "description": "Calcucrypt, rebuilt on the Beam starter one chapter at a time: declared particles, a validated operation, team plans, entitlement-gated data and a plan you can buy.",
     "keywords": [
         "laravel",
         "framework"
@@ -279,7 +279,7 @@
     "extra": {
         "splicewire": {
             "starter": {
-                "repository": "https://github.com/splicewire/laravel-beam-starter",
+                "repository": "https://github.com/splicewire/calcucrypt-tutorial",
                 "published": false
             }
         },

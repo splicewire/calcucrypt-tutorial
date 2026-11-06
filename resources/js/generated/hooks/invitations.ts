@@ -7,13 +7,13 @@ import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { route } from '@/lib/routes';
 
-type MutationVars = { params?: Record<string, string | number>; body?: unknown };
-type MutationOpts<T> = Omit<Partial<UseMutationOptions<T, Error, MutationVars>>, 'mutationFn'>;
+type MutationOpts<T, V> = Omit<Partial<UseMutationOptions<T, Error, V>>, 'mutationFn'>;
 
-export function useInvitationsRedeem(options?: MutationOpts<import("../Splicewire/Beam/Accounts/Data").InvitationAcceptedData>) {
+export type InvitationsRedeemVars = { params: { id: string | number } };
+export function useInvitationsRedeem(options?: MutationOpts<import("../Splicewire/Beam/Accounts/Data").InvitationAcceptedData, InvitationsRedeemVars>) {
     return useMutation({
-        mutationFn: async (vars: MutationVars) => {
-            const res = await api.post(route('invitations.redeem', vars.params ?? {}), vars.body);
+        mutationFn: async (vars: InvitationsRedeemVars) => {
+            const res = await api.post(route('invitations.redeem', vars.params));
             return res.data.data as import("../Splicewire/Beam/Accounts/Data").InvitationAcceptedData;
         },
         ...options,

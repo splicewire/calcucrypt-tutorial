@@ -22,7 +22,9 @@ it('generates host page modules and resolves their package-owned references', fu
         expect(Artisan::call('typescript:transform'))->toBe(0);
         expect(Artisan::output())->not->toContain('not found in the transformed types');
         $pages = File::get($directory.'/App/Data/Pages/index.ts');
-        expect($pages)->toContain('export type FrameConsolePageData', 'manifestUrl: string');
+        expect($pages)->toContain('export type CanonicalMdxReviewPageData', 'entryId: string');
+        // The realm console's props are beam-ux's RealmConsolePageData now (Route::beamRealmConsole), not a host copy.
+        expect($pages)->not->toContain('FrameConsolePageData');
         expect($pages)->not->toContain('SitemapResourcePageData');
         expect($pages)->not->toContain('export type ProfilePageData', 'export type SecurityPageData');
         expect(File::get($directory.'/Splicewire/Beam/Accounts/Data/Pages/index.ts'))

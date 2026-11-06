@@ -4,6 +4,8 @@ namespace App\Sitemap;
 
 use App\Models\SitemapRecord;
 use Illuminate\Support\Facades\Cache;
+use Splicewire\Beam\Ux\Nav\Contracts\NavItemSource;
+use Splicewire\Beam\Ux\Nav\NavItem;
 
 /**
  * Kind A — the opt-in record leaf. Projects the owner-edited {@see SitemapRecord} rows
@@ -13,8 +15,11 @@ use Illuminate\Support\Facades\Cache;
  * Runtime-merge, cache-busted on save (dial #3): the projection is memoised under
  * {@see self::CACHE_KEY}; {@see SitemapRecord::booted()} forgets it on every save/delete,
  * so an owner's Frame edit is reflected on the next request without a rebuild.
+ *
+ * It is also this host's {@see NavItemSource}, the records the packaged orphaned-nav doctor
+ * check validates: {@see navItems()} reads them fresh, never through the cache.
  */
-class RecordLeaf implements SitemapLeaf
+class RecordLeaf implements NavItemSource, SitemapLeaf
 {
     public const CACHE_KEY = 'sitemap.record-leaf.nav';
 
@@ -27,5 +32,13 @@ class RecordLeaf implements SitemapLeaf
                 ->map(fn (SitemapRecord $record): NavItem => $record->toNavItem())
                 ->all();
         }));
+    }
+
+    public function navItems(): iterable
+    {
+        return SitemapRecord::query()
+            ->get()
+            ->map(fn (SitemapRecord $record): NavItem => $record->toNavItem())
+            ->all();
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Sitemap;
 
+use Splicewire\Beam\Ux\Nav\NavItem;
+
 /**
  * A pluggable leaf in a {@see RootSitemap} section. The composition is closed over
  * exactly two implementations:

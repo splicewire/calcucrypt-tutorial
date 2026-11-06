@@ -97,11 +97,12 @@ entitlement, and selling a plan on the commerce fake rail.
 
 ## Checks
 
-`composer types:generate` derives TypeScript modules from the app's Data classes/enums and
-referenced Frame registry types. Edit the PHP declarations, then regenerate. The DTO modules
-are gitignored under `resources/js/generated/App/` and `resources/js/generated/Schemastud/`.
-The committed `routes.ts` and `aliases.ts` in the same parent directory belong to the Beam
-client generator and are not replaced by this command.
+`composer types:generate` runs `typescript:transform`, which writes one TypeScript module per PHP namespace under
+`resources/js/generated/`: the app's Data classes and enums, every type its particle and route declarations reach, and
+the directories its installed packages declare. Edit the PHP declarations, then regenerate. The modules are
+gitignored, one line per top-level namespace in `.gitignore`. The committed `routes.ts`, `aliases.ts` and `hooks/` in
+the same directory belong to the Beam client generator and are not replaced by this command. The provider's shape:
+`vendor/splicewire/laravel-beam/docs/agents/typescript-generation.md`.
 
 The `dev`, `build`, `build:ssr`, and `types:check` scripts regenerate before consuming these
 modules, so `composer setup` covers generation too. After changing Data during a running dev

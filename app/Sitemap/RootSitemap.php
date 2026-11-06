@@ -2,6 +2,8 @@
 
 namespace App\Sitemap;
 
+use Splicewire\Beam\Ux\Nav\NavItem;
+
 /**
  * The starter's worked Frame example — it teaches the record→project pattern by BEING it.
  *

@@ -2,6 +2,8 @@
 
 namespace App\Sitemap;
 
+use Splicewire\Beam\Ux\Nav\NavItem;
+
 /**
  * Kind C — the DEFAULT leaf. Derives its NavItems from a static list of docs (in a real
  * clone this is a glob over `resources/js/content/docs/**` resolved at BUILD, mirroring

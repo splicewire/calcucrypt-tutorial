@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Splicewire\Beam\Ux\Access\EntryRequirement;
 use Splicewire\Beam\Ux\Compile\EntryArtifactStore;
@@ -33,6 +34,10 @@ class HomePreviewTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Publishing writes through beam-ux's disk mirror, a tracked directory (resources/beam-ux/). Fake it before
+        // the first publish, which is when the mirror resolves its disk, so these cases leave no page file in the
+        // checkout (the EntryBodyTransportTest convention).
+        Storage::fake(config('beam.ux.storage.mirror_disk', 'beam-ux'));
         $this->home = BeamUxEntry::create(['slug' => 'home', 'type' => UxType::Page, 'format' => 'tsx', 'realm' => 'site',
             'namespace' => config('beam.ux.namespace', 'starter')]);
         $pub = app(EntryPublication::class);

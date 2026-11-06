@@ -1,0 +1,46 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "CalculatorFilterData",
+    "properties": {
+        "search": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-filter": {
+                "operator": "search",
+                "name": "q",
+                "control": "search"
+            }
+        },
+        "computation": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-filter": {
+                "operator": "exact",
+                "name": "computation",
+                "control": "text"
+            },
+            "x-sort": {
+                "name": "computation",
+                "default": false,
+                "direction": "asc"
+            }
+        },
+        "name": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "x-sort": {
+                "name": "name",
+                "default": false,
+                "direction": "asc"
+            }
+        }
+    },
+    "$id": "CalculatorFilterData"
+}

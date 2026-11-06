@@ -12,6 +12,8 @@
         "lint": "eslint . --fix",
         "lint:check": "eslint .",
         "types:check": "composer types:generate && tsc --noEmit && tsc -p tsconfig.generated.json",
+        "test": "vitest run",
+        "guides:compile": "node scripts/compile-guides.mjs",
         "beam:verify-prototype-boundary": "beam-verify-prototype-boundary"
     },
     "devDependencies": {
@@ -29,7 +31,10 @@
         "eslint-plugin-react-hooks": "^7.0.0",
         "prettier": "^3.4.2",
         "prettier-plugin-tailwindcss": "^0.6.11",
-        "typescript-eslint": "^8.23.0"
+        "remark-frontmatter": "^5.0.0",
+        "remark-mdx-frontmatter": "^5.2.0",
+        "typescript-eslint": "^8.23.0",
+        "vitest": "^3.2.7"
     },
     "dependencies": {
         "@inertiajs/core": "^3.0.0",
@@ -73,6 +78,7 @@
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "concurrently": "^9.0.1",
+        "dseg": "^0.46.0",
         "globals": "^15.14.0",
         "input-otp": "^1.4.2",
         "laravel-vite-plugin": "^3.0.0",
@@ -81,6 +87,7 @@
         "react-dom": "^19.2.0",
         "react-rnd": "^10.5.2",
         "react-router": "^7.0.0",
+        "recharts": "^2.15.4",
         "sonner": "^2.0.0",
         "tailwind-merge": "^3.0.1",
         "tailwindcss": "^4.0.0",
@@ -105,5 +112,10 @@
     },
     "prototype": {
         "outDir": "public/build"
+    },
+    "pnpm": {
+        "overrides": {
+            "@splicewire/_resources": "-"
+        }
     }
 }

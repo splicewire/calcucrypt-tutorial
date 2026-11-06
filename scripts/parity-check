@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# parity-check: does this tutorial behave like Calcucrypt for its four calculators?
+#
+#   scripts/parity-check <calcucrypt-checkout>      # rc 0 = parity, 1 = a difference, 2 = cannot run
+#
+# A maintainer tool. Calcucrypt is the production app this tutorial follows; point this at a checkout
+# of it (a scratch clone, never a served site) with `composer install` done. The tutorial side is
+# this repository, which should be at `ch-05`.
+#
+# Two probes, both keyless and offline:
+#   1. Engine identity. The calculator engine is supplied at `start` as is, so its files must be
+#      byte-identical in both apps: the PHP resolver and evaluator, the TypeScript graph evaluator,
+#      the four calculator definitions, and the golden vectors (tests/fixtures/expression-golden.json).
+#      What the chapters write (declarations, the operation, policies, the widget hook) is not
+#      compared as text: the tutorial builds it from the starter, so only its behaviour must match.
+#   2. Behaviour. scripts/parity/probe.php runs inside each app on sqlite :memory: with the commerce
+#      fake rail and one fixed-price market source, and prints a JSON fingerprint: the actor x
+#      calculator matrix (guest, free Member, trader Member, pro Owner x the API show, resolve with
+#      default and changed inputs, the tool page and the Guide embeds), malformed-input 422s, the plan
+#      purchase (an Owner buys Trader, a Member and a guest are refused, a decline keeps `free`), and
+#      the PHP evaluator's answer for every golden vector. The two fingerprints must be identical.
+#
+# PHP is `php` unless PHP_BIN says otherwise (e.g. PHP_BIN="herd php").
+
+set -uo pipefail
+
+TUTORIAL="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CALCUCRYPT="${1:-${CALCUCRYPT_PATH:-}}"
+read -r -a PHP <<< "${PHP_BIN:-php}"
+export XDEBUG_MODE=off
+
+if [[ -z "$CALCUCRYPT" || ! -f "$CALCUCRYPT/vendor/autoload.php" ]]; then
+    echo "usage: scripts/parity-check <calcucrypt-checkout with vendor/ installed>" >&2
+    exit 2
+fi
+CALCUCRYPT="$(cd "$CALCUCRYPT" && pwd)"
+
+ENGINE=(
+    app/Calculators/CalculatorResolver.php
+    app/Calculators/RefResolver.php
+    app/Calculators/Expression/ExpressionEvaluator.php
+    app/Calculators/Expression/ExpressionException.php
+    app/Calculators/Graph/CalculatorGraph.php
+    app/Content/CategoryCatalog.php
+    app/Content/Calculators/CalculatorDefinition.php
+    app/Content/Calculators/CalculatorRegistry.php
+    app/Content/Calculators/Definitions/ProfitCalculator.php
+    app/Content/Calculators/Definitions/ConverterCalculator.php
+    app/Content/Calculators/Definitions/PositionSizeCalculator.php
+    app/Content/Calculators/Definitions/CapitalGainsCalculator.php
+    app/Facts/FactStore.php
+    app/Facts/Contracts/Connector.php
+    resources/js/calculators/expression/evaluate.ts
+    resources/js/calculators/expression/evaluate.test.ts
+    resources/js/calculators/format.ts
+    resources/js/calculators/graph.ts
+    resources/js/calculators/graph.test.ts
+    resources/js/calculators/trader.test.ts
+    resources/js/calculators/types.ts
+    tests/fixtures/expression-golden.json
+)
+
+status=0
+same=0
+for file in "${ENGINE[@]}"; do
+    if cmp -s "$TUTORIAL/$file" "$CALCUCRYPT/$file"; then
+        same=$((same + 1))
+    else
+        echo "DIFF  engine file $file"
+        status=1
+    fi
+done
+echo "engine     $same of ${#ENGINE[@]} files byte-identical"
+
+work="$(mktemp -d "${TMPDIR:-/tmp}/calcucrypt-parity.XXXXXX")"
+trap 'rm -rf "$work"' EXIT
+golden="$TUTORIAL/tests/fixtures/expression-golden.json"
+
+for side in tutorial calcucrypt; do
+    root="$TUTORIAL"
+    [[ "$side" == calcucrypt ]] && root="$CALCUCRYPT"
+    if ! "${PHP[@]}" "$TUTORIAL/scripts/parity/probe.php" "$root" "$golden" > "$work/$side.json" 2> "$work/$side.err"; then
+        echo "FAIL  the probe could not run in the $side app ($root):"
+        tail -5 "$work/$side.err" | sed 's/^/        /'
+        exit 2
+    fi
+done
+
+if diff -u "$work/calcucrypt.json" "$work/tutorial.json" > "$work/diff.txt"; then
+    echo "behaviour  fingerprints identical ($(wc -l < "$work/tutorial.json" | tr -d ' ') lines, sha256 $(shasum -a 256 "$work/tutorial.json" | cut -c1-12))"
+else
+    echo "DIFF  behaviour (--- calcucrypt, +++ tutorial):"
+    sed 's/^/        /' "$work/diff.txt"
+    status=1
+fi
+
+if [[ $status -eq 0 ]]; then
+    echo "parity     green"
+else
+    echo "parity     RED"
+fi
+exit $status

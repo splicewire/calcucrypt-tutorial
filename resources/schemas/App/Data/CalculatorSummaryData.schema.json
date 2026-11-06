@@ -1,0 +1,36 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "CalculatorSummaryData",
+    "properties": {
+        "slug": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "summary": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "computation": {
+            "type": "string"
+        },
+        "category": {
+            "type": [
+                "string",
+                "null"
+            ]
+        }
+    },
+    "required": [
+        "slug",
+        "name",
+        "summary",
+        "computation",
+        "category"
+    ],
+    "$id": "CalculatorSummaryData"
+}

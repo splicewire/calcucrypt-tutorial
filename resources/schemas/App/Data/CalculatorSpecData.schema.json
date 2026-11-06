@@ -1,0 +1,40 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "Calculator",
+    "properties": {
+        "slug": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "summary": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "computation": {
+            "type": "string"
+        },
+        "category": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "graph": {
+            "type": "object"
+        }
+    },
+    "required": [
+        "slug",
+        "name",
+        "summary",
+        "computation",
+        "category",
+        "graph"
+    ],
+    "$id": "CalculatorSpecData"
+}

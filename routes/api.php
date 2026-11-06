@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Splicewire\Beam\Facades\Particle;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +28,17 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user()->only(['id', 'name', 'email']);
 })->name('api.user');
+
+// Calcucrypt's public read API. The declarations on CalculatorSpecData and GuideData say what each
+// resource is and who may read it; this file only chooses which routes to expose. The `api.` name
+// stem keeps them clear of the pages' own `calculators.*` / `guides.*` route names, and a public
+// mount advertises no webhook event vocabulary.
+Particle::mount('calculators', 'calculators')
+    ->names('api.calculators')
+    ->only(['index', 'show'])
+    ->hookEvents(false);
+
+Particle::mount('guides', 'guides')
+    ->names('api.guides')
+    ->only(['index', 'show'])
+    ->hookEvents(false);

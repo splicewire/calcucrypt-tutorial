@@ -11,6 +11,17 @@ type QueryOpts<T> = Omit<Partial<UseQueryOptions<T, Error, T>>, 'queryKey' | 'qu
 type MutationVars = { params?: Record<string, string | number>; body?: unknown };
 type MutationOpts<T> = Omit<Partial<UseMutationOptions<T, Error, MutationVars>>, 'mutationFn'>;
 
+export function useBeamUxReleaseChanges(params: Record<string, string | number>, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").ReleaseChangesData>) {
+    return useQuery({
+        queryKey: ['beam-ux-release.changes', params],
+        queryFn: async () => {
+            const res = await api.get(route('beam-ux-release.changes', params));
+            return res.data.data as import("../Splicewire/Beam/Ux/Data").ReleaseChangesData;
+        },
+        ...options,
+    });
+}
+
 export function useBeamUxReleaseCommand(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").ReleaseData>) {
     return useMutation({
         mutationFn: async (vars: MutationVars) => {
@@ -27,6 +38,17 @@ export function useBeamUxReleaseIndex(options?: QueryOpts<import("../Splicewire/
         queryFn: async () => {
             const res = await api.get(route('beam-ux-release.index'));
             return res.data.data as import("../Splicewire/Beam/Ux/Data").ReleaseData[];
+        },
+        ...options,
+    });
+}
+
+export function useBeamUxReleaseReadiness(params: Record<string, string | number>, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").ReleaseReadinessData>) {
+    return useQuery({
+        queryKey: ['beam-ux-release.readiness', params],
+        queryFn: async () => {
+            const res = await api.get(route('beam-ux-release.readiness', params));
+            return res.data.data as import("../Splicewire/Beam/Ux/Data").ReleaseReadinessData;
         },
         ...options,
     });

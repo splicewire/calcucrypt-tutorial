@@ -14,11 +14,9 @@ class HostIaSeamTest extends TestCase
 {
     use AssertsHostIaSeam;
 
-
     protected function hostIaRatchet(): array
     {
         return [
-            'T5 class App\\Beam\\RealmRegistry' => 'UX-12b: App\\Beam\\RealmRegistry is deleted',
             'T5 nav.yml:account-team realm=account' => 'UX-12b: account rows move under the user realm at /settings/*',
             'T5 nav.yml:account-theme realm=account' => 'UX-12b: account rows move under the user realm at /settings/*',
             'T5 nav.yml:account-tokens realm=account' => 'UX-12b: account rows move under the user realm at /settings/*',

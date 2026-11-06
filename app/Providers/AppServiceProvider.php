@@ -2,12 +2,10 @@
 
 namespace App\Providers;
 
-use App\Account\StarterAccountShell;
-use App\Beam\RealmRegistry;
 use App\Data\SitemapData;
-use App\Doctor\OrphanedNavItemAudit;
 use App\Models\SitemapRecord;
 use App\Models\User;
+use App\Sitemap\RecordLeaf;
 use Carbon\CarbonImmutable;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Date;
@@ -17,10 +15,12 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Rushing\PermissionCascade\Contracts\EntitlementResolver;
 use Rushing\PermissionCascade\Support\CascadePolicyRegistrar;
-use Splicewire\Beam\Accounts\Contracts\AccountShellProvider;
 use Splicewire\Beam\Authorization\SeatGate;
 use Splicewire\Beam\Doctor\BeamDoctorManifest;
+use Splicewire\Beam\Realm\RealmRegistry;
+use Splicewire\Beam\Ux\Doctor\OrphanedNavItemAudit;
 use Splicewire\Beam\Ux\Frame\RouteContextPlan;
+use Splicewire\Beam\Ux\Nav\Contracts\NavItemSource;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,12 +35,11 @@ class AppServiceProvider extends ServiceProvider
             resourcePaths: ['schemas' => 'schema-catalog', 'beam-ux-release-files' => 'release-files'],
         ));
 
-        // Bind the host account-shell provider over beam-accounts' NullAccountShellProvider default,
-        // so the packaged <AccountShell> renders real (neutral demo) plan/profile data OOTB.
-        $this->app->bind(
-            AccountShellProvider::class,
-            StarterAccountShell::class,
-        );
+        // No account-shell binding: beam-accounts' identity-only default fills the profile block (handle, initials, email)
+        // and hides the plan chip. A host with real plans binds its own provider (make-surface 01, owner ruling 2026-11-05).
+
+        // The record leaf is this host's persisted nav: the packaged orphaned-nav doctor check validates its links.
+        $this->app->bind(NavItemSource::class, RecordLeaf::class);
     }
 
     /**
@@ -85,7 +84,7 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register this HOST's doctor audit into beam-core's aggregation manifest — the same seam every
+     * Register the packaged orphaned-nav audit (beam-ux, over the {@see RecordLeaf} source bound above) into beam-core's aggregation manifest — the same seam every
      * beam-* package uses (the manifest is a singleton bound in beam's register phase and read fresh
      * when `splicewire:beam:doctor` runs, so an app registering in boot always lands). Advisory: an
      * orphaned nav link renders yellow but never turns the run red. Guarded on the manifest being
@@ -128,11 +127,12 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('ux.author', fn (User $user): bool => $user->can('entitlement:ux.author'));
         Gate::define('beam-docs.publish', fn (User $user): bool => $user->can('ux.operator.author'));
 
-        foreach (RealmRegistry::realms() as $realm) {
+        foreach (array_keys(app(RealmRegistry::class)->all()) as $realm) {
+            $ability = "ux.{$realm}.author";
             Gate::define(
-                RealmRegistry::authorAbility($realm),
+                $ability,
                 fn (User $user): bool => in_array(
-                    RealmRegistry::authorAbility($realm),
+                    $ability,
                     app(EntitlementResolver::class)->entitlementsFor($user),
                     true,
                 ),

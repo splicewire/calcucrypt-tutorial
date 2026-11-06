@@ -40,8 +40,10 @@ Route::get('/', function (Request $request) {
     if ($model !== null && $context instanceof PreviewContext) {
         // A preview is an immutable view of the Release's entries and ancestry. Never fall
         // back to live ancestry here: it can differ from the version the guest is previewing.
-        $chain = app(PublicEntryGate::class)->chainForEntry($model, 'site', null, $context);
-        $head = $chain === null
+        // The chain is root-first and ends at the page, or null when the gate refuses it. Taken as a list, the page
+        // is its last node; an empty or refused chain composes no head, as a refused one always has.
+        $chain = array_values(app(PublicEntryGate::class)->chainForEntry($model, 'site', null, $context) ?? []);
+        $head = $chain === []
             ? []
             : app(PageHeadComposer::class)
                 ->compose(

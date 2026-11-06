@@ -11,6 +11,10 @@
     "repositories": [
         {
             "type": "git",
+            "url": "https://github.com/stephenr85/laravel-commerce.git"
+        },
+        {
+            "type": "git",
             "url": "https://github.com/splicewire/laravel-beam-docs.git"
         },
         {
@@ -178,6 +182,7 @@
         "laravel/framework": "^13.17",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
+        "rushing/laravel-commerce": "dev-main",
         "spatie/laravel-typescript-transformer": "^3.3",
         "splicewire/laravel-beam": "dev-main",
         "splicewire/laravel-beam-mcp": "dev-main",

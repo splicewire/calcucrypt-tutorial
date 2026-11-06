@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Account\StarterAccountShell;
+use App\Auth\CalcucryptEntitlementResolver;
 use App\Beam\RealmRegistry;
 use App\Content\Calculators\CalculatorDefinition;
 use App\Content\Calculators\CalculatorRegistry;
@@ -49,8 +50,9 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Tell Beam about every paid calculator's entitlement key, so it defines an
-     * `entitlement:calculators.{slug}` gate for each. Beam defines those gates in its own boot(),
-     * so the keys must be in place during register().
+     * `entitlement:calculators.{slug}` gate for each, and about `plans.purchase`, the key an Owner
+     * or Admin holds to buy a plan. Beam defines those gates in its own boot(), so the keys must be
+     * in place during register().
      */
     protected function registerCalculatorEntitlements(): void
     {
@@ -58,6 +60,7 @@ class AppServiceProvider extends ServiceProvider
             fn (CalculatorDefinition $definition): ?string => $definition->entitlement(),
             (new CalculatorRegistry)->all(),
         ));
+        $keys[] = CalcucryptEntitlementResolver::PURCHASE_PLANS;
 
         config(['beam.core.entitlements.keys' => array_values(array_unique([
             ...(array) config('beam.core.entitlements.keys', []),

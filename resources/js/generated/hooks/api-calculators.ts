@@ -3,11 +3,13 @@
 // Regenerate after any backend route change; the diff is the drift signal (client-sdk-codegen).
 // Source of truth: the in-process route manifest (a RouteManifestSource).
 
-import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
+import { useMutation, useQuery, type UseQueryOptions, type UseMutationOptions } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { route } from '@/lib/routes';
 
 type QueryOpts<T> = Omit<Partial<UseQueryOptions<T, Error, T>>, 'queryKey' | 'queryFn'>;
+type MutationVars = { params?: Record<string, string | number>; body?: unknown };
+type MutationOpts<T> = Omit<Partial<UseMutationOptions<T, Error, MutationVars>>, 'mutationFn'>;
 
 export function useApiCalculatorsIndex(options?: QueryOpts<import("../App/Data").CalculatorSpecData[]>) {
     return useQuery({
@@ -15,6 +17,16 @@ export function useApiCalculatorsIndex(options?: QueryOpts<import("../App/Data")
         queryFn: async () => {
             const res = await api.get(route('api.calculators.index'));
             return res.data.data as import("../App/Data").CalculatorSpecData[];
+        },
+        ...options,
+    });
+}
+
+export function useApiCalculatorsResolve(options?: MutationOpts<import("../App/Data").CalculatorResolutionData>) {
+    return useMutation({
+        mutationFn: async (vars: MutationVars) => {
+            const res = await api.post(route('api.calculators.resolve', vars.params ?? {}), vars.body);
+            return res.data.data as import("../App/Data").CalculatorResolutionData;
         },
         ...options,
     });

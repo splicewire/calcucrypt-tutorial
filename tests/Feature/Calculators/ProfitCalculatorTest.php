@@ -77,6 +77,15 @@ it('re-resolves via a partial reload query on the show route', function (): void
         ->assertInertia(fn ($page) => $page->where('resolution.seedEnv.sellPrice', 100));
 });
 
+it('returns a resolution envelope from the resolve operation', function (): void {
+    profitCalculator();
+
+    $this->postJson('/api/calculators/crypto-profit/resolve', ['inputs' => ['asset' => 'ETH']])
+        ->assertOk()
+        ->assertJsonPath('data.seedEnv.sellPrice', 2500)
+        ->assertJsonPath('data.facts.sellPrice.symbol', 'ETH');
+});
+
 it('404s for an unpublished calculator', function (): void {
     $calculator = profitCalculator();
     $calculator->update(['status' => CalculatorStatus::Draft]);

@@ -33,9 +33,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // resource is and who may read it; this file only chooses which routes to expose. The `api.` name
 // stem keeps them clear of the pages' own `calculators.*` / `guides.*` route names, and a public
 // mount advertises no webhook event vocabulary.
+//
+// `resolve` is the ResolveCalculator operation: `POST /api/calculators/{slug}/resolve`, named
+// `api.calculators.resolve`. The widget calls it through the generated client, with the session
+// (bootstrap/app.php's `statefulApi()`), so the policy sees who is signed in.
 Particle::mount('calculators', 'calculators')
     ->names('api.calculators')
     ->only(['index', 'show'])
+    ->ops(['resolve'])
     ->hookEvents(false);
 
 Particle::mount('guides', 'guides')

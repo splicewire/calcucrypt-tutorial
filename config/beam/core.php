@@ -170,7 +170,9 @@ return [
         'classes' => [],
 
         // Filesystem paths scanned for annotated classes (dev convenience; no boot cache yet).
-        'discover_paths' => [],
+        // The resources in app/Data are found by config/frame.php's scan; the operations sit in
+        // app/Particle: `calculators.resolve` (ResolveCalculator).
+        'discover_paths' => [app_path('Particle')],
     ],
 
     // 'media'         => [ ... ]   // (ticket 08)

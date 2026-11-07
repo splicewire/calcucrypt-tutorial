@@ -6048,7 +6048,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stephenr85/php-popcorn.git",
-                "reference": "a723a5c4d5b1e66cbcff3a26c7ea4946755a1e89"
+                "reference": "432ec6ef0eaf53eecc43ecdb7bdaebf48d12d59a"
             },
             "require": {
                 "php": "^8.3",
@@ -6107,7 +6107,7 @@
                 "registry",
                 "strategy"
             ],
-            "time": "2026-10-19T17:24:56+00:00"
+            "time": "2026-11-05T12:17:27+00:00"
         },
         {
             "name": "schemastud/laravel-blockdoc",

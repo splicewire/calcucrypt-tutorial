@@ -225,8 +225,8 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan key:generate",
+            "pnpm install --frozen-lockfile",
             "@php artisan splicewire:beam:install --no-interaction",
-            "pnpm install",
             "@php artisan splicewire:beam:ux:compile",
             "pnpm run build"
         ],

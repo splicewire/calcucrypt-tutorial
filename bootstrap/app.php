@@ -19,6 +19,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // The host's own signed-in browser uses `/api/*` with its session (Sanctum's SPA cookies, CSRF on writes);
+        // every other caller still needs a bearer token. Without this the `api` group starts no session, and a
+        // signed-in browser is refused by every `auth:sanctum` route, a gated particle op included. See routes/api.php.
+        $middleware->statefulApi();
+
         // beam-accounts' camel wire carries the same secrets as the framework's snake defaults (kept while any caller
         // sends them): leave them byte-exact. Their flash twin is in withExceptions below.
         $middleware->trimStrings(except: ['currentPassword', 'passwordConfirmation']);

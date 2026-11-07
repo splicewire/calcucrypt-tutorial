@@ -161,16 +161,20 @@ return [
     | `#[ParticleResource]` / `#[ParticleOp]` and lists the class here (or points `discover_paths` at its
     | Data directory) instead of hand-registering from a provider. Closures the attribute can't carry are
     | resolved from `public static` convention methods on the annotated class (scope/project/prepare/
-    | afterWrite; handle/respond for an op). Empty by default — the imperative provider registration seam
-    | still works and the two coexist. UNLIKE #[ParticleResource], this has no build-cache yet: a `discover_paths`
-    | scan walks the filesystem each boot, so prefer the explicit `classes` list until the cache lands.
+    | afterWrite; handle/respond for an op). The imperative provider registration seam still works and the two
+    | coexist. The PACKAGE default is empty, because a `discover_paths` scan has no build cache yet and walks the
+    | filesystem each boot. This starter turns it on for its own `app/Data` anyway: dropping an annotated class
+    | there is the wiring the tutorial teaches, and `frame.discover_paths` already scans the same directory each
+    | boot. A host that outgrows the scan lists its classes in `classes` instead.
     */
     'particle' => [
         // Explicit #[ParticleResource]/#[ParticleOp] class-strings to reflect and register at boot.
         'classes' => [],
 
-        // Filesystem paths scanned for annotated classes (dev convenience; no boot cache yet).
-        'discover_paths' => [],
+        // Filesystem paths scanned for annotated classes at boot (no boot cache yet; see above).
+        'discover_paths' => [
+            app_path('Data'),
+        ],
     ],
 
     // 'media'         => [ ... ]   // (ticket 08)

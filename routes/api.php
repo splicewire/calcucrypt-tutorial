@@ -14,14 +14,16 @@ use Illuminate\Support\Facades\Route;
 | it is deliberately the smallest one: "who am I, according to this bearer".
 |
 | ⚠️ **`auth:sanctum` is not bearer-only.** `Sanctum\Guard::__invoke()` tries `config('sanctum.guard')`
-| — the session `web` guard by default — BEFORE it looks at the Authorization header, so a signed-in
-| browser reaches this route with no token at all. That is Sanctum's SPA-cookie design and it is
-| correct; it just means a test that wants to prove a token works (or that a REVOKED token is
-| refused) must issue its request from a context carrying no session cookie, or it will be measuring
-| the session instead.
+| — the session `web` guard by default — BEFORE it looks at the Authorization header. Because
+| `bootstrap/app.php` calls `statefulApi()`, a request from this host's own frontend (a Referer or
+| Origin in `sanctum.stateful`) starts the session, so a signed-in browser reaches this route with no
+| token at all, and its writes must carry the CSRF token. That is Sanctum's SPA-cookie design. Any
+| other caller gets no session here and must present a bearer token. So a test that wants to prove a
+| token works (or that a REVOKED token is refused) must send no first-party Referer or Origin, or it
+| will be measuring the session instead. Without `statefulApi()` none of this holds: the `api` group
+| starts no session, and a signed-in browser is a stranger here (tests/Feature/StarterDefaultsTest.php).
 |
-| Registered in `bootstrap/app.php` under the `api` prefix, so these live at `/api/*` with no CSRF
-| and no session middleware of their own.
+| Registered in `bootstrap/app.php` under the `api` prefix, so these live at `/api/*`.
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

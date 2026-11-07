@@ -6,7 +6,6 @@ use App\Models\SitemapRecord;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
-use Spatie\Permission\PermissionRegistrar;
 use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Teams\TeamProvisioner;
 use Tests\TestCase;
@@ -43,15 +42,11 @@ class SitemapWriteAuthorizationTest extends TestCase
         app(TeamProvisioner::class)->addMember($member, $team, Role::Member);
         $member->switchTeam($team);
 
-        // Membership and the active team are separate: the member must switch to this team so the
-        // request middleware can bind its team-scoped roles for the read while writes still fail closed.
-        // The registrar is also pointed here for this direct test setup.
-        // In a real request `bootstrap/app.php`'s `splicewire.team` middleware does this; here the
-        // test is the caller, and without it every assertion below would be a denial for the wrong
-        // reason — which is precisely the shape that reports a passing authorization test.
-        app(PermissionRegistrar::class)->setPermissionsTeamId($team->getKey());
-        app(PermissionRegistrar::class)->forgetCachedPermissions();
-
+        // Every assertion below runs through an HTTP request, so `bootstrap/app.php`'s
+        // `splicewire.team` middleware binds each actor's team-scoped roles from their active team
+        // (`current_team_id`: set by `personalTeamFor` for the owner, by `switchTeam` for the member).
+        // Clear any role/permission relations cached before that team context so the request reloads
+        // them under the active team rather than a stale global scope.
         foreach ([$owner, $member] as $user) {
             $user->unsetRelation('roles')->unsetRelation('permissions');
         }

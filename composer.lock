@@ -8102,7 +8102,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/splicewire/laravel-beam-accounts.git",
-                "reference": "3bd4b65944a206bf487a101554052213d7818516"
+                "reference": "094226bb17535cab3f88cc80d82dce8c9efe5776"
             },
             "require": {
                 "firebase/php-jwt": "^6.0|^7.0",
@@ -8134,7 +8134,7 @@
             "suggest": {
                 "laravel/sanctum": "Install in a satellite to activate its own opt-in token 'api' guard seam alongside the engine's session/Fortify web guard.",
                 "laravel/socialite": "Install where Route::splicewireAccountsOAuth() mounts OAuth sign-in (purchase-walkthrough M10).",
-                "splicewire/laravel-beam-notifications": "Activates this package's `to_roles:` / `to_teams:` recipient kinds, which it registers into `beam.notifications.recipient_kinds` unconditionally — the entries are inert strings without the notify package and live with it, so nothing here probes whether it is installed."
+                "splicewire/laravel-beam-notifications": "Activates this package's `to_roles:` / `to_teams:` recipient kinds, which it registers into `beam.notifications.recipient-kinds` unconditionally — the entries are inert strings without the notify package and live with it, so nothing here probes whether it is installed."
             },
             "default-branch": true,
             "type": "library",
@@ -8168,6 +8168,11 @@
                     "include": [
                         "composer.local.json"
                     ]
+                },
+                "typescript-transformer": {
+                    "directories": {
+                        "src/Data/Pages": "Inertia page props that host controllers render (ProfilePageData, SecurityPageData, …); no particle declaration names them"
+                    }
                 }
             },
             "autoload": {
@@ -8206,7 +8211,7 @@
                 "schemastud",
                 "teams"
             ],
-            "time": "2026-11-02T00:17:21+00:00"
+            "time": "2026-11-08T04:35:14+00:00"
         },
         {
             "name": "splicewire/laravel-beam-analytics",
@@ -8793,7 +8798,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/splicewire/laravel-beam-ux.git",
-                "reference": "a78baf15fe8b2c1ee136f0ed5b767528388a9020"
+                "reference": "9105ef5d4a96737984082d74fed0112be5b68b54"
             },
             "require": {
                 "illuminate/contracts": "^11.0|^12.0|^13.0",
@@ -8898,7 +8903,7 @@
                 "splicewire",
                 "ux"
             ],
-            "time": "2026-11-07T03:14:31+00:00"
+            "time": "2026-11-07T21:15:50+00:00"
         },
         {
             "name": "splicewire/laravel-beam-ux-prototype",

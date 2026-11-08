@@ -1,0 +1,14 @@
+{
+    "files": {
+        "app/Http/Middleware/HandleInertiaRequests.php": [
+            "site",
+            "account",
+            "operator"
+        ],
+        "resources/css/app.css": [
+            "site",
+            "account",
+            "operator"
+        ]
+    }
+}

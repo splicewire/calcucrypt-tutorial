@@ -6257,7 +6257,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/schemastud/laravel-data-schemas.git",
-                "reference": "c6be46aaec8c58b30c790f09d2f2e49da4c5c818"
+                "reference": "15dec5202df6831fd5e98215c0915f9f0365af4b"
             },
             "require": {
                 "galbar/jsonpath": "^3.0",
@@ -6318,6 +6318,9 @@
                 ],
                 "pint": [
                     "@php -d memory_limit=512M vendor/bin/pint"
+                ],
+                "docs:examples": [
+                    "@php tests/regenerate-data-examples.php"
                 ]
             },
             "license": [
@@ -6338,7 +6341,7 @@
                 "spatie",
                 "validation"
             ],
-            "time": "2026-11-01T21:13:31+00:00"
+            "time": "2026-11-08T03:52:32+00:00"
         },
         {
             "name": "schemastud/laravel-frame",

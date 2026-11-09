@@ -46,3 +46,10 @@ Particle::mount('calculators', 'calculators')
 Particle::mount('guides', 'guides')
     ->names('api.guides')
     ->hookEvents(false);
+
+// A reader's saved inputs: the generator's defaults made this resource writable, so the bare mount takes all
+// five verbs (index, show, store, update, destroy). The calculator page calls them with the session, and
+// SavedInputPolicy keeps each reader to their own.
+Particle::mount('saved-inputs', 'saved-inputs')
+    ->names('api.saved-inputs')
+    ->hookEvents(false);

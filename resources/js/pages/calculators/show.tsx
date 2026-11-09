@@ -36,7 +36,7 @@ export default function CalculatorShow({
                     {spec.summary && <p className="mt-3 text-muted-foreground">{spec.summary}</p>}
                 </header>
 
-                <CalculatorWidget spec={spec} resolution={resolution} />
+                <CalculatorWidget spec={spec} resolution={resolution} savable />
 
                 <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
                     <FiguredOut spec={spec} />

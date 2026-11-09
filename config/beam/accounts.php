@@ -15,6 +15,7 @@
 */
 
 use App\Auth\CurrentTeamPlan;
+use App\Auth\PlanPurchasers;
 use Splicewire\Beam\Accounts\Authorization\RolePermissions;
 use Splicewire\Beam\Models\BeamSchema;
 use Splicewire\Beam\Models\GitRepo;
@@ -75,6 +76,8 @@ return [
         // Where a reader's plan lives: the current team's `plan` (App\Auth\CurrentTeamPlan). beam-accounts'
         // module resolver composes that plan's bundle with Beam's default grants.
         'plan' => CurrentTeamPlan::class,
+        // Keys held for a reason other than the plan: `plans.purchase` for the current team's Owner or an Admin.
+        'grants' => [PlanPurchasers::class],
         'default_staff_bundle' => 'staff',
         'staff_roles' => ['staff', 'operator'],
     ],

@@ -53,3 +53,12 @@ Particle::mount('guides', 'guides')
 Particle::mount('saved-inputs', 'saved-inputs')
     ->names('api.saved-inputs')
     ->hookEvents(false);
+
+// The plans on sale (PlanOfferData, read from config/plans.php) and the PurchasePlan operation:
+// `GET /api/plans` and `POST /api/plans/purchase`. The op has no subject, so its URL has no `{id}`;
+// the resource is read-only and not showable, so the bare mount takes only the list, and nothing
+// can swallow the op's URL.
+Particle::mount('plans', 'plans')
+    ->names('api.plans')
+    ->ops(['purchase'])
+    ->hookEvents(false);

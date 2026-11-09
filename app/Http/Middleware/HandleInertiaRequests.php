@@ -87,13 +87,16 @@ class HandleInertiaRequests extends Middleware
      * Build the flat `can` map for the current principal via the beam {@see CanMapBuilder}. Degrades
      * to an empty map on any failure so it never takes down an Inertia response.
      *
+     * It carries every calculator entitlement (`calculators.crypto-position-size`, …), resolved for
+     * the current team's plan, so the frontend reads authorization instead of deciding it.
+     *
      * @return array<string, bool>
      */
     protected function canMap(Request $request): array
     {
         try {
             return app(CanMapBuilder::class)
-                ->withFeatureKeys(['os.enter'])
+                ->withFeatureKeys(['os.enter', ...(array) config('beam.core.entitlements.keys', [])])
                 ->forPrincipal($request->user());
         } catch (Throwable) {
             return [];

@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Account\StarterAccountShell;
 use App\Beam\RealmRegistry;
+use App\Content\Calculators\CalculatorDefinition;
+use App\Content\Calculators\CalculatorRegistry;
 use App\Data\SitemapData;
 use App\Doctor\OrphanedNavItemAudit;
 use App\Models\SitemapRecord;
@@ -66,6 +68,25 @@ class AppServiceProvider extends ServiceProvider
         $this->registerAuthoringGates();
         $this->registerResourcePolicies();
         $this->registerDoctorAudits();
+        $this->declareCalculatorEntitlements();
+    }
+
+    /**
+     * Declare every paid calculator's entitlement key, so Beam defines an `entitlement:calculators.{slug}`
+     * gate for each. Declaring a key grants it to no one: until a plan holds it, the calculator is locked
+     * for every reader. Beam reads its keys when it checks one, so declaring them in boot() is in time.
+     */
+    protected function declareCalculatorEntitlements(): void
+    {
+        $keys = array_filter(array_map(
+            fn (CalculatorDefinition $definition): ?string => $definition->entitlement(),
+            (new CalculatorRegistry)->all(),
+        ));
+
+        config(['beam.core.entitlements.keys' => array_values(array_unique([
+            ...(array) config('beam.core.entitlements.keys', []),
+            ...$keys,
+        ]))]);
     }
 
     /**

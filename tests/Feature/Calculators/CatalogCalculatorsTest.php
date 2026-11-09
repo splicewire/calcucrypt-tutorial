@@ -14,14 +14,11 @@ beforeEach(function (): void {
 
 // The tutorial's subset of Calcucrypt's catalogue. Its prices come from the keyless
 // FixtureConnector (config/facts.php), so every fact's source reads `Fixture`.
+// The paid ones (position size, capital gains) are locked for every reader until a plan holds their
+// keys: LockFirstTest covers them.
 dataset('grounded calculators', [
     'profit' => ['crypto-profit', 'finance.investment-profit', ['sellPrice']],
     'converter' => ['crypto-converter', 'finance.currency-conversion', ['fromPrice', 'toPrice']],
-    'position size' => ['crypto-position-size', 'finance.position-size', ['spot']],
-]);
-
-dataset('ungrounded calculators', [
-    'capital gains' => ['crypto-capital-gains', 'finance.capital-gains'],
 ]);
 
 it('renders a grounded calculator with its live facts resolved', function (string $slug, string $key, array $factNodes): void {
@@ -40,13 +37,3 @@ it('renders a grounded calculator with its live facts resolved', function (strin
             return $page;
         });
 })->with('grounded calculators');
-
-it('renders an ungrounded tax calculator that resolves with no live facts', function (string $slug, string $key): void {
-    $this->get("/calculators/{$slug}")
-        ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->component('calculators/show')
-            ->where('spec.key', $key)
-            ->where('resolution.facts', []),
-        );
-})->with('ungrounded calculators');

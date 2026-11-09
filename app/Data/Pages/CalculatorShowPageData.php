@@ -10,7 +10,7 @@ use Spatie\LaravelData\Lazy;
 
 /**
  * The props of `calculators/show`: the `calculators` resource's own projection, its live
- * resolution, and the Guides that explain it.
+ * resolution (null when the calculator is locked), and the Guides that explain it.
  */
 class CalculatorShowPageData extends Data
 {
@@ -19,7 +19,7 @@ class CalculatorShowPageData extends Data
      */
     public function __construct(
         public CalculatorSpecData $spec,
-        public Lazy|CalculatorResolutionData $resolution,
+        public Lazy|CalculatorResolutionData|null $resolution,
         public array $guides,
         public ?GuideSummaryData $primaryGuide,
     ) {}

@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { GuideCard } from '@/components/crypt/cards';
 import { CalculatorWidget } from '@/components/calculators/calculator-widget';
+import { LockedCalculator } from '@/components/calculators/locked-calculator';
 
 type GuideSummary = App.Data.GuideSummaryData;
 
@@ -11,7 +12,7 @@ export default function CalculatorShow({
     primaryGuide = null,
 }: {
     spec: App.Data.CalculatorSpecData;
-    resolution: App.Data.CalculatorResolutionData;
+    resolution: App.Data.CalculatorResolutionData | null;
     guides?: GuideSummary[];
     primaryGuide?: GuideSummary | null;
 }) {
@@ -36,10 +37,14 @@ export default function CalculatorShow({
                     {spec.summary && <p className="mt-3 text-muted-foreground">{spec.summary}</p>}
                 </header>
 
-                <CalculatorWidget spec={spec} resolution={resolution} savable />
+                {spec.locked || resolution === null ? (
+                    <LockedCalculator spec={spec} />
+                ) : (
+                    <CalculatorWidget spec={spec} resolution={resolution} savable />
+                )}
 
                 <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
-                    <FiguredOut spec={spec} />
+                    {spec.locked ? <span /> : <FiguredOut spec={spec} />}
                     {primaryGuide && (
                         <Link
                             href={`/guides/${primaryGuide.slug}`}

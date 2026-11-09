@@ -62,10 +62,12 @@ class GuideController extends Controller
             $anchor = $calculator->pivot->getAttribute('anchor');
 
             if ($mode === AssociationMode::Embed->value) {
+                $spec = CalculatorSpecData::project($calculator);
+
                 $embeds[] = new CalculatorEmbedData(
                     anchor: is_string($anchor) ? $anchor : null,
-                    spec: CalculatorSpecData::project($calculator),
-                    resolution: $this->resolver->resolve($calculator),
+                    spec: $spec,
+                    resolution: $spec->locked ? null : $this->resolver->resolve($calculator),
                 );
             } else {
                 $links[] = CalculatorSummaryData::fromModel($calculator);

@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "CalculatorIndexPageData",
+    "properties": {
+        "calculators": {
+            "type": "array"
+        },
+        "filters": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        }
+    },
+    "required": [
+        "calculators",
+        "filters"
+    ],
+    "$id": "CalculatorIndexPageData"
+}

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Splicewire\Beam\Facades\Particle;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +28,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user()->only(['id', 'name', 'email']);
 })->name('api.user');
+
+// Calcucrypt's public read API. The declaration on CalculatorSpecData says what the resource is and
+// who may read it, and a bare mount takes its verbs from it: a read-only resource mounts `index` and
+// `show` and no write route. The `api.` name stem keeps them clear of the pages' own `calculators.*`
+// route names, and a public mount advertises no webhook event vocabulary.
+Particle::mount('calculators', 'calculators')
+    ->names('api.calculators')
+    ->hookEvents(false);

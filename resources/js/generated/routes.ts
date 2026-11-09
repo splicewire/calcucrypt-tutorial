@@ -10,6 +10,8 @@ export type RouteMap = Record<string, string>;
 export const defaults: RouteMap = {
     'api.calculators.index': 'api/calculators',
     'api.calculators.show': 'api/calculators/{id}',
+    'api.guides.index': 'api/guides',
+    'api.guides.show': 'api/guides/{id}',
     'beam-docs.search': 'beam/docs/search',
     'beam-ux-entry.body': 'beam-ux-entries/{id}/body',
     'beam-ux-entry.canvas-bindings': 'beam-ux-entries/{id}/canvas-bindings',

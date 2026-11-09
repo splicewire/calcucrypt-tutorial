@@ -41,7 +41,7 @@ createInertiaApp({
     ...options,
     layout: (name) => {
         // Calcucrypt's public pages wear its own site chrome (layouts/site-layout.tsx).
-        if (name.startsWith('calculators/')) {
+        if (name.startsWith('calculators/') || name.startsWith('guides/')) {
             return SiteLayout;
         }
 

@@ -5,10 +5,13 @@
 // Data class and regenerate, and every page sees the change.
 
 declare namespace App.Data {
+    type CalculatorEmbedData = import('@/generated/App/Data').CalculatorEmbedData;
     type CalculatorResolutionData = import('@/generated/App/Data').CalculatorResolutionData;
     type CalculatorSpecData = import('@/generated/App/Data').CalculatorSpecData;
     type CalculatorSummaryData = import('@/generated/App/Data').CalculatorSummaryData;
     type FactData = import('@/generated/App/Data').FactData;
+    type GuideData = import('@/generated/App/Data').GuideData;
+    type GuideSummaryData = import('@/generated/App/Data').GuideSummaryData;
 }
 
 declare namespace App.Enums {

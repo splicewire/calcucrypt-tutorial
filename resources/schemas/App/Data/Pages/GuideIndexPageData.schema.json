@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "GuideIndexPageData",
+    "properties": {
+        "guides": {
+            "type": "array"
+        },
+        "filters": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        }
+    },
+    "required": [
+        "guides",
+        "filters"
+    ],
+    "$id": "GuideIndexPageData"
+}

@@ -29,10 +29,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user()->only(['id', 'name', 'email']);
 })->name('api.user');
 
-// Calcucrypt's public read API. The declaration on CalculatorSpecData says what the resource is and
-// who may read it, and a bare mount takes its verbs from it: a read-only resource mounts `index` and
-// `show` and no write route. The `api.` name stem keeps them clear of the pages' own `calculators.*`
-// route names, and a public mount advertises no webhook event vocabulary.
+// Calcucrypt's public read API. The declarations on CalculatorSpecData and GuideData say what each
+// resource is and who may read it, and a bare mount takes its verbs from them: a read-only resource
+// mounts `index` and `show` and no write route. The `api.` name stem keeps them clear of the pages'
+// own `calculators.*` / `guides.*` route names, and a public mount advertises no webhook event
+// vocabulary.
 Particle::mount('calculators', 'calculators')
     ->names('api.calculators')
+    ->hookEvents(false);
+
+Particle::mount('guides', 'guides')
+    ->names('api.guides')
     ->hookEvents(false);

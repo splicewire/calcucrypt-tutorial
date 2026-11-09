@@ -8,6 +8,7 @@
 export type AuthUserData = import("./Splicewire/Beam/Accounts/Data").AuthUserData;
 export type BeamUxEntryBodyData = import("./Splicewire/Beam/Ux/Data").BeamUxEntryBodyData;
 export type BeamUxEntryBodyInputData = import("./Splicewire/Beam/Ux/Data").BeamUxEntryBodyInputData;
+export type CalculatorResolutionData = import("./App/Data").CalculatorResolutionData;
 export type CalculatorSpecData = import("./App/Data").CalculatorSpecData;
 export type DocsSearchResultsData = import("./Splicewire/Beam/Docs/Data").DocsSearchResultsData;
 export type EntryCanvasBindingsOutputData = import("./Splicewire/Beam/Ux/Data").EntryCanvasBindingsOutputData;

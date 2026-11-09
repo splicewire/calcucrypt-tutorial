@@ -107,7 +107,7 @@
         },
         "CalculatorResolutionData": {
             "type": "object",
-            "title": "CalculatorResolutionData",
+            "title": "Calculator resolution",
             "properties": {
                 "facts": {
                     "type": "object",

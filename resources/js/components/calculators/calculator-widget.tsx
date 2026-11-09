@@ -18,7 +18,7 @@ type Resolution = App.Data.CalculatorResolutionData;
 // editor + a per-row allocation table. Both ground every figure in the same live, cited facts.
 export function CalculatorWidget({ spec, resolution }: { spec: Spec; resolution: Resolution }) {
     const graph = spec.graph as unknown as CalculatorGraph;
-    const calc = useCalculator(graph, resolution);
+    const calc = useCalculator(spec.slug, graph, resolution);
 
     const collectionNode = graph.nodes.find((node) => node.kind === 'collection');
     if (collectionNode && graph.table) {

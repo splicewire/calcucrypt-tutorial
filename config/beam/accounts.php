@@ -14,6 +14,7 @@
 | Keep the host-owned schema without publishing the package's full estate.
 */
 
+use App\Auth\CurrentTeamPlan;
 use Splicewire\Beam\Accounts\Authorization\RolePermissions;
 use Splicewire\Beam\Models\BeamSchema;
 use Splicewire\Beam\Models\GitRepo;
@@ -61,7 +62,19 @@ return [
     'entitlements' => [
         'bundles' => [
             'staff' => ['ux.author', 'os.enter', 'os.operate'],
+            // The plans a team can hold. Each bundle lists the entitlement keys its plan unlocks; `free`
+            // has no bundle, so a free team holds no calculator keys.
+            'trader' => [
+                'calculators.crypto-position-size',
+            ],
+            'pro' => [
+                'calculators.crypto-position-size',
+                'calculators.crypto-capital-gains',
+            ],
         ],
+        // Where a reader's plan lives: the current team's `plan` (App\Auth\CurrentTeamPlan). beam-accounts'
+        // module resolver composes that plan's bundle with Beam's default grants.
+        'plan' => CurrentTeamPlan::class,
         'default_staff_bundle' => 'staff',
         'staff_roles' => ['staff', 'operator'],
     ],

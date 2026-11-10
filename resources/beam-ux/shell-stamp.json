@@ -9,6 +9,11 @@
             "site",
             "account",
             "operator"
+        ],
+        "resources/js/frame-resource-map.ts": [
+            "site",
+            "account",
+            "operator"
         ]
     }
 }

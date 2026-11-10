@@ -89,3 +89,23 @@ jobs:
             exit 1
           fi
           echo "setup left a clean tree"
+
+      # The committed client tree (beam.client.out_dir, resources/js/generated: routes, hooks, aliases and
+      # frame-resources.ts) must be what this checkout's generator writes. Setup only consumes it, so the check
+      # above cannot see a stale or missing file; this step regenerates it and compares. `git status
+      # --untracked-files=all`, not `git diff`, so a file the generator newly writes is caught too, and the
+      # generator's own failure fails the step (bash -e). The transformer-owned namespace modules there are
+      # ignored (.gitignore), so they never count. Separate from setup, after it, like the check above.
+      - name: The committed client tree is fresh
+        if: always() && steps.setup-tree.outcome == 'success'
+        run: |
+          php artisan splicewire:beam:generate:client
+          drift="$(git status --porcelain --untracked-files=all -- resources/js/generated)"
+          if [ -n "$drift" ]; then
+            echo "::error::The committed client tree is stale: splicewire:beam:generate:client rewrote it."
+            echo "Run 'php artisan splicewire:beam:generate:client' and commit resources/js/generated:"
+            echo "$drift"
+            git --no-pager diff --stat -- resources/js/generated
+            exit 1
+          fi
+          echo "the committed client tree is what the generator writes"

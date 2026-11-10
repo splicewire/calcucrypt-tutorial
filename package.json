@@ -12,6 +12,7 @@
         "lint": "eslint . --fix",
         "lint:check": "eslint .",
         "types:check": "composer types:generate && tsc --noEmit && tsc -p tsconfig.generated.json",
+        "frame:vocabulary": "frame-vocabulary",
         "beam:verify-prototype-boundary": "beam-verify-prototype-boundary"
     },
     "devDependencies": {

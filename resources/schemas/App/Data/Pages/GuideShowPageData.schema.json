@@ -1,0 +1,60 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "GuideShowPageData",
+    "properties": {
+        "guide": {
+            "$ref": "#/$defs/GuideData"
+        },
+        "embeds": {
+            "type": "array"
+        },
+        "links": {
+            "type": "array"
+        }
+    },
+    "required": ["guide", "embeds", "links"],
+    "$id": "GuideShowPageData",
+    "$defs": {
+        "GuideData": {
+            "type": "object",
+            "title": "Guide",
+            "properties": {
+                "slug": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "teaser": {
+                    "type": ["string", "null"]
+                },
+                "artifactUrl": {
+                    "type": "string"
+                },
+                "artifactVersion": {
+                    "type": "string"
+                },
+                "readingMinutes": {
+                    "type": "integer"
+                },
+                "category": {
+                    "type": ["string", "null"]
+                },
+                "publishedAt": {
+                    "type": ["string", "null"]
+                }
+            },
+            "required": [
+                "slug",
+                "title",
+                "teaser",
+                "artifactUrl",
+                "artifactVersion",
+                "readingMinutes",
+                "category",
+                "publishedAt"
+            ]
+        }
+    }
+}

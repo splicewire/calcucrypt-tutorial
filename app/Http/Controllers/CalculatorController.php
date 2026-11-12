@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Calculators\CalculatorResolver;
 use App\Data\CalculatorSpecData;
 use App\Data\CalculatorSummaryData;
+use App\Data\GuideSummaryData;
 use App\Data\Pages\CalculatorIndexPageData;
 use App\Data\Pages\CalculatorShowPageData;
 use App\Models\Calculator;
@@ -56,9 +57,19 @@ class CalculatorController extends Controller
         // Lazy so a `?only=resolution` reload re-resolves without rebuilding the whole page.
         $inputs = request()->query();
 
+        // Back-findability: every published Guide that references this calculator, with its
+        // canonical explainer (the primary Guide) surfaced first in "Learn more".
+        $guides = $calculator->guides()->published()->get();
+        $primary = $calculator->primary_guide_id !== null
+            ? $guides->firstWhere('id', $calculator->primary_guide_id)
+            : null;
+
+
         return Inertia::render('calculators/show', new CalculatorShowPageData(
             spec: CalculatorSpecData::project($calculator),
             resolution: Lazy::closure(fn () => $this->resolver->resolve($calculator, $inputs)),
+            guides: $guides->map(GuideSummaryData::fromModel(...))->values()->all(),
+            primaryGuide: $primary !== null ? GuideSummaryData::fromModel($primary) : null,
         ));
     }
 }

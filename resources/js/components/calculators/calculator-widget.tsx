@@ -16,19 +16,19 @@ type Resolution = App.Data.CalculatorResolutionData;
 // The reusable, embeddable calculator surface. A scalar calculator (Profit) renders a form +
 // the seven-segment device screen; a collection calculator (Allocation) renders a portfolio
 // editor + a per-row allocation table. Both ground every figure in the same live, cited facts.
-export function CalculatorWidget({ spec, resolution }: { spec: Spec; resolution: Resolution }) {
+export function CalculatorWidget({ spec, resolution, readOnly = false }: { spec: Spec; resolution: Resolution; readOnly?: boolean }) {
     const graph = spec.graph as unknown as CalculatorGraph;
     const calc = useCalculator(graph, resolution);
 
     const collectionNode = graph.nodes.find((node) => node.kind === 'collection');
     if (collectionNode && graph.table) {
-        return <CollectionWidget graph={graph} calc={calc} collectionNode={collectionNode} />;
+        return <CollectionWidget graph={graph} calc={calc} collectionNode={collectionNode} readOnly={readOnly} />;
     }
 
-    return <ScalarWidget graph={graph} calc={calc} />;
+    return <ScalarWidget graph={graph} calc={calc} readOnly={readOnly} />;
 }
 
-function ScalarWidget({ graph, calc }: { graph: CalculatorGraph; calc: UseCalculator }) {
+function ScalarWidget({ graph, calc, readOnly }: { graph: CalculatorGraph; calc: UseCalculator; readOnly: boolean }) {
     const { inputs, setInput, values, vectors, facts, refreshing } = calc;
     const byId = nodeById(graph);
     const inputNodes = graph.nodes.filter((node) => node.kind === 'input');
@@ -58,7 +58,7 @@ function ScalarWidget({ graph, calc }: { graph: CalculatorGraph; calc: UseCalcul
                     <p className="mb-4 font-mono text-[11px] tracking-widest text-muted-foreground uppercase">Your position</p>
                     <div className="space-y-4">
                         {orderedInputs.map((node) => (
-                            <InputControl key={node.id} node={node} value={inputs[node.id]} onChange={(value) => setInput(node.id, value)} />
+                            <InputControl key={node.id} node={node} value={inputs[node.id]} readOnly={readOnly} onChange={(value) => setInput(node.id, value)} />
                         ))}
 
                         {refNodes.map((node) => (
@@ -75,7 +75,7 @@ function ScalarWidget({ graph, calc }: { graph: CalculatorGraph; calc: UseCalcul
     );
 }
 
-function CollectionWidget({ graph, calc, collectionNode }: { graph: CalculatorGraph; calc: UseCalculator; collectionNode: CalculatorNode }) {
+function CollectionWidget({ graph, calc, collectionNode, readOnly }: { graph: CalculatorGraph; calc: UseCalculator; collectionNode: CalculatorNode; readOnly: boolean }) {
     const { inputs, setInput, collections, setCell, addRow, removeRow, values, vectors, vectorFacts, refreshing } = calc;
     const byId = nodeById(graph);
     const control = collectionNode.control as CollectionControl;
@@ -97,7 +97,7 @@ function CollectionWidget({ graph, calc, collectionNode }: { graph: CalculatorGr
                     <p className="mb-4 font-mono text-[11px] tracking-widest text-muted-foreground uppercase">Your portfolio</p>
                     <div className="space-y-4">
                         {scalarInputs.map((node) => (
-                            <InputControl key={node.id} node={node} value={inputs[node.id]} onChange={(value) => setInput(node.id, value)} />
+                            <InputControl key={node.id} node={node} value={inputs[node.id]} readOnly={readOnly} onChange={(value) => setInput(node.id, value)} />
                         ))}
                     </div>
 
@@ -106,8 +106,8 @@ function CollectionWidget({ graph, calc, collectionNode }: { graph: CalculatorGr
                         {rows.map((row, index) => (
                             <div key={index} className="flex items-center gap-2">
                                 {symbolField && (
-                                    <Select value={String(row[symbolField.id] ?? '')} onValueChange={(value) => setCell(collectionNode.id, index, symbolField.id, value)}>
-                                        <SelectTrigger className="h-9 flex-1 font-mono">
+                                    <Select disabled={readOnly} value={String(row[symbolField.id] ?? '')} onValueChange={(value) => setCell(collectionNode.id, index, symbolField.id, value)}>
+                                        <SelectTrigger disabled={readOnly} className="h-9 flex-1 font-mono">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -122,6 +122,7 @@ function CollectionWidget({ graph, calc, collectionNode }: { graph: CalculatorGr
                                 {toggleField && (
                                     <button
                                         type="button"
+                                        disabled={readOnly}
                                         onClick={() => setCell(collectionNode.id, index, toggleField.id, !row[toggleField.id])}
                                         aria-pressed={Boolean(row[toggleField.id])}
                                         className={cn(
@@ -135,7 +136,7 @@ function CollectionWidget({ graph, calc, collectionNode }: { graph: CalculatorGr
                                 <button
                                     type="button"
                                     onClick={() => removeRow(collectionNode.id, index)}
-                                    disabled={!canRemove}
+                                    disabled={readOnly || !canRemove}
                                     aria-label="Remove asset"
                                     className="flex size-9 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
                                 >
@@ -145,6 +146,7 @@ function CollectionWidget({ graph, calc, collectionNode }: { graph: CalculatorGr
                         ))}
                         <button
                             type="button"
+                            disabled={readOnly}
                             onClick={() => addRow(collectionNode.id)}
                             className="mt-1 inline-flex items-center gap-1.5 font-mono text-xs text-terminal transition-opacity hover:opacity-80"
                         >
@@ -299,7 +301,7 @@ function FieldLabel({ htmlFor, children }: { htmlFor?: string; children: React.R
     );
 }
 
-function InputControl({ node, value, onChange }: { node: CalculatorNode; value: number | string; onChange: (value: number | string) => void }) {
+function InputControl({ node, value, onChange, readOnly }: { node: CalculatorNode; value: number | string; onChange: (value: number | string) => void; readOnly: boolean }) {
     const control = node.control;
     if (!control || control.type === 'collection') {
         return null;
@@ -310,8 +312,8 @@ function InputControl({ node, value, onChange }: { node: CalculatorNode; value: 
         return (
             <div className="space-y-1.5">
                 <FieldLabel htmlFor={node.id}>{node.label}</FieldLabel>
-                <Select value={String(value)} onValueChange={onChange}>
-                    <SelectTrigger id={node.id} className="w-full font-mono">
+                <Select disabled={readOnly} value={String(value)} onValueChange={onChange}>
+                    <SelectTrigger disabled={readOnly} id={node.id} className="w-full font-mono">
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -337,6 +339,7 @@ function InputControl({ node, value, onChange }: { node: CalculatorNode; value: 
                 id={node.id}
                 type="number"
                 inputMode="decimal"
+                readOnly={readOnly}
                 value={Number.isFinite(value as number) ? String(value) : ''}
                 min={numberControl.min}
                 max={numberControl.max}

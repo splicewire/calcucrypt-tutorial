@@ -114,6 +114,12 @@ export interface FrameResources {
         createResult: import('./Splicewire/Beam/Data').GitRepoData;
         actions: {};
     };
+    'guides': {
+        row: import('./App/Data').GuideData;
+        edit: import('./App/Data').GuideData;
+        createResult: import('./App/Data').GuideData;
+        actions: {};
+    };
     'hooks': {
         row: import('./Splicewire/Beam/Data').HookData;
         edit: import('./Splicewire/Beam/Data').HookInputData;

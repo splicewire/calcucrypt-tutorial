@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "GuideSummaryData",
+    "properties": {
+        "slug": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string"
+        },
+        "teaser": {
+            "type": ["string", "null"]
+        },
+        "category": {
+            "type": ["string", "null"]
+        }
+    },
+    "required": ["slug", "title", "teaser", "category"],
+    "$id": "GuideSummaryData"
+}

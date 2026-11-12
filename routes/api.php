@@ -35,3 +35,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Particle::mount('calculators', 'calculators')
     ->names('api.calculators')
     ->hookEvents(false);
+
+Particle::mount('guides', 'guides')
+    ->names('api.guides')
+    ->hookEvents(false);

@@ -20,6 +20,7 @@ export type EntrySourceData = import("./Splicewire/Beam/Ux/Data").EntrySourceDat
 export type FileBatchReconcileResultData = import("./Splicewire/Beam/Ux/Data").FileBatchReconcileResultData;
 export type FileInspectionData = import("./Splicewire/Beam/Ux/Data").FileInspectionData;
 export type FileReconcileResultData = import("./Splicewire/Beam/Ux/Data").FileReconcileResultData;
+export type GuideData = import("./App/Data").GuideData;
 export type InvitationAcceptedData = import("./Splicewire/Beam/Accounts/Data").InvitationAcceptedData;
 export type PageEntryRefData = import("./Splicewire/Beam/Ux/Data").PageEntryRefData;
 export type PhpApiIndexData = import("./Splicewire/Beam/Docs/Data").PhpApiIndexData;

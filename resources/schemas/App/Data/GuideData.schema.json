@@ -1,0 +1,42 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "Guide",
+    "properties": {
+        "slug": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string"
+        },
+        "teaser": {
+            "type": ["string", "null"]
+        },
+        "artifactUrl": {
+            "type": "string"
+        },
+        "artifactVersion": {
+            "type": "string"
+        },
+        "readingMinutes": {
+            "type": "integer"
+        },
+        "category": {
+            "type": ["string", "null"]
+        },
+        "publishedAt": {
+            "type": ["string", "null"]
+        }
+    },
+    "required": [
+        "slug",
+        "title",
+        "teaser",
+        "artifactUrl",
+        "artifactVersion",
+        "readingMinutes",
+        "category",
+        "publishedAt"
+    ],
+    "$id": "GuideData"
+}

@@ -1,12 +1,19 @@
 import { Head, Link } from '@inertiajs/react';
+import { GuideCard } from '@/components/crypt/cards';
 import { CalculatorWidget } from '@/components/calculators/calculator-widget';
+
+type GuideSummary = App.Data.GuideSummaryData;
 
 export default function CalculatorShow({
     spec,
     resolution,
+    guides = [],
+    primaryGuide = null,
 }: {
     spec: App.Data.CalculatorSpecData;
     resolution: App.Data.CalculatorResolutionData;
+    guides?: GuideSummary[];
+    primaryGuide?: GuideSummary | null;
 }) {
     return (
         <>
@@ -33,9 +40,48 @@ export default function CalculatorShow({
 
                 <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
                     <FiguredOut spec={spec} />
+                    {primaryGuide && (
+                        <Link
+                            href={`/guides/${primaryGuide.slug}`}
+                            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+                        >
+                            Read the guide →
+                        </Link>
+                    )}
                 </div>
+
+                <LearnMore guides={guides} primaryGuide={primaryGuide} />
             </div>
         </>
+    );
+}
+
+// Back-findability: the Guides that explain this calculator, its canonical explainer first.
+function LearnMore({ guides, primaryGuide }: { guides: GuideSummary[]; primaryGuide: GuideSummary | null }) {
+    if (guides.length === 0) {
+        return null;
+    }
+
+    const primarySlug = primaryGuide?.slug;
+    const ordered = [...guides].sort((a, b) => (a.slug === primarySlug ? -1 : b.slug === primarySlug ? 1 : 0));
+
+    return (
+        <section className="mt-12 border-t border-border pt-8">
+            <h2 className="text-xl font-semibold text-foreground">Learn more</h2>
+            <p className="mt-1 mb-5 font-mono text-xs text-muted-foreground">Guides that explain this calculator</p>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {ordered.map((guide) => (
+                    <div key={guide.slug} className="relative">
+                        {guide.slug === primarySlug && (
+                            <span className="absolute top-2 right-2 z-10 rounded-sm border border-terminal bg-background px-1.5 py-px font-mono text-[9px] tracking-wide text-terminal uppercase">
+                                Primary
+                            </span>
+                        )}
+                        <GuideCard guide={guide} />
+                    </div>
+                ))}
+            </div>
+        </section>
     );
 }
 

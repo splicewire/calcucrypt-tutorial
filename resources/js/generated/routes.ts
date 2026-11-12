@@ -10,6 +10,8 @@ export type RouteMap = Record<string, string>;
 export const defaults: RouteMap = {
     'api.calculators.index': 'api/calculators',
     'api.calculators.show': 'api/calculators/{id}',
+    'api.guides.index': 'api/guides',
+    'api.guides.show': 'api/guides/{id}',
     'beam-docs.php-api-index': 'beam/docs/php-api-index',
     'beam-docs.php-api-symbol': 'beam/docs/php-api-symbol',
     'beam-docs.search': 'beam/docs/search',

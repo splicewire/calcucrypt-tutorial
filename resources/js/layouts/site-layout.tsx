@@ -3,10 +3,12 @@ import { Moon, Sun } from 'lucide-react';
 import { type PropsWithChildren } from 'react';
 import { useAppearance } from '@/hooks/use-appearance';
 
-// Supplied public chrome. Each chapter adds navigation only when its page routes exist.
+// The public Crypt chrome — CALCUCRYPT wordmark, Calculators/Guides nav, a Light/Dark
+// toggle, and auth. app.tsx wraps the calculators/* and guides/* pages in it.
 
-const NAV_LINKS: { href: string; label: string }[] = [
+const NAV_LINKS = [
     { href: '/calculators', label: 'Calculators' },
+    { href: '/guides', label: 'Guides' },
 ];
 
 // The CALCU·CRYPT wordmark: two-tone LCD text in the 14-segment font — "CALCU" in terminal

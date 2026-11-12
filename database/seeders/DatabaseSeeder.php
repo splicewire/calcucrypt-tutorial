@@ -63,5 +63,8 @@ class DatabaseSeeder extends Seeder
         // renders unchanged output before any author touches the theme (theme-entries-and-authoring
         // ticket str-01).
         $this->call(ThemeSeeder::class);
+
+        // The calculator catalogue and its Guides (content:sync).
+        $this->call(CryptSeeder::class);
     }
 }

@@ -2,24 +2,31 @@
 
 namespace App\Http\Middleware;
 
+use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Splicewire\Beam\Entitlements\CanMapBuilder;
 use Splicewire\Beam\Ux\Http\Concerns\SharesBeamShell;
+use Throwable;
 
-/**
- * The host's Inertia middleware. The shell's shared props (brand, realms, auth, nav, accountNav, accountShell, can,
- * realmManifest, theme) are packaged in {@see SharesBeamShell}; this host tailors none of them. A host that does
- * overrides that one method here, never a copy of the share.
- */
 class HandleInertiaRequests extends Middleware
 {
     use SharesBeamShell;
 
-    /**
-     * The root template that's loaded on the first page visit.
-     *
-     * @see https://inertiajs.com/server-side-setup#root-template
-     *
-     * @var string
-     */
     protected $rootView = 'app';
+
+    /**
+     * Share the starter's OS capability through the package shell.
+     *
+     * @return array<string, bool>
+     */
+    protected function canMap(Request $request): array
+    {
+        try {
+            return app(CanMapBuilder::class)
+                ->withFeatureKeys(['os.enter'])
+                ->forPrincipal($this->shellPrincipal($request));
+        } catch (Throwable) {
+            return [];
+        }
+    }
 }

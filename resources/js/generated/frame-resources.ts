@@ -30,6 +30,30 @@ export interface FrameResources {
         createResult: import('./Splicewire/Beam/Analytics/Data').AnalyticsFigureData;
         actions: {};
     };
+    'analytics-traffic': {
+        row: import('./Splicewire/Beam/Analytics/Data').AnalyticsFigureData;
+        edit: import('./Splicewire/Beam/Analytics/Data').AnalyticsFigureData;
+        createResult: import('./Splicewire/Beam/Analytics/Data').AnalyticsFigureData;
+        actions: {};
+    };
+    'analytics-traffic-pages': {
+        row: import('./Splicewire/Beam/Analytics/Data').TrafficRankData;
+        edit: import('./Splicewire/Beam/Analytics/Data').TrafficRankData;
+        createResult: import('./Splicewire/Beam/Analytics/Data').TrafficRankData;
+        actions: {};
+    };
+    'analytics-traffic-referrers': {
+        row: import('./Splicewire/Beam/Analytics/Data').TrafficRankData;
+        edit: import('./Splicewire/Beam/Analytics/Data').TrafficRankData;
+        createResult: import('./Splicewire/Beam/Analytics/Data').TrafficRankData;
+        actions: {};
+    };
+    'analytics-traffic-trend': {
+        row: import('./Splicewire/Beam/Analytics/Data').TrafficPointData;
+        edit: import('./Splicewire/Beam/Analytics/Data').TrafficPointData;
+        createResult: import('./Splicewire/Beam/Analytics/Data').TrafficPointData;
+        actions: {};
+    };
     'beam-ux-entry': {
         row: import('./Splicewire/Beam/Ux/Data').BeamUxEntryData;
         edit: import('./Splicewire/Beam/Ux/Data').BeamUxEntryInputData;
@@ -115,7 +139,7 @@ export interface FrameResources {
         actions: {};
     };
     'records': {
-        row: import('./Splicewire/Beam/Data').RecordData | Record<string, unknown>;
+        row: import('./Splicewire/Beam/Data').RecordData | import('./Splicewire/Beam/Collections').PublicRecordData;
         edit: import('./Splicewire/Beam/Data').RecordData;
         createResult: import('./Splicewire/Beam/Data').RecordData;
         actions: {};
@@ -142,12 +166,6 @@ export interface FrameResources {
         row: import('./Splicewire/Beam/Ux/Data').DashboardCardRowData;
         edit: import('./Splicewire/Beam/Ux/Data').DashboardCardRowData;
         createResult: import('./Splicewire/Beam/Ux/Data').DashboardCardRowData;
-        actions: {};
-    };
-    'sitemap': {
-        row: import('./App/Data').SitemapData;
-        edit: import('./App/Data').SitemapData;
-        createResult: import('./App/Data').SitemapData;
         actions: {};
     };
     'tags': {

@@ -46,11 +46,11 @@ class StarterIdentityTest extends TestCase
     public static function credentialBearingOrigins(): array
     {
         return [
-            'token userinfo' => ['https://x-access-token:ghs_EXAMPLETOKEN@github.com/splicewire/laravel-beam-starter'],
-            'token userinfo with .git' => ['https://x-access-token:ghs_EXAMPLETOKEN@github.com/splicewire/laravel-beam-starter.git'],
-            'user:pass userinfo' => ['https://user:pass@github.com/splicewire/laravel-beam-starter.git'],
-            'plain with .git' => ['https://github.com/splicewire/laravel-beam-starter.git'],
-            'plain already clean' => ['https://github.com/splicewire/laravel-beam-starter'],
+            'token userinfo' => ['https://x-access-token:ghs_EXAMPLETOKEN@github.com/splicewire/calcucrypt-tutorial'],
+            'token userinfo with .git' => ['https://x-access-token:ghs_EXAMPLETOKEN@github.com/splicewire/calcucrypt-tutorial.git'],
+            'user:pass userinfo' => ['https://user:pass@github.com/splicewire/calcucrypt-tutorial.git'],
+            'plain with .git' => ['https://github.com/splicewire/calcucrypt-tutorial.git'],
+            'plain already clean' => ['https://github.com/splicewire/calcucrypt-tutorial'],
         ];
     }
 

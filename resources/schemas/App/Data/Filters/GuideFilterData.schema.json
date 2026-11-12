@@ -1,0 +1,24 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "GuideFilterData",
+    "properties": {
+        "search": {
+            "type": ["string", "null"],
+            "x-filter": {
+                "operator": "search",
+                "name": "q",
+                "control": "search"
+            }
+        },
+        "title": {
+            "type": ["string", "null"],
+            "x-sort": {
+                "name": "title",
+                "default": false,
+                "direction": "asc"
+            }
+        }
+    },
+    "$id": "GuideFilterData"
+}

@@ -130,7 +130,6 @@ return [
         'tenant' => [
             'beam-ux-release-files',
             'beam-ux-entry',
-            'sitemap',
             'schemas',
             'hooks',
             'git-repo',

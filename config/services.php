@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // The opt-in live market source (FACTS_DRIVER=live). No key is needed for the tutorial: the
+    // default driver is the keyless FixtureConnector (config/facts.php).
+    'coinmarketcap' => [
+        'key' => env('CMC_API_KEY'),
+        'base_url' => env('CMC_BASE_URL', 'https://pro-api.coinmarketcap.com'),
+    ],
+
 ];

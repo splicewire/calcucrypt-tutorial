@@ -10,6 +10,8 @@ use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Models\Membership;
 use Splicewire\Beam\Accounts\Models\Team;
 use Splicewire\Beam\Accounts\Sharing\AccessGrants;
+use Splicewire\Beam\Dashboard\SectionOverview;
+use Splicewire\Beam\Nav\NavSectionRegistry;
 use Splicewire\Beam\Ux\Models\BeamUxEntry;
 use Tests\TestCase;
 
@@ -44,7 +46,8 @@ class RealmDashboardTest extends TestCase
 
     /**
      * Every destination in a nav tree: the nodes with an href and no children, depth-first. Headers
-     * (seats) are not destinations and draw no tile, so they are not leaves here either.
+     * (seats) are not leaves; flagged overview seats are dashboard destinations instead,
+     * handled separately by dashboardDestinations().
      *
      * @param  list<array<string, mixed>>  $nodes
      * @return list<array<string, mixed>>
@@ -62,6 +65,35 @@ class RealmDashboardTest extends TestCase
         }
 
         return $leaves;
+    }
+
+    /**
+     * Overview seats are destinations on the dashboard; their children stay on the rail.
+     * This host case exercises an unlocked Analytics seat. The locked-seat contract is owned by
+     * beam-ux's SectionOverviewTest::test_a_soft_locked_seat_stays_visible_and_locked_with_no_landing:
+     * a locked seat stays on the rail but contributes neither a dashboard tile nor an overview route.
+     *
+     * @param  list<array<string, mixed>>  $nodes
+     * @param  list<string>  $overviewRoutes
+     * @return list<array<string, mixed>>
+     */
+    private static function dashboardDestinations(array $nodes, array $overviewRoutes): array
+    {
+        $destinations = [];
+
+        foreach ($nodes as $node) {
+            if (in_array($node['routeName'] ?? null, $overviewRoutes, true)) {
+                if (($node['locked'] ?? null) === null) {
+                    $destinations[] = $node;
+                }
+            } elseif (($node['children'] ?? []) !== []) {
+                $destinations = [...$destinations, ...self::dashboardDestinations($node['children'], $overviewRoutes)];
+            } elseif (is_string($node['href'] ?? null)) {
+                $destinations[] = $node;
+            }
+        }
+
+        return $destinations;
     }
 
     /** @return list<array<string, mixed>> */
@@ -126,7 +158,7 @@ class RealmDashboardTest extends TestCase
      * (ADR-0224: a default-provider resource with no declared context is a nav tile, not a derived card).
      * Every destination appears once - card XOR tile - and the tiles are the realm's remaining nav leaves,
      * after every card. This host seats no card-declaring resource in the operator realm, so its dashboard
-     * is all tiles (Users, Teams); a host that adds a card resource asserts it the same way.
+     * is all tiles (Users, Teams, Analytics); Analytics' overview seat is one destination.
      */
     public function test_the_operator_dashboard_streams_declared_cards_with_live_counts_then_remaining_product_tiles(): void
     {
@@ -158,8 +190,13 @@ class RealmDashboardTest extends TestCase
         $manifest = $this->actingAs($operator)->getJson('/operator/frame/manifest')->assertOk()->json();
         $cardHrefs = array_column($cards, 'href');
         $productNav = array_filter($manifest['nav']['items'], fn (array $node): bool => ($node['zone'] ?? null) !== 'meta');
+        $overviewRoutes = [];
+        foreach (SectionOverview::flagged('operator', app(NavSectionRegistry::class)) as $section) {
+            $overviewRoutes[] = SectionOverview::routeNameFor('operator', $section->key);
+            $overviewRoutes[] = $section->key.'.section';
+        }
         $rail = array_values(array_filter(
-            self::leaves($productNav),
+            self::dashboardDestinations(array_values($productNav), $overviewRoutes),
             fn (array $leaf): bool => ($leaf['routeName'] ?? null) !== 'operator-dashboard.index'
                 && ! in_array($leaf['href'], $cardHrefs, true),
         ));
@@ -169,6 +206,28 @@ class RealmDashboardTest extends TestCase
         $this->assertNotEmpty($tiles);
         $this->assertSame(array_column($rail, 'href'), $tileHrefs);
         $this->assertSame(array_column($rail, 'title'), array_column($tiles, 'label'));
+        $this->assertSame(array_column($rail, 'icon'), array_column($tiles, 'icon'));
+        $this->assertSame([
+            ['Users', '/operator/users', 'users', 1],
+            ['Teams', '/operator/teams', 'building', 2],
+            ['Analytics', '/operator/analytics', 'Activity', 3],
+        ], array_map(fn (array $tile): array => [$tile['label'], $tile['href'], $tile['icon'], $tile['navOrder']], $tiles));
+
+        // Grouping the tiles must preserve the real section's complete child navigation.
+        $overview = array_values(array_filter(
+            $manifest['nav']['items'],
+            fn (array $node): bool => ($node['routeName'] ?? null) === 'operator-analytics-overview.index',
+        ));
+        $this->assertCount(1, $overview);
+        $this->assertNull($overview[0]['locked']);
+        $this->assertSame([
+            'analytics-measurement.index', 'analytics-traffic.index',
+            'analytics-traffic-trend.index', 'analytics-traffic-pages.index', 'analytics-traffic-referrers.index',
+            'analytics-events.index', 'analytics-site.index', 'analytics-audience.index',
+        ], array_column(self::leaves($overview[0]['children']), 'routeName'));
+        foreach (self::leaves($overview[0]['children']) as $child) {
+            $this->assertNull($child['locked']);
+        }
         $this->assertNotContains('/operator/dashboard', $tileHrefs);
 
         // ADR-0224: Users and Teams are tiles, not cards; every destination appears once (card XOR tile).

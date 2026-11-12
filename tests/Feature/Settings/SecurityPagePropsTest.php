@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\ResponseFactory;
-use Laravel\Chisel\Filesystem\File;
 use Laravel\Fortify\Features;
 use Laravel\Passkeys\Passkey;
 use Opis\JsonSchema\Validator;
@@ -117,58 +116,31 @@ it('keeps security partial reloads selective', function () {
     expect($evaluations)->toBe(0);
 });
 
-it('preserves package defaults after actual Chisel feature removal', function (array $removed) {
+it('resets security props when runtime authentication features are disabled', function () {
+    $controller = new SecurityController;
     config(['fortify.features' => [Features::twoFactorAuthentication(['confirm' => true]), Features::passkeys()]]);
-    if (! str_contains(file_get_contents(app_path('Http/Controllers/Settings/SecurityController.php')), '/* @chisel-')) {
-        $this->markTestSkipped('Scaffold markers were already consumed by Chisel.');
-    }
-    $directory = sys_get_temp_dir().'/security-chisel-'.bin2hex(random_bytes(6));
-    mkdir($directory);
-    $name = 'ChiselledSecurity'.bin2hex(random_bytes(6));
-    $source = str_replace('class SecurityController ', 'class '.$name.' ', file_get_contents(app_path('Http/Controllers/Settings/SecurityController.php')));
-    file_put_contents($directory.'/Controller.php', $source);
-    try {
-        $files = new File($directory);
-        foreach (['2fa', 'passkeys'] as $feature) {
-            foreach (['Controller.php'] as $file) {
-                if (in_array($feature, $removed, true)) {
-                    $files->removeSection($file, $feature);
-                } else {
-                    $files->removeSectionMarkers($file, $feature);
-                }
-            }
-        }
-        require $directory.'/Controller.php';
-        $class = 'App\\Http\\Controllers\\Settings\\'.$name;
-        Inertia::swap(new ResponseFactory);
-        $request = securityPropsRequest(false);
-        $props = (new $class)->edit($request)->toResponse($request)->getData(true)['props'];
-        expect($props)->toHaveKey('passwordRules');
-        if (in_array('2fa', $removed, true)) {
-            expect($props['canManageTwoFactor'])->toBeFalse();
-            expect($props)->not->toHaveKeys(['twoFactorEnabled', 'requiresConfirmation']);
-            expect($request->stateChecks)->toBe(0);
-        } else {
-            expect($props['canManageTwoFactor'])->toBeTrue();
-            expect($props['twoFactorEnabled'])->toBeFalse();
-        }
-        if (in_array('passkeys', $removed, true)) {
-            expect($props['canManagePasskeys'])->toBeFalse();
-            expect($props['passkeys'])->toBe([]);
-        } else {
-            expect($props['canManagePasskeys'])->toBeTrue();
-            expect($props['passkeys'])->toBe([]);
-        }
-    } finally {
-        unlink($directory.'/Controller.php');
-        rmdir($directory);
-    }
-})->with([
-    'keep both' => [[]],
-    'remove 2fa' => [['2fa']],
-    'remove passkeys' => [['passkeys']],
-    'remove both' => [['2fa', 'passkeys']],
-]);
+    Inertia::swap(new ResponseFactory);
+    $enabledRequest = securityPropsRequest(true);
+    $enabled = $controller->edit($enabledRequest)->toResponse($enabledRequest)->getData(true)['props'];
+
+    expect($enabled['canManageTwoFactor'])->toBeTrue();
+    expect($enabled['canManagePasskeys'])->toBeTrue();
+    expect($enabled['twoFactorEnabled'])->toBeTrue();
+    expect($enabledRequest->stateChecks)->toBe(1);
+
+    config(['fortify.features' => []]);
+    Inertia::swap(new ResponseFactory);
+    $disabledRequest = securityPropsRequest(true);
+    $disabled = $controller->edit($disabledRequest)->toResponse($disabledRequest)->getData(true)['props'];
+
+    expect($disabled)->toMatchArray([
+        'canManageTwoFactor' => false,
+        'canManagePasskeys' => false,
+        'passkeys' => [],
+        'passwordRules' => Password::defaults()->toPasswordRulesString(),
+    ])->not->toHaveKeys(['twoFactorEnabled', 'requiresConfirmation']);
+    expect($disabledRequest->stateChecks)->toBe(0);
+});
 
 function securityPropsRequest(bool $enabled, bool $partial = false): SecurityPropsRequest
 {

@@ -22,7 +22,6 @@ class IdentifierLabelTest extends TestCase
     protected function identifierLabelRatchet(): array
     {
         return [
-            'App\Data\SitemapData' => 'APP-09b: declare #[Title] (host)',
             'Schemastud\Frame\Data\OverviewData' => 'APP-09b: declare #[Title] (schemastud/frame)',
             'Schemastud\Frame\Data\ResourceCapabilitiesData' => 'APP-09b: declare #[Title] (schemastud/frame)',
             'Schemastud\Frame\Data\SummaryFigureData' => 'APP-09b: declare #[Title] (schemastud/frame)',

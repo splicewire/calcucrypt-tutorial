@@ -10,9 +10,6 @@
             "type": "string"
         }
     },
-    "required": [
-        "id",
-        "label"
-    ],
+    "required": ["id", "label"],
     "$id": "CanonicalMdxVersionChoiceData"
 }

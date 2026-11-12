@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Splicewire\Beam\Accounts\Support\TokensEndpoints;
 use Splicewire\Beam\Authorization\SeatGate;
 use Splicewire\Beam\Ux\Data\Pages\EntryPageData;
 use Splicewire\Beam\Ux\Head\PageHead;
@@ -102,7 +103,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ⚠️ These are NOT the tenant frame console's `tokens` / `members` / `invitations` leaves, and
     // those three have been removed from `config('frame.realms')['tenant']` in the same change. Read
     // that file's realm comment for why one capability may not have two surfaces here.
-    Route::get('account/tokens', fn () => Inertia::render('account/tokens'))->name('account.tokens')->defaults(SeatGate::OPEN_TO_MEMBERS, true);
+    Route::get('account/tokens', fn () => Inertia::render('account/tokens', ['endpoints' => TokensEndpoints::props()]))->name('account.tokens')->defaults(SeatGate::OPEN_TO_MEMBERS, true);
     Route::get('account/team', fn () => Inertia::render('account/team'))->name('account.team')->defaults(SeatGate::OPEN_TO_MEMBERS, true);
 
     // ── The THEME entry's editor seat (G2-BEAM-THEME-NAV) ────────────────────────────────────────

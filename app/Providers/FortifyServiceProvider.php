@@ -2,9 +2,6 @@
 
 namespace App\Providers;
 
-/* @chisel-registration */
-
-/* @end-chisel-registration */
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -92,39 +89,28 @@ class FortifyServiceProvider extends ServiceProvider
             'status' => $request->session()->get('status'),
         ])));
 
-        /* @chisel-email-verification */
         Fortify::verifyEmailView(fn (Request $request) => Inertia::render('auth/entry', AuthEntryPageData::from([
             'slug' => 'verify-email',
             'entry' => PageEntryRef::for('verify-email'),
             'body' => $entryBody->forSlug('verify-email'),
             'status' => $request->session()->get('status'),
         ])));
-        /* @end-chisel-email-verification */
-
-        /* @chisel-registration */
         Fortify::registerView(fn () => Inertia::render('auth/entry', AuthEntryPageData::from([
             'slug' => 'register',
             'entry' => PageEntryRef::for('register'),
             'body' => $entryBody->forSlug('register'),
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
         ])));
-        /* @end-chisel-registration */
-
-        /* @chisel-2fa */
         Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/entry', AuthEntryPageData::from([
             'slug' => 'two-factor-challenge',
             'entry' => PageEntryRef::for('two-factor-challenge'),
             'body' => $entryBody->forSlug('two-factor-challenge'),
         ])));
-        /* @end-chisel-2fa */
-
-        /* @chisel-password-confirmation */
         Fortify::confirmPasswordView(fn () => Inertia::render('auth/entry', AuthEntryPageData::from([
             'slug' => 'confirm-password',
             'entry' => PageEntryRef::for('confirm-password'),
             'body' => $entryBody->forSlug('confirm-password'),
         ])));
-        /* @end-chisel-password-confirmation */
     }
 
     /**
@@ -164,24 +150,19 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureRateLimiting(): void
     {
-        /* @chisel-2fa */
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
-        /* @end-chisel-2fa */
-
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });
 
-        /* @chisel-passkeys */
         RateLimiter::for('passkeys', function (Request $request) {
             return Limit::perMinute(10)->by(
                 ($request->input('credential.id') ?: $request->session()->getId()).'|'.$request->ip(),
             );
         });
-        /* @end-chisel-passkeys */
     }
 }

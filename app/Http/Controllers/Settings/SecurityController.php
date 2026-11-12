@@ -29,10 +29,7 @@ class SecurityController extends Controller
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
         ];
 
-        /* @chisel-2fa */
         $props['canManageTwoFactor'] = Features::canManageTwoFactorAuthentication();
-        /* @end-chisel-2fa */
-        /* @chisel-passkeys */
         $props['canManagePasskeys'] = Features::canManagePasskeys();
         $props['passkeys'] = Features::canManagePasskeys()
                 ? $request->user()
@@ -50,16 +47,13 @@ class SecurityController extends Controller
                     ->values()
                     ->all()
                 : [];
-        /* @end-chisel-passkeys */
 
-        /* @chisel-2fa */
         if (Features::canManageTwoFactorAuthentication()) {
             $request->ensureStateIsValid();
 
             $props['twoFactorEnabled'] = $request->user()->hasEnabledTwoFactorAuthentication();
             $props['requiresConfirmation'] = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm');
         }
-        /* @end-chisel-2fa */
 
         return Inertia::render('settings/security', SecurityPageData::from($props));
     }

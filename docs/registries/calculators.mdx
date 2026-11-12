@@ -1,0 +1,25 @@
+---
+title: Calculator definitions
+segment: calculators
+---
+
+# Calculator definitions
+
+The `calculators` registry is the authored catalog that `content:sync` reads. Add a calculator by
+placing a concrete `CalculatorDefinition` subclass under `app/Content/Calculators/Definitions`;
+`CalculatorRegistry` discovers that directory when it builds the catalog. Database calculator rows
+are projections of these definitions, rather than another definition source.
+
+A definition supplies a Calculator Key such as `finance.crypto-profit`, its public slug and its
+graph. `CalculatorKey` checks the key against the host's closed domain list before registration.
+The registry rejects two definitions with the same key. Keep each authored calculator in one class.
+
+Use `all()` when synchronizing the authored catalog. Use `get()` for a key the application chose
+and expects to exist; use `find()` for outside input, where a missing calculator is an ordinary
+result. Neither method changes the user's plan or grants an entitlement: calculator access remains
+the declaration/policy's decision.
+
+`App\Content\Calculators\CalculatorRegistry` carries the registry declaration. Its keyspace is
+separate from Beam's calculator entitlement keys, even where both begin with `calculators`.
+
+<RegistryRegistrants root="calculators" />

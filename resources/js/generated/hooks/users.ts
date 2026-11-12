@@ -3,17 +3,19 @@
 // Regenerate after any backend route change; the diff is the drift signal (client-sdk-codegen).
 // Source of truth: the in-process route manifest (a RouteManifestSource).
 
-import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+import type { UseQueryOptions } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { route } from '@/lib/routes';
 
 type QueryOpts<T> = Omit<Partial<UseQueryOptions<T, Error, T>>, 'queryKey' | 'queryFn'>;
 
-export function useUsersLoginAs(params: Record<string, string | number>, options?: QueryOpts<import("../Splicewire/Beam/Accounts/Data").AuthUserData>) {
+export function useUsersLoginAs(params: { id: string | number }, options?: QueryOpts<import("../Splicewire/Beam/Accounts/Data").AuthUserData>) {
     return useQuery({
         queryKey: ['users.login-as', params],
         queryFn: async () => {
             const res = await api.get(route('users.login-as', params));
+
             return res.data.data as import("../Splicewire/Beam/Accounts/Data").AuthUserData;
         },
         ...options,

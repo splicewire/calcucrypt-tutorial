@@ -1,14 +1,18 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "splicewire/laravel-beam-starter",
+    "name": "splicewire/calcucrypt-tutorial",
     "type": "project",
-    "description": "The Beam starter: a Laravel, Inertia and React app with the Beam spine wired in.",
+    "description": "Calcucrypt, rebuilt on the Beam starter one chapter at a time: declared particles, a validated operation, team plans, entitlement-gated data and a plan you can buy.",
     "keywords": [
         "laravel",
         "framework"
     ],
     "license": "MIT",
     "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/stephenr85/laravel-commerce.git"
+        },
         {
             "type": "git",
             "url": "https://github.com/splicewire/laravel-beam-docs.git"
@@ -173,7 +177,6 @@
     "require": {
         "php": "^8.4",
         "inertiajs/inertia-laravel": "^3.0",
-        "laravel/chisel": "^0.1.0",
         "laravel/fortify": "^1.37.2",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
@@ -189,7 +192,9 @@
         "schemastud/laravel-data-schema-org": "dev-main",
         "schemastud/laravel-data-schemas": "dev-main",
         "wikimedia/composer-merge-plugin": "^2.1",
-        "splicewire/laravel-beam-docs": "dev-main"
+        "splicewire/laravel-beam-docs": "dev-main",
+        "rushing/laravel-commerce": "dev-main",
+        "laravel/sanctum": "^4.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",
@@ -279,7 +284,7 @@
     "extra": {
         "splicewire": {
             "starter": {
-                "repository": "https://github.com/splicewire/laravel-beam-starter",
+                "repository": "https://github.com/splicewire/calcucrypt-tutorial",
                 "published": false
             }
         },

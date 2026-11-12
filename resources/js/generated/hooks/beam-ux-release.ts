@@ -3,29 +3,32 @@
 // Regenerate after any backend route change; the diff is the drift signal (client-sdk-codegen).
 // Source of truth: the in-process route manifest (a RouteManifestSource).
 
-import { useMutation, useQuery, type UseQueryOptions, type UseMutationOptions } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { route } from '@/lib/routes';
 
 type QueryOpts<T> = Omit<Partial<UseQueryOptions<T, Error, T>>, 'queryKey' | 'queryFn'>;
-type MutationVars = { params?: Record<string, string | number>; body?: unknown };
-type MutationOpts<T> = Omit<Partial<UseMutationOptions<T, Error, MutationVars>>, 'mutationFn'>;
+type MutationOpts<T, V> = Omit<Partial<UseMutationOptions<T, Error, V>>, 'mutationFn'>;
 
-export function useBeamUxReleaseChanges(params: Record<string, string | number>, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").ReleaseChangesData>) {
+export function useBeamUxReleaseChanges(params: { id: string | number }, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").ReleaseChangesData>) {
     return useQuery({
         queryKey: ['beam-ux-release.changes', params],
         queryFn: async () => {
             const res = await api.get(route('beam-ux-release.changes', params));
+
             return res.data.data as import("../Splicewire/Beam/Ux/Data").ReleaseChangesData;
         },
         ...options,
     });
 }
 
-export function useBeamUxReleaseCommand(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").ReleaseData>) {
+export type BeamUxReleaseCommandVars = { params: { id: string | number }; body: import("../Splicewire/Beam/Ux/Data").ReleaseCommandData };
+export function useBeamUxReleaseCommand(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").ReleaseData, BeamUxReleaseCommandVars>) {
     return useMutation({
-        mutationFn: async (vars: MutationVars) => {
-            const res = await api.post(route('beam-ux-release.command', vars.params ?? {}), vars.body);
+        mutationFn: async (vars: BeamUxReleaseCommandVars) => {
+            const res = await api.post(route('beam-ux-release.command', vars.params), vars.body);
+
             return res.data.data as import("../Splicewire/Beam/Ux/Data").ReleaseData;
         },
         ...options,
@@ -37,28 +40,31 @@ export function useBeamUxReleaseIndex(options?: QueryOpts<import("../Splicewire/
         queryKey: ['beam-ux-release.index'],
         queryFn: async () => {
             const res = await api.get(route('beam-ux-release.index'));
+
             return res.data.data as import("../Splicewire/Beam/Ux/Data").ReleaseData[];
         },
         ...options,
     });
 }
 
-export function useBeamUxReleaseReadiness(params: Record<string, string | number>, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").ReleaseReadinessData>) {
+export function useBeamUxReleaseReadiness(params: { id: string | number }, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").ReleaseReadinessData>) {
     return useQuery({
         queryKey: ['beam-ux-release.readiness', params],
         queryFn: async () => {
             const res = await api.get(route('beam-ux-release.readiness', params));
+
             return res.data.data as import("../Splicewire/Beam/Ux/Data").ReleaseReadinessData;
         },
         ...options,
     });
 }
 
-export function useBeamUxReleaseShow(params: Record<string, string | number>, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").ReleaseData>) {
+export function useBeamUxReleaseShow(params: { id: string | number }, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").ReleaseData>) {
     return useQuery({
         queryKey: ['beam-ux-release.show', params],
         queryFn: async () => {
             const res = await api.get(route('beam-ux-release.show', params));
+
             return res.data.data as import("../Splicewire/Beam/Ux/Data").ReleaseData;
         },
         ...options,

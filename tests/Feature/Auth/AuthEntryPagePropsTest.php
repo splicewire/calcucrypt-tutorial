@@ -52,18 +52,10 @@ dataset('auth entry views', [
     'login' => ['login', LoginViewResponse::class],
     'reset' => ['reset-password', ResetPasswordViewResponse::class],
     'forgot' => ['forgot-password', RequestPasswordResetLinkViewResponse::class],
-    /* @chisel-email-verification */
     'verify' => ['verify-email', VerifyEmailViewResponse::class],
-    /* @end-chisel-email-verification */
-    /* @chisel-registration */
     'register' => ['register', RegisterViewResponse::class],
-    /* @end-chisel-registration */
-    /* @chisel-2fa */
     '2fa' => ['two-factor-challenge', TwoFactorChallengeViewResponse::class],
-    /* @end-chisel-2fa */
-    /* @chisel-password-confirmation */
     'confirm' => ['confirm-password', ConfirmPasswordViewResponse::class],
-    /* @end-chisel-password-confirmation */
 ]);
 
 it('declares each Fortify view as whole props with unchanged JSON', function (string $slug, string $contract, bool $seeded) {

@@ -567,7 +567,7 @@
             "action": "App\\Http\\Controllers\\Settings\\SecurityController@update",
             "tier": "guided",
             "origin": "app",
-            "location": "app/Http/Controllers/Settings/SecurityController.php:71"
+            "location": "app/Http/Controllers/Settings/SecurityController.php:65"
         },
         {
             "uri": "settings/profile",

@@ -11,10 +11,13 @@ use Rushing\DataNav\NavGate;
 use Rushing\DataNav\NavRegistry;
 use Rushing\PermissionCascade\Contracts\AccessGrant;
 use Schemastud\Frame\Http\Controllers\FrameManifestController;
-use Splicewire\Beam\Accounts\Enums\Role;
 use Splicewire\Beam\Accounts\Models\Membership;
 use Splicewire\Beam\Accounts\Models\Team;
 use Splicewire\Beam\Accounts\Sharing\AccessGrants;
+use Splicewire\Beam\Analytics\AnalyticsSection;
+use Splicewire\Beam\Analytics\Areas\AnalyticsAreaRegistry;
+use Splicewire\Beam\Analytics\Traffic\TrafficPanels;
+use Splicewire\Beam\Particle\ParticleResourceRegistry;
 use Splicewire\Beam\Ux\Models\BeamUxEntry;
 use Tests\TestCase;
 
@@ -27,7 +30,7 @@ use Tests\TestCase;
  * frame's `FrameNavContributor` plug; what this host supplies is `config('frame.realms')`, a list it
  * spells out (`api-surface-coherence` 141/142).
  *
- * The realm comparison checks both realms and requires disjoint route lists. A
+ * The realm comparison checks complete route sets and permits sharing only where declared. A
  * test that only ever asked for `tenant` would pass against a projector that ignored the realm and
  * returned every resource to everyone — which is precisely the defect these assertions exist to
  * catch, and it is invisible to a single-realm fixture.
@@ -80,20 +83,56 @@ class FrameManifestRouterTest extends TestCase
     public function test_it_scopes_the_router_table_to_the_realm_the_host_placed_each_resource_in(): void
     {
         $actor = $this->operator();
-        $tenant = $this->routeNames('tenant', $actor);
-        $operator = $this->routeNames('operator', $actor);
+        $byRealm = [
+            'tenant' => $this->manifestFor('tenant', $actor)['routeContext'],
+            'operator' => $this->manifestFor('operator', $actor)['routeContext'],
+        ];
+        $tenant = array_map(fn ($entry): string => $entry->routeName, $byRealm['tenant']);
+        $operator = array_map(fn ($entry): string => $entry->routeName, $byRealm['operator']);
 
-        $this->assertContains('beam-ux-entry.index', $tenant);
-        $this->assertContains('hooks.index', $tenant);
-        $this->assertNotContains('users.index', $tenant);
+        // Analytics declares both realms; host-only resources must still stay in their own realm.
+        $this->assertEqualsCanonicalizing(['operator', 'tenant'], AnalyticsSection::REALMS);
+        $analytics = array_map(
+            fn ($area): string => $area->resourceKey().'.index',
+            app(AnalyticsAreaRegistry::class)->definitions(),
+        );
+        foreach (array_keys(TrafficPanels::PANELS) as $panel) {
+            $analytics[] = TrafficPanels::resourceKey($panel).'.index';
+        }
+        $this->assertNotEmpty($analytics);
 
-        $this->assertContains('users.index', $operator);
-        $this->assertContains('teams.index', $operator);
-        $this->assertNotContains('beam-ux-entry.index', $operator);
+        $this->assertEqualsCanonicalizing([
+            // Package bumps require re-reading declarations and read policies, not accepting a new snapshot.
+            'beam-ux-release-files.index', 'beam-ux-release-files.edit',
+            'schemas.index', 'schemas.create', 'schemas.edit',
+            'git-repo.index', 'git-repo.edit', 'hooks.index', 'hooks.edit',
+            'beam-ux-sitemap-health.index', 'beam-ux-sitemap-health.edit',
+            'beam-ux-entry.index', 'beam-ux-entry.create', 'beam-ux-entry.edit',
+            'beam-ux-mirror-status.index', 'beam-ux-mirror-status.edit',
+            'tenant-dashboard.index', 'tenant-analytics-overview.index',
+            ...$analytics,
+        ], $tenant, 'the tenant gets its complete declared route set');
+        $this->assertEqualsCanonicalizing([
+            'users.index', 'users.edit', 'teams.index', 'teams.edit',
+            'operator-dashboard.index', 'operator-analytics-overview.index',
+            ...$analytics,
+        ], $operator, 'the operator gets its complete declared route set');
+        $this->assertEqualsCanonicalizing($analytics, array_values(array_intersect($tenant, $operator)));
 
-        // The two realms must not merely differ — neither may overlap the other, or a projector
-        // leaking one realm's list into the other could still satisfy both blocks above.
-        $this->assertSame([], array_values(array_intersect($tenant, $operator)));
+        $mounted = $this->actingAs($actor)->getJson('/frame/manifest')->assertOk();
+        $this->assertEqualsCanonicalizing($tenant, array_column($mounted->json('routeContext'), 'routeName'));
+
+        // Files recording admits manifest metadata and addressed details, never an unaddressed list.
+        // The direct-call fixture must identify FrameManifestController so that policy sees the real context.
+        $this->actingAs($actor)->getJson('/frame/resources/beam-ux-release-files')->assertForbidden();
+
+        $particles = app(ParticleResourceRegistry::class);
+        foreach ($byRealm as $realm => $entries) {
+            foreach ($entries as $entry) {
+                $this->assertNotNull($entry->resource);
+                $this->assertContains($realm, $particles->realmsFor($entry->resource), $entry->routeName);
+            }
+        }
     }
 
     public function test_it_gives_a_resource_the_per_record_twin_its_own_declaration_allows(): void
@@ -124,7 +163,7 @@ class FrameManifestRouterTest extends TestCase
         // `config('frame.realms')` — that config is read once, when `BeamServiceProvider` binds the
         // registry, so a runtime `config()` set would be silently too late and this test would go
         // green over a premise it never established.
-        app(\Splicewire\Beam\Particle\ParticleResourceRegistry::class)
+        app(ParticleResourceRegistry::class)
             ->loadRealmMap(['tenant' => ['tokens', 'invitations']]);
 
         $byName = $this->byName('tenant', $this->operator());
@@ -209,10 +248,8 @@ class FrameManifestRouterTest extends TestCase
         if ($actor !== null) {
             $this->actingAs($actor);
 
-            // A controller-direct call skips config('frame.middleware'), so the live splicewire.team
-            // middleware never points the team-scoped role registrar at the actor's tenant - without it the
-            // actor resolves zero roles and the per-actor read gate empties the realm's router table for the
-            // wrong reason (the seam SitemapWriteAuthorizationTest documents). Point it at the actor's team.
+            // Direct controller calls skip splicewire.team. Match that middleware's team scope
+            // so the manifest evaluates this actor's roles.
             if ($actor->currentTeam !== null) {
                 app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($actor->currentTeam->getKey());
                 app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
@@ -222,24 +259,13 @@ class FrameManifestRouterTest extends TestCase
 
         $request = Request::create('/frame/manifest', 'GET');
         $request->setUserResolver(fn () => $actor);
-        $route = new RoutingRoute(['GET'], 'frame/manifest', []);
+        $route = new RoutingRoute(['GET'], 'frame/manifest', FrameManifestController::class.'@__invoke');
         $route->defaults('realm', $realm);
         $route->bind($request);
         $request->setRouteResolver(fn () => $route);
         $this->app->instance('request', $request);
 
         return $this->app->call(FrameManifestController::class, ['request' => $request]);
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function routeNames(string $realm, User $actor): array
-    {
-        return array_map(
-            fn ($entry): string => $entry->routeName,
-            $this->manifestFor($realm, $actor)['routeContext']
-        );
     }
 
     /**

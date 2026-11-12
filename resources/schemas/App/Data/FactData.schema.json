@@ -1,0 +1,43 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "FactData",
+    "properties": {
+        "value": {
+            "type": "number"
+        },
+        "source": {
+            "type": "string"
+        },
+        "asOf": {
+            "type": "string"
+        },
+        "connector": {
+            "type": "string"
+        },
+        "metric": {
+            "type": "string"
+        },
+        "symbol": {
+            "type": "string"
+        },
+        "stale": {
+            "type": "boolean",
+            "default": false
+        },
+        "changePercent24h": {
+            "type": ["number", "null"]
+        }
+    },
+    "required": [
+        "value",
+        "source",
+        "asOf",
+        "connector",
+        "metric",
+        "symbol",
+        "stale",
+        "changePercent24h"
+    ],
+    "$id": "FactData"
+}

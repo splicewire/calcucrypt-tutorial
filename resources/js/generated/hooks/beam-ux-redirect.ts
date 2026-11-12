@@ -3,18 +3,20 @@
 // Regenerate after any backend route change; the diff is the drift signal (client-sdk-codegen).
 // Source of truth: the in-process route manifest (a RouteManifestSource).
 
-import { useMutation, useQuery, type UseQueryOptions, type UseMutationOptions } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { route } from '@/lib/routes';
 
 type QueryOpts<T> = Omit<Partial<UseQueryOptions<T, Error, T>>, 'queryKey' | 'queryFn'>;
-type MutationVars = { params?: Record<string, string | number>; body?: unknown };
-type MutationOpts<T> = Omit<Partial<UseMutationOptions<T, Error, MutationVars>>, 'mutationFn'>;
+type MutationOpts<T, V> = Omit<Partial<UseMutationOptions<T, Error, V>>, 'mutationFn'>;
 
-export function useBeamUxRedirectDestroy(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").RedirectData>) {
+export type BeamUxRedirectDestroyVars = { params: { id: string | number } };
+export function useBeamUxRedirectDestroy(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").RedirectData, BeamUxRedirectDestroyVars>) {
     return useMutation({
-        mutationFn: async (vars: MutationVars) => {
-            const res = await api.delete(route('beam-ux-redirect.destroy', vars.params ?? {}));
+        mutationFn: async (vars: BeamUxRedirectDestroyVars) => {
+            const res = await api.delete(route('beam-ux-redirect.destroy', vars.params));
+
             return res.data.data as import("../Splicewire/Beam/Ux/Data").RedirectData;
         },
         ...options,
@@ -26,37 +28,43 @@ export function useBeamUxRedirectIndex(options?: QueryOpts<import("../Splicewire
         queryKey: ['beam-ux-redirect.index'],
         queryFn: async () => {
             const res = await api.get(route('beam-ux-redirect.index'));
+
             return res.data.data as import("../Splicewire/Beam/Ux/Data").RedirectData[];
         },
         ...options,
     });
 }
 
-export function useBeamUxRedirectShow(params: Record<string, string | number>, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").RedirectData>) {
+export function useBeamUxRedirectShow(params: { id: string | number }, options?: QueryOpts<import("../Splicewire/Beam/Ux/Data").RedirectData>) {
     return useQuery({
         queryKey: ['beam-ux-redirect.show', params],
         queryFn: async () => {
             const res = await api.get(route('beam-ux-redirect.show', params));
+
             return res.data.data as import("../Splicewire/Beam/Ux/Data").RedirectData;
         },
         ...options,
     });
 }
 
-export function useBeamUxRedirectStore(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").RedirectData>) {
+export type BeamUxRedirectStoreVars = { body: import("../Splicewire/Beam/Ux/Data").RedirectInputData };
+export function useBeamUxRedirectStore(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").RedirectData, BeamUxRedirectStoreVars>) {
     return useMutation({
-        mutationFn: async (vars: MutationVars) => {
+        mutationFn: async (vars: BeamUxRedirectStoreVars) => {
             const res = await api.post(route('beam-ux-redirect.store'), vars.body);
+
             return res.data.data as import("../Splicewire/Beam/Ux/Data").RedirectData;
         },
         ...options,
     });
 }
 
-export function useBeamUxRedirectUpdate(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").RedirectData>) {
+export type BeamUxRedirectUpdateVars = { params: { id: string | number }; body: import("../Splicewire/Beam/Ux/Data").RedirectInputData };
+export function useBeamUxRedirectUpdate(options?: MutationOpts<import("../Splicewire/Beam/Ux/Data").RedirectData, BeamUxRedirectUpdateVars>) {
     return useMutation({
-        mutationFn: async (vars: MutationVars) => {
-            const res = await api.put(route('beam-ux-redirect.update', vars.params ?? {}), vars.body);
+        mutationFn: async (vars: BeamUxRedirectUpdateVars) => {
+            const res = await api.put(route('beam-ux-redirect.update', vars.params), vars.body);
+
             return res.data.data as import("../Splicewire/Beam/Ux/Data").RedirectData;
         },
         ...options,

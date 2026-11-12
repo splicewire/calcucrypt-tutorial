@@ -1,3 +1,5 @@
+import { createSessionRequest } from '@schemastud/frame/session';
+
 // Beam client runtime — the `client_import` half of the generated client's runtime contract
 // (`beam.client.client_import`, default '@/lib/api'). Published by
 // `php artisan vendor:publish --tag=beam-client-runtime`; after publishing this file is YOURS —
@@ -10,38 +12,24 @@
 // is fixed).
 
 /** The double-unwrap envelope generated hooks destructure: `res.data.data` is the payload. */
-export type ApiResponse<T> = { data: { data: T } };
+export type ApiResponse<T> = { data: { data: T | undefined } };
 
-function xsrfToken(): string | null {
-    const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
-
-    return match ? decodeURIComponent(match[1]) : null;
-}
+const sessionRequest = createSessionRequest();
 
 async function request<T>(
     method: string,
     url: string,
     body?: unknown,
 ): Promise<ApiResponse<T>> {
-    const token = xsrfToken();
-
-    const res = await fetch(url, {
+    const response = await sessionRequest<{ data: T } | null>(
         method,
-        credentials: 'same-origin',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            ...(token ? { 'X-XSRF-TOKEN': token } : {}),
-        },
-        body: body === undefined ? undefined : JSON.stringify(body),
-    });
+        url,
+        undefined,
+        body,
+    );
 
-    if (!res.ok) {
-        throw new Error(`${method} ${url} failed (${res.status})`);
-    }
-
-    // Re-wrap the Laravel `{ data }` body once more so generated hooks can read `res.data.data`.
-    return { data: (await res.json()) as { data: T } };
+    // Preserve the generated hooks' double unwrap, including an empty DELETE response.
+    return { data: response.data ?? { data: undefined } };
 }
 
 export const api = {

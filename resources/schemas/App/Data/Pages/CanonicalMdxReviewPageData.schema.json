@@ -22,12 +22,7 @@
             }
         }
     },
-    "required": [
-        "entryId",
-        "title",
-        "versions",
-        "releases"
-    ],
+    "required": ["entryId", "title", "versions", "releases"],
     "$id": "CanonicalMdxReviewPageData",
     "$defs": {
         "CanonicalMdxVersionChoiceData": {
@@ -41,10 +36,7 @@
                     "type": "string"
                 }
             },
-            "required": [
-                "id",
-                "label"
-            ]
+            "required": ["id", "label"]
         },
         "ReleaseMemberData": {
             "type": "object",
@@ -54,22 +46,13 @@
                     "type": "string"
                 },
                 "versionId": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": ["string", "null"]
                 },
                 "observedPin": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": ["string", "null"]
                 },
                 "redirectTarget": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": ["string", "null"]
                 },
                 "stale": {
                     "type": "boolean"
@@ -122,10 +105,7 @@
                     "type": "string"
                 },
                 "sha": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": ["string", "null"]
                 },
                 "noChange": {
                     "type": "boolean"
@@ -134,10 +114,7 @@
                     "type": "boolean"
                 },
                 "message": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": ["string", "null"]
                 }
             },
             "required": [
@@ -187,10 +164,7 @@
                     }
                 },
                 "reviewedBy": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": ["string", "null"]
                 },
                 "members": {
                     "type": "array",
@@ -225,32 +199,20 @@
                     ]
                 },
                 "filesMemberId": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": ["string", "null"]
                 },
                 "filesHref": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": ["string", "null"]
                 },
                 "previewLinksEnabled": {
                     "type": "boolean",
                     "default": false
                 },
                 "previewLink": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": ["string", "null"]
                 },
                 "previewHref": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": ["string", "null"]
                 },
                 "canManagePreviewLinks": {
                     "type": "boolean",

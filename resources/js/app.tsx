@@ -16,6 +16,7 @@ import {
 } from '@splicewire/beam-mdx/kit';
 import { beamDocsPages } from '@splicewire/beam-docs/pages';
 import '@splicewire/beam-ux/tokens-docs.css';
+import 'dseg/css/dseg.css';
 import { authFeatures } from './beam';
 
 const pages = import.meta.glob<PageModule>([

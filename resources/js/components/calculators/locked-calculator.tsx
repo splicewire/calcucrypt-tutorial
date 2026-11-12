@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Lock } from 'lucide-react';
+import { PlanPicker } from '@/components/calculators/plan-picker';
 import { planName } from '@/components/crypt/cards';
 import { cn } from '@/lib/utils';
 
@@ -7,7 +8,8 @@ type Spec = App.Data.CalculatorSpecData;
 
 // What a reader sees in place of a calculator their plan does not cover. The server already left
 // the graph and the live prices out (`spec.locked`), so there is nothing here to hide: this only
-// says which plan unlocks it, and asks a guest to sign in first.
+// says which plan unlocks it, asks a guest to sign in first, and offers a signed-in reader the
+// plans that would unlock it.
 export function LockedCalculator({
     spec,
     compact = false,
@@ -39,10 +41,16 @@ export function LockedCalculator({
             </h2>
 
             {auth?.user ? (
-                <p className="max-w-md text-sm text-muted-foreground">
-                    Your team's current plan doesn't include it. Upgrade your
-                    team to {plan} to use it.
-                </p>
+                <>
+                    <p className="max-w-md text-sm text-muted-foreground">
+                        Your team's current plan doesn't include it. Upgrade
+                        your team to {plan} to use it.
+                    </p>
+                    <PlanPicker
+                        requiredPlan={spec.requiredPlan}
+                        compact={compact}
+                    />
+                </>
             ) : (
                 <>
                     <p className="max-w-md text-sm text-muted-foreground">

@@ -28,6 +28,7 @@ export type PhpApiIndexData = import("./Splicewire/Beam/Docs/Data").PhpApiIndexD
 export type PhpApiSymbolData = import("./Splicewire/Beam/Docs/Data").PhpApiSymbolData;
 export type PlanOfferData = import("./App/Data").PlanOfferData;
 export type PreviewLinkData = import("./Splicewire/Beam/Ux/Data").PreviewLinkData;
+export type PurchasePlanOutputData = import("./App/Data").PurchasePlanOutputData;
 export type RedirectData = import("./Splicewire/Beam/Ux/Data").RedirectData;
 export type ReleaseChangesData = import("./Splicewire/Beam/Ux/Data").ReleaseChangesData;
 export type ReleaseData = import("./Splicewire/Beam/Ux/Data").ReleaseData;

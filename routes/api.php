@@ -31,7 +31,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user()->only(['id', 'name', 'email']);
 })->name('api.user');
 
-// The declaration supplies read verbs; the host supplies this API mount.
+// Calcucrypt's public read API. The declarations on CalculatorSpecData and GuideData say what each
+// resource is and who may read it, and a bare mount takes its verbs from them: a read-only resource
+// mounts `index` and `show` and no write route. The `api.` name stem keeps them clear of the pages'
+// own `calculators.*` / `guides.*` route names, and a public mount advertises no webhook event
+// vocabulary.
+//
+// `resolve` is the ResolveCalculator operation: `POST /api/calculators/{slug}/resolve`, named
+// `api.calculators.resolve`. The widget calls it through the generated client, with the session
+// (bootstrap/app.php's `statefulApi()`), so the policy sees who is signed in.
 Particle::mount('calculators', 'calculators')
     ->names('api.calculators')
     ->ops(['resolve'])
@@ -41,12 +49,18 @@ Particle::mount('guides', 'guides')
     ->names('api.guides')
     ->hookEvents(false);
 
-// Package-owned storage and its explicit policy isolate each actor and schema.
+// A reader's saved inputs: the generator's defaults made this resource writable, so the bare mount takes all
+// five verbs (index, show, store, update, destroy). The calculator page calls them with the session, and
+// The package-owned backing and explicit policy isolate each reader and schema.
 Particle::mount('saved-inputs', 'saved-inputs')
     ->names('api.saved-inputs')
     ->hookEvents(false);
 
-// The coherent Billing catalogue is read-only; purchase arrives in ch-07.
+// The plans on sale (PlanOfferData, read from config/plans.php) and the PurchasePlan operation:
+// `GET /api/plans` and `POST /api/plans/purchase`. The op has no subject, so its URL has no `{id}`;
+// the resource is read-only and not showable, so the bare mount takes only the list, and nothing
+// can swallow the op's URL.
 Particle::mount('plans', 'plans')
     ->names('api.plans')
+    ->ops(['purchase'])
     ->hookEvents(false);

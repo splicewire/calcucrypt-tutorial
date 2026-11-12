@@ -13,6 +13,8 @@ declare namespace App.Data {
     type GuideData = import('@/generated/App/Data').GuideData;
     type GuideSummaryData = import('@/generated/App/Data').GuideSummaryData;
     type PlanOfferData = import('@/generated/App/Data').PlanOfferData;
+    type PurchasePlanInputData = import('@/generated/App/Data').PurchasePlanInputData;
+    type PurchasePlanOutputData = import('@/generated/App/Data').PurchasePlanOutputData;
     type ResolveCalculatorInputData = import('@/generated/App/Data').ResolveCalculatorInputData;
 }
 

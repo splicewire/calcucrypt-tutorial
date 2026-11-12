@@ -14,6 +14,7 @@ export const defaults: RouteMap = {
     'api.guides.index': 'api/guides',
     'api.guides.show': 'api/guides/{id}',
     'api.plans.index': 'api/plans',
+    'api.plans.purchase': 'api/plans/purchase',
     'api.saved-inputs.destroy': 'api/saved-inputs/{id}',
     'api.saved-inputs.index': 'api/saved-inputs',
     'api.saved-inputs.show': 'api/saved-inputs/{id}',

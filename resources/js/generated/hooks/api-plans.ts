@@ -3,12 +3,13 @@
 // Regenerate after any backend route change; the diff is the drift signal (client-sdk-codegen).
 // Source of truth: the in-process route manifest (a RouteManifestSource).
 
-import { useQuery } from '@tanstack/react-query';
-import type { UseQueryOptions } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { route } from '@/lib/routes';
 
 type QueryOpts<T> = Omit<Partial<UseQueryOptions<T, Error, T>>, 'queryKey' | 'queryFn'>;
+type MutationOpts<T, V> = Omit<Partial<UseMutationOptions<T, Error, V>>, 'mutationFn'>;
 
 export function useApiPlansIndex(options?: QueryOpts<import("../App/Data").PlanOfferData[]>) {
     return useQuery({
@@ -17,6 +18,18 @@ export function useApiPlansIndex(options?: QueryOpts<import("../App/Data").PlanO
             const res = await api.get(route('api.plans.index'));
 
             return res.data.data as import("../App/Data").PlanOfferData[];
+        },
+        ...options,
+    });
+}
+
+export type ApiPlansPurchaseVars = { body: import("../App/Data").PurchasePlanInputData };
+export function useApiPlansPurchase(options?: MutationOpts<import("../App/Data").PurchasePlanOutputData, ApiPlansPurchaseVars>) {
+    return useMutation({
+        mutationFn: async (vars: ApiPlansPurchaseVars) => {
+            const res = await api.post(route('api.plans.purchase'), vars.body);
+
+            return res.data.data as import("../App/Data").PurchasePlanOutputData;
         },
         ...options,
     });

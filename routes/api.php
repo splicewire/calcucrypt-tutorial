@@ -45,3 +45,8 @@ Particle::mount('guides', 'guides')
 Particle::mount('saved-inputs', 'saved-inputs')
     ->names('api.saved-inputs')
     ->hookEvents(false);
+
+// The coherent Billing catalogue is read-only; purchase arrives in ch-07.
+Particle::mount('plans', 'plans')
+    ->names('api.plans')
+    ->hookEvents(false);

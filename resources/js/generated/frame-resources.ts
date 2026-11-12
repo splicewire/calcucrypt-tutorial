@@ -150,6 +150,12 @@ export interface FrameResources {
         createResult: import('./Splicewire/Beam/Ux/Data').DashboardCardRowData;
         actions: {};
     };
+    'plans': {
+        row: import('./App/Data').PlanOfferData;
+        edit: import('./App/Data').PlanOfferData;
+        createResult: import('./App/Data').PlanOfferData;
+        actions: {};
+    };
     'records': {
         row: import('./Splicewire/Beam/Data').RecordData | import('./Splicewire/Beam/Collections').PublicRecordData;
         edit: import('./Splicewire/Beam/Data').RecordData;

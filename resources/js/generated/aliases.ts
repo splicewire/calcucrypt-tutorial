@@ -26,6 +26,7 @@ export type InvitationAcceptedData = import("./Splicewire/Beam/Accounts/Data").I
 export type PageEntryRefData = import("./Splicewire/Beam/Ux/Data").PageEntryRefData;
 export type PhpApiIndexData = import("./Splicewire/Beam/Docs/Data").PhpApiIndexData;
 export type PhpApiSymbolData = import("./Splicewire/Beam/Docs/Data").PhpApiSymbolData;
+export type PlanOfferData = import("./App/Data").PlanOfferData;
 export type PreviewLinkData = import("./Splicewire/Beam/Ux/Data").PreviewLinkData;
 export type RedirectData = import("./Splicewire/Beam/Ux/Data").RedirectData;
 export type ReleaseChangesData = import("./Splicewire/Beam/Ux/Data").ReleaseChangesData;

@@ -38,8 +38,8 @@ it('locks every paid calculator for a guest and for a signed-in reader alike', f
             ->assertOk()
             ->assertJsonPath('data.locked', true)
             ->assertJsonPath('data.graph', null)
-            // No plan sells it yet.
-            ->assertJsonPath('data.requiredPlan', null);
+            // Now a plan sells it (GatedCalculatorsTest names which); a reader with no plan is still locked out.
+            ->assertJsonPath('data.requiredPlan', fn (?string $plan): bool => in_array($plan, ['trader', 'pro'], true));
 
         $this->postJson("/api/calculators/{$slug}/resolve")->assertForbidden();
     }

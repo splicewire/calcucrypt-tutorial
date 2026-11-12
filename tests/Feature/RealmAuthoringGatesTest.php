@@ -16,14 +16,8 @@ use Splicewire\Beam\Ux\Models\BeamUxEntry;
 use Tests\TestCase;
 
 /**
- * Ticket 02 (theme-entries-and-authoring): the `ux.{realm}.author` per-realm authoring gates, ported
- * from `rushing/audiostud`'s `AppServiceProvider::registerRealmAuthoringGates()`. Proves the same shape:
- * a per-realm ability for every packaged registry entry, backward-compatible with the flat
- * `ux.author` ability (a global holder authors every realm).
- *
- * theme-entries-and-authoring: `ux.author`/`ux.{realm}.author` resolve through the realm-grant cascade
- * (an Owner/Admin of a Team holding `manage` on a realm's root entry, {@see grantRealmReach()}) — no
- * more `is_staff` boolean anywhere in this repo's Gate surface.
+ * Package authoring gates preserve per-realm grants; this host only adds beam-docs.publish.
+ * A coarse ux.author grant never substitutes for another realm's authoring grant.
  */
 class RealmAuthoringGatesTest extends TestCase
 {
@@ -93,5 +87,30 @@ class RealmAuthoringGatesTest extends TestCase
         foreach ($this->realms() as $realm) {
             $this->assertFalse($user->can($this->authorAbility($realm)));
         }
+    }
+
+    public function test_a_site_grant_does_not_grant_other_realms_or_document_publication(): void
+    {
+        $user = User::factory()->create();
+        $this->grantRealmReach($user, ['site']);
+        $user = $user->fresh();
+
+        $this->assertTrue($user->can('ux.author'));
+        $this->assertTrue($user->can('ux.site.author'));
+        foreach (['ux.user.author', 'ux.tenant.author', 'ux.operator.author', 'beam-docs.publish'] as $ability) {
+            $this->assertFalse($user->can($ability), $ability);
+        }
+
+        $this->actingAs($user)->get(route('account.theme'))->assertOk();
+        $this->get('/operator')->assertForbidden();
+        $this->getJson('/frame/resources/users')->assertForbidden();
+    }
+
+    public function test_the_host_document_publication_alias_follows_the_operator_grant(): void
+    {
+        $user = User::factory()->create();
+        $this->grantRealmReach($user, ['operator']);
+
+        $this->assertTrue($user->fresh()->can('beam-docs.publish'));
     }
 }

@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Settings\PasswordUpdateRequest;
 use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
+use Rushing\LaravelDataSchemasScribe\Attributes\RequestFromData;
 use Splicewire\Beam\Accounts\Data\Pages\SecurityPageData;
+use Splicewire\Beam\Accounts\Data\PasswordUpdateInputData;
+use Splicewire\Beam\Accounts\Http\Controllers\SecurityController as AccountSecurityController;
 
 class SecurityController extends Controller
 {
@@ -64,14 +67,13 @@ class SecurityController extends Controller
     /**
      * Update the user's password.
      */
-    public function update(PasswordUpdateRequest $request): RedirectResponse
+    #[RequestFromData(PasswordUpdateInputData::class)]
+    public function update(Request $request, PasswordUpdateInputData $input): RedirectResponse
     {
-        $request->user()->update([
-            'password' => $request->password,
-        ]);
+        $response = app(AccountSecurityController::class)->update($request, $input);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Password updated.')]);
 
-        return back();
+        return $response;
     }
 }

@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Settings\ProfileDeleteRequest;
-use App\Http\Requests\Settings\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use Rushing\LaravelDataSchemasScribe\Attributes\RequestFromData;
 use Splicewire\Beam\Accounts\Data\Pages\ProfilePageData;
+use Splicewire\Beam\Accounts\Data\ProfileDeleteInputData;
+use Splicewire\Beam\Accounts\Data\ProfileUpdateInputData;
+use Splicewire\Beam\Accounts\Http\Controllers\ProfileController as AccountProfileController;
 use Splicewire\Beam\Ux\Support\PageEntryRef;
 
 class ProfileController extends Controller
@@ -35,35 +36,22 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    #[RequestFromData(ProfileUpdateInputData::class)]
+    public function update(Request $request, ProfileUpdateInputData $input): RedirectResponse
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
+        $response = app(AccountProfileController::class)->update($request, $input);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
 
-        return to_route('profile.edit');
+        return $response;
     }
 
     /**
      * Delete the user's profile.
      */
-    public function destroy(ProfileDeleteRequest $request): RedirectResponse
+    #[RequestFromData(ProfileDeleteInputData::class)]
+    public function destroy(Request $request, ProfileDeleteInputData $input): RedirectResponse
     {
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/');
+        return app(AccountProfileController::class)->destroy($request, $input);
     }
 }

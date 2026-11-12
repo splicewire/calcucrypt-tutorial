@@ -156,8 +156,38 @@ class SecurityTest extends TestCase
                 'password' => 'new-password',
                 'password_confirmation' => 'new-password',
             ])
-            ->assertSessionHasErrors(['current_password', 'password_confirmation', 'currentPassword']);
+            ->assertSessionHasErrors([
+                'current_password' => 'Unknown input field [current_password].',
+                'password_confirmation' => 'Unknown input field [password_confirmation].',
+            ])
+            ->assertSessionDoesntHaveErrors('currentPassword');
 
         $this->assertTrue(Hash::check('password', $user->refresh()->password));
+    }
+
+    public function test_password_update_preserves_its_success_toast(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->put(route('user-password.update'), [
+            'currentPassword' => 'password',
+            'password' => 'new-password',
+            'passwordConfirmation' => 'new-password',
+        ])->assertInertiaFlash('toast', ['type' => 'success', 'message' => 'Password updated.'])
+            ->assertSessionHas('status', 'password-updated');
+    }
+
+    public function test_password_update_refuses_unknown_fields_without_changing_the_password(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->put(route('user-password.update'), [
+            'currentPassword' => 'password',
+            'password' => 'new-password',
+            'passwordConfirmation' => 'new-password',
+            'unexpected' => 'ignored by the old request',
+        ])->assertSessionHasErrors(['unexpected' => 'Unknown input field [unexpected].']);
+
+        $this->assertTrue(Hash::check('password', $user->fresh()->password));
     }
 }

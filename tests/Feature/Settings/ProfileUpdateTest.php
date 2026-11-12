@@ -96,4 +96,36 @@ class ProfileUpdateTest extends TestCase
 
         $this->assertNotNull($user->fresh());
     }
+
+    public function test_a_profile_cannot_take_another_users_email(): void
+    {
+        $user = User::factory()->create();
+        $other = User::factory()->create();
+
+        $this->actingAs($user)->patch(route('profile.update'), [
+            'name' => 'Changed',
+            'email' => $other->email,
+        ])->assertSessionHasErrors('email');
+
+        $this->assertSame($user->email, $user->fresh()->email);
+        $this->assertSame($user->name, $user->fresh()->name);
+    }
+
+    public function test_profile_update_preserves_its_success_toast(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->patch(route('profile.update'), [
+            'name' => 'Updated Name',
+            'email' => $user->email,
+        ])->assertInertiaFlash('toast', ['type' => 'success', 'message' => 'Profile updated.'])
+            ->assertSessionHas('status', 'profile-updated');
+    }
+
+    public function test_guests_cannot_write_account_settings(): void
+    {
+        $this->patch(route('profile.update'), [])->assertRedirect(route('login'));
+        $this->delete(route('profile.destroy'), [])->assertRedirect(route('login'));
+        $this->put(route('user-password.update'), [])->assertRedirect(route('login'));
+    }
 }

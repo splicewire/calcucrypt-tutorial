@@ -17,8 +17,22 @@
         },
         "category": {
             "type": ["string", "null"]
+        },
+        "locked": {
+            "type": "boolean"
+        },
+        "requiredPlan": {
+            "type": ["string", "null"]
         }
     },
-    "required": ["slug", "name", "summary", "key", "category"],
+    "required": [
+        "slug",
+        "name",
+        "summary",
+        "key",
+        "category",
+        "locked",
+        "requiredPlan"
+    ],
     "$id": "CalculatorSummaryData"
 }

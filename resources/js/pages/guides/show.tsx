@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { EntryBody } from '@splicewire/beam-ux/site';
 import { CalculatorWidget } from '@/components/calculators/calculator-widget';
+import { LockedCalculator } from '@/components/calculators/locked-calculator';
+import { LockBadge } from '@/components/crypt/cards';
 
 type Guide = App.Data.GuideData;
 type Embed = App.Data.CalculatorEmbedData;
@@ -87,7 +89,14 @@ function EmbeddedCalculator({ embed }: { embed: Embed }) {
                     Open full tool ↗
                 </Link>
             </div>
-            <CalculatorWidget spec={embed.spec} resolution={embed.resolution} />
+            {embed.spec.locked || embed.resolution === null ? (
+                <LockedCalculator spec={embed.spec} compact />
+            ) : (
+                <CalculatorWidget
+                    spec={embed.spec}
+                    resolution={embed.resolution}
+                />
+            )}
         </section>
     );
 }
@@ -127,7 +136,9 @@ function LinkCta({ calculator }: { calculator: CalculatorSummary }) {
                 <p className="font-mono text-[10px] tracking-widest text-terminal-dim uppercase">
                     Tool
                 </p>
-
+                {calculator.locked && (
+                    <LockBadge plan={calculator.requiredPlan} />
+                )}
             </div>
             <h3 className="mt-1 text-base font-semibold text-foreground">
                 Open the full tool: {calculator.name}

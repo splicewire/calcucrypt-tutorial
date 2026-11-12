@@ -15,15 +15,17 @@ class HandleInertiaRequests extends Middleware
     protected $rootView = 'app';
 
     /**
-     * Share the starter's OS capability through the package shell.
+     * Include the product's declared calculator keys in the package's shared can-map.
      *
      * @return array<string, bool>
      */
     protected function canMap(Request $request): array
     {
         try {
+            $keys = array_values(array_filter((array) config('beam.core.entitlements.keys', []), is_string(...)));
+
             return app(CanMapBuilder::class)
-                ->withFeatureKeys(['os.enter'])
+                ->withFeatureKeys(['os.enter', ...$keys])
                 ->forPrincipal($this->shellPrincipal($request));
         } catch (Throwable) {
             return [];

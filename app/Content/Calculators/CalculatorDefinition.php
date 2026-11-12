@@ -73,6 +73,16 @@ abstract class CalculatorDefinition
     }
 
     /**
+     * The entitlement key that unlocks this calculator, or null when it is free for everyone.
+     * A paid calculator returns `calculators.{slug}`; the plans that include it name that key in
+     * `config/beam/accounts.php` (`entitlements.bundles`).
+     */
+    public function entitlement(): ?string
+    {
+        return null;
+    }
+
+    /**
      * The slug of this calculator's canonical explainer Guide, if any. Applied by
      * `content:sync` after all Posts are upserted, so the Guide may be authored later.
      */

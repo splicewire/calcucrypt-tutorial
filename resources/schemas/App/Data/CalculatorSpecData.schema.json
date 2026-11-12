@@ -19,9 +19,24 @@
             "type": ["string", "null"]
         },
         "graph": {
-            "type": "object"
+            "type": ["object", "null"]
+        },
+        "locked": {
+            "type": "boolean"
+        },
+        "requiredPlan": {
+            "type": ["string", "null"]
         }
     },
-    "required": ["slug", "name", "summary", "key", "category", "graph"],
+    "required": [
+        "slug",
+        "name",
+        "summary",
+        "key",
+        "category",
+        "graph",
+        "locked",
+        "requiredPlan"
+    ],
     "$id": "CalculatorSpecData"
 }

@@ -42,6 +42,11 @@ class CapitalGainsCalculator extends CalculatorDefinition
         return ['tax', 'profit'];
     }
 
+    public function entitlement(): ?string
+    {
+        return 'calculators.'.$this->slug();
+    }
+
     public function primaryGuide(): ?string
     {
         return 'crypto-taxes-end-to-end';

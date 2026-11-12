@@ -75,7 +75,7 @@ class GuideController extends Controller
                 $embeds[] = new CalculatorEmbedData(
                     anchor: is_string($anchor) ? $anchor : null,
                     spec: $spec,
-                    resolution: $this->resolver->resolve($calculator),
+                    resolution: $spec->locked ? null : $this->resolver->resolve($calculator),
                 );
             } else {
                 $links[] = CalculatorSummaryData::fromModel($calculator);

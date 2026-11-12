@@ -13,7 +13,7 @@ class CalculatorSitemapSource implements SitemapSource
     public function urls(): iterable
     {
         $base = rtrim(app(SitemapBaseUrlResolver::class)->baseUrl(), '/');
-        foreach (Calculator::query()->published()->get() as $calculator) {
+        foreach (Calculator::query()->published()->whereNull('entitlement')->get() as $calculator) {
             yield Url::create($base.'/calculators/'.$calculator->slug);
         }
     }

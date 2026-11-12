@@ -119,8 +119,7 @@ it('publishes calculator and Guide XML URLs while excluding a pinned draft Guide
     expect($urls)->not->toContain(url('/guides/how-crypto-profit-works'));
     $urls = collect(app(App\Content\Guides\CalculatorSitemapSource::class)->urls())->map(fn ($url) => $url->url)->all();
     expect($urls)->toContain(url('/calculators/crypto-profit'));
-    // Every calculator is public until the lock-first chapter introduces paid keys.
-    expect($urls)->toContain(url('/calculators/crypto-capital-gains'));
+    expect($urls)->not->toContain(url('/calculators/crypto-capital-gains'));
 });
 
 it('imports a genuine draft with a pin without making its metadata publicly addressable', function (): void {

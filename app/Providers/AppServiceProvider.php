@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Content\Calculators\CalculatorDefinition;
+use App\Content\Calculators\CalculatorRegistry;
 use App\Models\Calculator;
 use App\Models\User;
 use App\SavedInputs\SavedInputAssociations;
@@ -44,8 +46,27 @@ class AppServiceProvider extends ServiceProvider
                 ?->defaults(SeatGate::OPEN_TO_MEMBERS, true);
         });
         $this->registerAuthoringGates();
+        $this->declareCalculatorEntitlements();
         Calculator::deleting(fn (Calculator $calculator) => app(SavedInputAssociations::class)->deletingCalculator($calculator));
         User::deleting(fn (User $user) => app(SavedInputAssociations::class)->deletingUser($user));
+    }
+
+    /**
+     * Declare every paid calculator's entitlement key, so Beam defines an `entitlement:calculators.{slug}`
+     * gate for each. Declaring a key grants it to no one: until a plan holds it, the calculator is locked
+     * for every reader. Beam reads its keys when it checks one, so declaring them in boot() is in time.
+     */
+    protected function declareCalculatorEntitlements(): void
+    {
+        $keys = array_filter(array_map(
+            fn (CalculatorDefinition $definition): ?string => $definition->entitlement(),
+            (new CalculatorRegistry)->all(),
+        ));
+
+        config(['beam.core.entitlements.keys' => array_values(array_unique([
+            ...(array) config('beam.core.entitlements.keys', []),
+            ...$keys,
+        ]))]);
     }
 
     /** Documentation publication follows the package's operator authoring gate. */

@@ -7,7 +7,14 @@
             "$ref": "#/$defs/CalculatorSpecData"
         },
         "resolution": {
-            "$ref": "#/$defs/CalculatorResolutionData",
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/CalculatorResolutionData"
+                },
+                {
+                    "type": "null"
+                }
+            ],
             "readOnly": true,
             "x-lazy": true
         },
@@ -48,10 +55,25 @@
                     "type": ["string", "null"]
                 },
                 "graph": {
-                    "type": "object"
+                    "type": ["object", "null"]
+                },
+                "locked": {
+                    "type": "boolean"
+                },
+                "requiredPlan": {
+                    "type": ["string", "null"]
                 }
             },
-            "required": ["slug", "name", "summary", "key", "category", "graph"]
+            "required": [
+                "slug",
+                "name",
+                "summary",
+                "key",
+                "category",
+                "graph",
+                "locked",
+                "requiredPlan"
+            ]
         },
         "FactData": {
             "type": "object",

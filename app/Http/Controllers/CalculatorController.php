@@ -64,10 +64,12 @@ class CalculatorController extends Controller
             ? $guides->firstWhere('id', $calculator->primary_guide_id)
             : null;
 
+        // A locked calculator is described but not grounded: no graph, and no live prices.
+        $spec = CalculatorSpecData::project($calculator);
 
         return Inertia::render('calculators/show', new CalculatorShowPageData(
-            spec: CalculatorSpecData::project($calculator),
-            resolution: Lazy::closure(fn () => $this->resolver->resolve($calculator, $inputs)),
+            spec: $spec,
+            resolution: $spec->locked ? null : Lazy::closure(fn () => $this->resolver->resolve($calculator, $inputs)),
             guides: $guides->map(GuideSummaryData::fromModel(...))->values()->all(),
             primaryGuide: $primary !== null ? GuideSummaryData::fromModel($primary) : null,
         ));

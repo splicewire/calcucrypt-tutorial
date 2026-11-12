@@ -12,6 +12,7 @@ declare namespace App.Data {
     type FactData = import('@/generated/App/Data').FactData;
     type GuideData = import('@/generated/App/Data').GuideData;
     type GuideSummaryData = import('@/generated/App/Data').GuideSummaryData;
+    type ResolveCalculatorInputData = import('@/generated/App/Data').ResolveCalculatorInputData;
 }
 
 declare namespace App.Enums {

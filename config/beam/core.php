@@ -174,6 +174,7 @@ return [
         // Filesystem paths scanned for annotated classes at boot (no boot cache yet; see above).
         'discover_paths' => [
             app_path('Data'),
+            app_path('Particle'),
         ],
     ],
 

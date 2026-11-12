@@ -87,8 +87,7 @@ function EmbeddedCalculator({ embed }: { embed: Embed }) {
                     Open full tool ↗
                 </Link>
             </div>
-            <p className="mb-3 text-sm text-muted-foreground">This preview is read-only. Open the full tool to change inputs.</p>
-            <CalculatorWidget spec={embed.spec} resolution={embed.resolution} readOnly />
+            <CalculatorWidget spec={embed.spec} resolution={embed.resolution} />
         </section>
     );
 }

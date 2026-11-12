@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // The declaration supplies read verbs; the host supplies this API mount.
 Particle::mount('calculators', 'calculators')
     ->names('api.calculators')
+    ->ops(['resolve'])
     ->hookEvents(false);
 
 Particle::mount('guides', 'guides')

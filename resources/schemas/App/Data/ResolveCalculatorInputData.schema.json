@@ -1,0 +1,13 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "Calculator inputs",
+    "properties": {
+        "inputs": {
+            "type": "array",
+            "default": []
+        }
+    },
+    "required": ["inputs"],
+    "$id": "ResolveCalculatorInputData"
+}

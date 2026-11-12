@@ -40,3 +40,8 @@ Particle::mount('calculators', 'calculators')
 Particle::mount('guides', 'guides')
     ->names('api.guides')
     ->hookEvents(false);
+
+// Package-owned storage and its explicit policy isolate each actor and schema.
+Particle::mount('saved-inputs', 'saved-inputs')
+    ->names('api.saved-inputs')
+    ->hookEvents(false);

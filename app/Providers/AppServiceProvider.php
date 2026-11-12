@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Calculator;
 use App\Models\User;
+use App\SavedInputs\SavedInputAssociations;
 use Carbon\CarbonImmutable;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Date;
@@ -42,6 +44,8 @@ class AppServiceProvider extends ServiceProvider
                 ?->defaults(SeatGate::OPEN_TO_MEMBERS, true);
         });
         $this->registerAuthoringGates();
+        Calculator::deleting(fn (Calculator $calculator) => app(SavedInputAssociations::class)->deletingCalculator($calculator));
+        User::deleting(fn (User $user) => app(SavedInputAssociations::class)->deletingUser($user));
     }
 
     /** Documentation publication follows the package's operator authoring gate. */

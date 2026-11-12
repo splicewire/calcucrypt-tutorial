@@ -33,4 +33,5 @@ export type ReleaseData = import("./Splicewire/Beam/Ux/Data").ReleaseData;
 export type ReleaseFilesData = import("./Splicewire/Beam/Ux/Data").ReleaseFilesData;
 export type ReleaseReadinessData = import("./Splicewire/Beam/Ux/Data").ReleaseReadinessData;
 export type ReleaseRecordingData = import("./Splicewire/Beam/Ux/Data").ReleaseRecordingData;
+export type SavedInputData = import("./App/Data").SavedInputData;
 export type TeamData = import("./Splicewire/Beam/Accounts/Data").TeamData;

@@ -3,16 +3,19 @@ import { useApiCalculatorsResolve } from '@/generated/hooks/api-calculators';
 import type { ApiCalculatorsResolveVars } from '@/generated/hooks/api-calculators';
 import type { Env, ExprValue } from './expression/evaluate';
 import { type Collections, evaluateGraph, type Vectors } from './graph';
+import { applyInputs } from './inputs';
+import type { InputValue } from './inputs';
 import type { CalculatorGraph, CollectionControl, CollectionRow } from './types';
 
 type Resolution = App.Data.CalculatorResolutionData;
 // The generated client types the body from the operation's declared `input:` (ResolveCalculatorInputData).
 type ResolveInput = ApiCalculatorsResolveVars['body'];
-type InputValue = number | string;
 
 export interface UseCalculator {
     inputs: Record<string, InputValue>;
     setInput: (id: string, value: InputValue) => void;
+    /** Set several inputs at once (a saved set): one state update, and at most one re-resolve. */
+    setInputs: (values: Record<string, InputValue>) => void;
     collections: Collections;
     setCell: (collectionId: string, rowIndex: number, field: string, value: number | string | boolean) => void;
     addRow: (collectionId: string) => void;
@@ -105,7 +108,7 @@ function seedVectors(resolution: Resolution): Vectors {
  * the tool page and a calculator embedded in a guide re-resolve the same way.
  */
 export function useCalculator(slug: string, graph: CalculatorGraph, initialResolution: Resolution): UseCalculator {
-    const [inputs, setInputs] = useState<Record<string, InputValue>>(() => scalarInputs(graph));
+    const [inputs, storeInputs] = useState<Record<string, InputValue>>(() => scalarInputs(graph));
     const [collections, setCollections] = useState<Collections>(() => initialCollections(graph));
     const [resolution, setResolution] = useState<Resolution>(initialResolution);
     const resolve = useApiCalculatorsResolve();
@@ -152,14 +155,18 @@ export function useCalculator(slug: string, graph: CalculatorGraph, initialResol
         resolve.mutate({ params: { id: slug }, body }, { onSuccess: setResolution });
     };
 
-    const setInput = (id: string, value: InputValue): void => {
-        const next = { ...inputs, [id]: value };
-        setInputs(next);
+    // Every input change goes through here: the next inputs are built once from the current ones,
+    // and the server is asked once, with the complete set, when the change touched a ref input.
+    const setInputs = (values: Record<string, InputValue>): void => {
+        const { next, reprices } = applyInputs(inputs, values, refInputs);
+        storeInputs(next);
 
-        if (refInputs.has(id)) {
+        if (reprices) {
             reresolve(next, collections);
         }
     };
+
+    const setInput = (id: string, value: InputValue): void => setInputs({ [id]: value });
 
     // Collections apply in place: compute the next rows from the current state, then store
     // them and (when the priced symbols changed) re-resolve with the same rows.
@@ -202,6 +209,7 @@ export function useCalculator(slug: string, graph: CalculatorGraph, initialResol
     return {
         inputs,
         setInput,
+        setInputs,
         collections,
         setCell,
         addRow,

@@ -1,0 +1,24 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "Saved inputs",
+    "properties": {
+        "calculator": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "inputs": {
+            "type": "object",
+            "additionalProperties": {
+                "type": [
+                    "number",
+                    "string"
+                ]
+            }
+        }
+    },
+    "$id": "App\\Data\\SavedInputData/2",
+    "additionalProperties": false
+}

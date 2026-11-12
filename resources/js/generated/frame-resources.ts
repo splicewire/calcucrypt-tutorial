@@ -162,6 +162,12 @@ export interface FrameResources {
         createResult: import('./Splicewire/Beam/Filters/Data').SavedFilterData;
         actions: {};
     };
+    'saved-inputs': {
+        row: import('./App/Data').SavedInputData;
+        edit: import('./App/Data').SavedInputData;
+        createResult: import('./App/Data').SavedInputData;
+        actions: {};
+    };
     'schemas': {
         row: import('./Splicewire/Beam/Data').BeamSchemaData;
         edit: import('./Splicewire/Beam/Data').BeamSchemaInputData;

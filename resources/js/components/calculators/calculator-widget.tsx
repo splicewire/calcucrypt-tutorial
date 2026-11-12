@@ -9,6 +9,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 import { CalculatorReadout, type Readout } from './calculator-readout';
 import { ResultChart } from './result-chart';
+import { SavedInputsPanel } from './saved-inputs-panel';
 
 type Spec = App.Data.CalculatorSpecData;
 type Resolution = App.Data.CalculatorResolutionData;
@@ -16,7 +17,8 @@ type Resolution = App.Data.CalculatorResolutionData;
 // The reusable, embeddable calculator surface. A scalar calculator (Profit) renders a form +
 // the seven-segment device screen; a collection calculator (Allocation) renders a portfolio
 // editor + a per-row allocation table. Both ground every figure in the same live, cited facts.
-export function CalculatorWidget({ spec, resolution }: { spec: Spec; resolution: Resolution }) {
+// `savable` (the tool page) adds a signed-in reader's saved inputs to a scalar calculator.
+export function CalculatorWidget({ spec, resolution, savable = false }: { spec: Spec; resolution: Resolution; savable?: boolean }) {
     const graph = spec.graph as unknown as CalculatorGraph;
     const calc = useCalculator(spec.slug, graph, resolution);
 
@@ -25,10 +27,10 @@ export function CalculatorWidget({ spec, resolution }: { spec: Spec; resolution:
         return <CollectionWidget graph={graph} calc={calc} collectionNode={collectionNode} />;
     }
 
-    return <ScalarWidget graph={graph} calc={calc} />;
+    return <ScalarWidget graph={graph} calc={calc} savedFor={savable ? spec.slug : null} />;
 }
 
-function ScalarWidget({ graph, calc }: { graph: CalculatorGraph; calc: UseCalculator }) {
+function ScalarWidget({ graph, calc, savedFor = null }: { graph: CalculatorGraph; calc: UseCalculator; savedFor?: string | null }) {
     const { inputs, setInput, values, vectors, facts, refreshing } = calc;
     const byId = nodeById(graph);
     const inputNodes = graph.nodes.filter((node) => node.kind === 'input');
@@ -71,6 +73,8 @@ function ScalarWidget({ graph, calc }: { graph: CalculatorGraph; calc: UseCalcul
             </div>
 
             {graph.chart?.type === 'line' && <ResultChart graph={graph} vectors={vectors} />}
+
+            {savedFor !== null && <SavedInputsPanel slug={savedFor} calc={calc} />}
         </div>
     );
 }

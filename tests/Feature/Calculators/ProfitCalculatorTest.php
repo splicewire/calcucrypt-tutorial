@@ -36,6 +36,8 @@ function profitCalculator(): Calculator
 beforeEach(function (): void {
     // Resolve refs through a fake connector — never CoinMarketCap.
     config()->set('facts.connectors.coinmarketcap', FakeConnector::class);
+    // Assert on Inertia props without needing a built Vite manifest.
+    $this->withoutVite();
 });
 
 it('resolves the default asset ref into a fact with provenance', function (): void {
@@ -52,6 +54,34 @@ it('re-resolves a different asset when the asset input changes', function (): vo
 
     expect($resolution->seedEnv['sellPrice'])->toBe(2500.0)
         ->and($resolution->facts['sellPrice']->symbol)->toBe('ETH');
+});
+
+it('serves the tool page under the site chrome with spec and resolution', function (): void {
+    profitCalculator();
+
+    $this->get('/calculators/crypto-profit')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('calculators/show')
+            ->where('spec.slug', 'crypto-profit')
+            ->where('spec.key', 'finance.investment-profit')
+            ->where('resolution.seedEnv.sellPrice', 42000)
+            ->where('resolution.facts.sellPrice.source', 'FakeSource'),
+        );
+});
+
+it('re-resolves via a partial reload query on the show route', function (): void {
+    profitCalculator();
+
+    $this->get('/calculators/crypto-profit?asset=SOL')
+        ->assertInertia(fn ($page) => $page->where('resolution.seedEnv.sellPrice', 100));
+});
+
+it('404s for an unpublished calculator', function (): void {
+    $calculator = profitCalculator();
+    $calculator->update(['status' => CalculatorStatus::Draft]);
+
+    $this->get('/calculators/crypto-profit')->assertNotFound();
 });
 
 it('identifies referenced symbols from the ref input options', function (): void {

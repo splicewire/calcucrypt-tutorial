@@ -6,6 +6,7 @@ import { useAppearance } from '@/hooks/use-appearance';
 // Supplied public chrome. Each chapter adds navigation only when its page routes exist.
 
 const NAV_LINKS: { href: string; label: string }[] = [
+    { href: '/calculators', label: 'Calculators' },
 ];
 
 // The CALCU·CRYPT wordmark: two-tone LCD text in the 14-segment font — "CALCU" in terminal

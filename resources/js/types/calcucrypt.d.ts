@@ -6,6 +6,8 @@
 
 declare namespace App.Data {
     type CalculatorResolutionData = import('@/generated/App/Data').CalculatorResolutionData;
+    type CalculatorSpecData = import('@/generated/App/Data').CalculatorSpecData;
+    type CalculatorSummaryData = import('@/generated/App/Data').CalculatorSummaryData;
     type FactData = import('@/generated/App/Data').FactData;
 }
 

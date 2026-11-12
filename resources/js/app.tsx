@@ -18,6 +18,7 @@ import { beamDocsPages } from '@splicewire/beam-docs/pages';
 import '@splicewire/beam-ux/tokens-docs.css';
 import 'dseg/css/dseg.css';
 import { authFeatures } from './beam';
+import SiteLayout from './layouts/site-layout';
 
 const pages = import.meta.glob<PageModule>([
     './pages/**/*.tsx',
@@ -59,4 +60,14 @@ const options = beamInertiaOptions({
 });
 configureDocs();
 
-createInertiaApp(options);
+createInertiaApp({
+    ...options,
+    layout: (name) => {
+        // Calculator pages use the supplied site chrome.
+        if (name.startsWith('calculators/')) {
+            return SiteLayout;
+        }
+
+        return options.layout(name);
+    },
+});

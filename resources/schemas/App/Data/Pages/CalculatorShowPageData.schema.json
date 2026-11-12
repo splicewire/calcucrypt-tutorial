@@ -1,0 +1,112 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "CalculatorShowPageData",
+    "properties": {
+        "spec": {
+            "$ref": "#/$defs/CalculatorSpecData"
+        },
+        "resolution": {
+            "$ref": "#/$defs/CalculatorResolutionData",
+            "readOnly": true,
+            "x-lazy": true
+        }
+    },
+    "required": ["spec"],
+    "$id": "CalculatorShowPageData",
+    "$defs": {
+        "CalculatorSpecData": {
+            "type": "object",
+            "title": "Calculator",
+            "properties": {
+                "slug": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "summary": {
+                    "type": ["string", "null"]
+                },
+                "key": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": ["string", "null"]
+                },
+                "graph": {
+                    "type": "object"
+                }
+            },
+            "required": ["slug", "name", "summary", "key", "category", "graph"]
+        },
+        "FactData": {
+            "type": "object",
+            "title": "FactData",
+            "properties": {
+                "value": {
+                    "type": "number"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "asOf": {
+                    "type": "string"
+                },
+                "connector": {
+                    "type": "string"
+                },
+                "metric": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "stale": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "changePercent24h": {
+                    "type": ["number", "null"]
+                }
+            },
+            "required": [
+                "value",
+                "source",
+                "asOf",
+                "connector",
+                "metric",
+                "symbol",
+                "stale",
+                "changePercent24h"
+            ]
+        },
+        "CalculatorResolutionData": {
+            "type": "object",
+            "title": "Calculator resolution",
+            "properties": {
+                "facts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/$defs/FactData"
+                    }
+                },
+                "seedEnv": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "seedVectors": {
+                    "type": "array",
+                    "default": []
+                },
+                "vectorFacts": {
+                    "type": "array",
+                    "default": []
+                }
+            },
+            "required": ["facts", "seedEnv", "seedVectors", "vectorFacts"]
+        }
+    }
+}

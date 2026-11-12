@@ -8,6 +8,8 @@ export type RouteMap = Record<string, string>;
 
 /** AUTO-GENERATED — the tenant route-name map. */
 export const defaults: RouteMap = {
+    'api.calculators.index': 'api/calculators',
+    'api.calculators.show': 'api/calculators/{id}',
     'beam-docs.php-api-index': 'beam/docs/php-api-index',
     'beam-docs.php-api-symbol': 'beam/docs/php-api-symbol',
     'beam-docs.search': 'beam/docs/search',

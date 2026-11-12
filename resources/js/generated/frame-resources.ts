@@ -102,6 +102,12 @@ export interface FrameResources {
         createResult: import('./Splicewire/Beam/Ux/Data').SitemapHealthRowData;
         actions: {};
     };
+    'calculators': {
+        row: import('./App/Data').CalculatorSpecData;
+        edit: import('./App/Data').CalculatorSpecData;
+        createResult: import('./App/Data').CalculatorSpecData;
+        actions: {};
+    };
     'git-repo': {
         row: import('./Splicewire/Beam/Data').GitRepoData;
         edit: import('./Splicewire/Beam/Data').GitRepoData;

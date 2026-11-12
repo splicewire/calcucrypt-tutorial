@@ -19,6 +19,7 @@ class GuideServiceProvider extends ServiceProvider
                 throw new \LogicException('The Guide host already binds a different Page lifecycle.');
             }
             $bindings->bind('page', EntryPublishLifecycle::DEFINITION);
+            app(\Splicewire\Beam\Sitemap\SitemapSourceRegistry::class)->register(\App\Content\Guides\CalculatorSitemapSource::class);
         });
     }
 }

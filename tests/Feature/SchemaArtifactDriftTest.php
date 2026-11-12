@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Rushing\Doctor\DoctorStatus;
 use Splicewire\Beam\Surgeon\SchemaProjectionDriftAudit;
 
 uses(Tests\TestCase::class);
@@ -21,79 +22,33 @@ uses(Tests\TestCase::class);
  * DISAGREED with the real command and cost a host a permanent phantom "stale" finding no regeneration
  * could clear. One implementation, driven from a test — never a second one to compare against.
  */
-it('has no particle-declared Data in the application disk schema scope before chapter one', function (): void {
-    // This is the audit's population: particle resource data/input and operation input/output,
-    // restricted to the configured application schema paths. ResponseFromData page contracts
-    // and supplied Data still exist; the unconditional real-regeneration test below checks them.
-    $paths = (array) config('data-schemas.auto_discover_types', [app_path('Data')]);
-    $classes = [];
-    $resources = app(Splicewire\Beam\Particle\ParticleResourceRegistry::class);
-    foreach ($resources->keys() as $key) {
-        $resource = $resources->resolve($key); // unfiltered declaration identity, not guest reach
-        foreach ([$resource->data, $resource->input] as $class) {
-            if (is_string($class)) {
-                $classes[] = $class;
-            }
-        }
-    }
-    $operations = app(Splicewire\Beam\Particle\ParticleOperationRegistry::class);
-    foreach ($operations->keys() as $key) {
-        $operation = $operations->resolve($key);
-        foreach ([$operation->input, $operation->output] as $slot) {
-            $slotValues = is_array($slot) ? $slot : [$slot];
-            array_walk_recursive($slotValues, function ($class) use (&$classes): void {
-                if (is_string($class)) {
-                    $classes[] = $class;
-                }
-            });
-        }
-    }
-    $inScope = array_values(array_filter(array_unique($classes), function (string $class) use ($paths): bool {
-        if (! class_exists($class) || ! is_subclass_of($class, Spatie\LaravelData\Data::class)) {
-            return false;
-        }
-        $file = (new ReflectionClass($class))->getFileName();
-
-        return $file !== false && array_any($paths, fn ($path): bool => str_starts_with($file, rtrim((string) $path, '/').'/'));
-    }));
-    expect($inScope)->toBe([]);
-
-    // Independent physical declaration probe. No product resource/op attribute is shipped yet;
-    // it does not pretend that other App Data or page wire declarations are absent.
-    $attributed = [];
-    foreach ([app_path('Data'), app_path('Particle')] as $path) {
-        if (! is_dir($path)) {
-            continue;
-        }
-        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS)) as $file) {
-            if (! str_ends_with($file->getPathname(), '.php')) {
-                continue;
-            }
-            $tokens = token_get_all((string) file_get_contents($file->getPathname()));
-            foreach ($tokens as $index => $token) {
-                if (! is_array($token) || $token[0] !== T_ATTRIBUTE) {
-                    continue;
-                }
-                for ($next = $index + 1; $next < count($tokens); $next++) {
-                    $name = $tokens[$next];
-                    if ($name === ']') {
-                        break;
-                    }
-                    if (is_array($name) && in_array($name[0], [T_STRING, T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED], true)) {
-                        $leaf = basename(str_replace('\\', '/', $name[1]));
-                        if (in_array($leaf, ['ParticleResource', 'ParticleOp'], true)) {
-                            $attributed[] = $file->getPathname();
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    expect($attributed)->toBe([]);
+it('has a committed schema projection for every declared Data class', function () {
     $findings = SchemaProjectionDriftAudit::forApp()->run();
-    expect($findings)->toHaveCount(1)
-        ->and($findings[0]->conclusive)->toBeFalse();
+
+    // Drift is reported one finding per offending class, so the clean shape is exactly one summary.
+    // Print the details on failure — "expected 1, got 3" alone would not say WHICH class drifted.
+    expect($findings)->toHaveCount(
+        1,
+        'schema projections are missing or stale: '
+            .implode(' | ', array_map(fn ($f): string => $f->detail, $findings))
+    );
+
+    $finding = $findings[0];
+
+    expect($finding->status)->toBe(DoctorStatus::Pass, $finding->detail);
+
+    // ⚠️ Both of the audit's vacuous outcomes report Pass, and one of them reports it CONCLUSIVELY:
+    //   - an empty population  → Finding::inconclusive(), Pass + conclusive:false
+    //   - an unavailable check → Finding::pass('... — schema-projection drift check skipped.')
+    // So asserting Pass proves nothing on its own. The conclusive flag rejects the first, and pinning
+    // the success detail's exact shape rejects the second — a "skipped" pass cannot match this.
+    expect($finding->conclusive)->toBeTrue($finding->detail);
+    expect($finding->detail)->toMatch('/^\d+ declared Data class\(es\) have fresh disk schema projections\.$/');
+
+    // ...and the population must be non-empty, so a scope regression that silently stops seeing
+    // app/Data cannot pass as "clean".
+    preg_match('/^(\d+) /', $finding->detail, $m);
+    expect((int) $m[1])->toBeGreaterThanOrEqual(1, $finding->detail);
 });
 
 /**

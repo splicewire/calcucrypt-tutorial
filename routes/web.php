@@ -17,6 +17,7 @@ use Splicewire\Beam\Ux\Preview\PreviewContext;
 use Splicewire\Beam\Ux\Support\PageEntryRef;
 
 require __DIR__.'/canonical-mdx.php';
+require __DIR__.'/calcucrypt.php';
 
 // The FRONT DOOR is the OOTB site realm: `/` renders the promoted <SiteLayout> chrome (public) AND —
 // behind the ux.author seam — mounts the in-place visual editor (@/editor). (frontend-surfaces wiring.)

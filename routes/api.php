@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Splicewire\Beam\Facades\Particle;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,3 +30,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user()->only(['id', 'name', 'email']);
 })->name('api.user');
+
+// The declaration supplies read verbs; the host supplies this API mount.
+Particle::mount('calculators', 'calculators')
+    ->names('api.calculators')
+    ->hookEvents(false);

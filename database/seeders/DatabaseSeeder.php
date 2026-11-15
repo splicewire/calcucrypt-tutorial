@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use RuntimeException;
 
 /**
  * One call (seeding-scenarios 02): `splicewire:beam:seed` runs every step registered in the beam seed manifest, the
@@ -20,6 +21,13 @@ class DatabaseSeeder extends Seeder
     {
         // The parent `db:seed --force` (or `migrate:fresh --seed`, which forwards it) is the production consent, and it
         // is forwarded DOWN: since beam-facade 190 `splicewire:beam:seed` does not force `db:seed` unconditionally.
-        $this->command->call('splicewire:beam:seed', $this->command->option('force') ? ['--force' => true] : []);
+        $exit = $this->command->call('splicewire:beam:seed', $this->command->option('force') ? ['--force' => true] : []);
+
+        // A failed step makes `splicewire:beam:seed` exit non-zero; `Command::call()` only returns that code, so it is
+        // rethrown here, or `db:seed` and `migrate --seed` would exit 0 over a failed seed (the app's own steps ran
+        // through `$this->call()` and threw before they moved into the manifest).
+        if ($exit !== 0) {
+            throw new RuntimeException("splicewire:beam:seed exited {$exit}: a seed step failed (see its report above).");
+        }
     }
 }

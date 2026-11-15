@@ -59,6 +59,11 @@ frontend. Everything it fetches is public. `package.json` overrides one transiti
 dependency, `@splicewire/_resources`, to nothing: it holds TypeScript declarations only, nothing in
 this app reads them, and it is not public.
 
+`php artisan migrate --seed` runs `splicewire:beam:seed`: the packages' seed steps and this app's own
+(realm nav, auth pages, theme, the calculator catalogue and, in `local`, two sample users). Every step
+is safe to repeat. After you check out a later commit, run it again to load that commit's
+calculators.
+
 From `ch-01` on, open `/calculators`. Set `APP_URL` to the address you serve the app on: from
 `ch-03`, the calculator pages call the API with the session cookie, and Sanctum only treats the
 app's own origin as stateful.

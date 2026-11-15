@@ -8,6 +8,10 @@ use App\Models\Calculator;
 use App\Models\User;
 use App\SavedInputs\SavedInputAssociations;
 use Carbon\CarbonImmutable;
+use Database\Seeders\AuthPagesSeeder;
+use Database\Seeders\CryptSeeder;
+use Database\Seeders\DemoUsersSeeder;
+use Database\Seeders\RealmNavSeeder;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +19,10 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Splicewire\Beam\Authorization\SeatGate;
+use Splicewire\Beam\Seed\BeamSeedManifest;
+use Splicewire\Beam\Seed\SeedStep;
 use Splicewire\Beam\Ux\Frame\RouteContextPlan;
+use Splicewire\Beam\Ux\Seeders\ThemeSeeder;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -49,6 +56,23 @@ class AppServiceProvider extends ServiceProvider
         $this->declareCalculatorEntitlements();
         Calculator::deleting(fn (Calculator $calculator) => app(SavedInputAssociations::class)->deletingCalculator($calculator));
         User::deleting(fn (User $user) => app(SavedInputAssociations::class)->deletingUser($user));
+        $this->registerSeedSteps();
+    }
+
+    /**
+     * This app's own seed data, as steps in the beam seed manifest (seeding-scenarios 02), so `DatabaseSeeder` and
+     * `splicewire:beam:install` reach it through one `splicewire:beam:seed` run. The starter's four steps, under this
+     * app's name and ordered below beam-accounts' demo team (10), plus the catalogue (`content:sync`, idempotent by
+     * slug) at the default order, after the packages' steps. Every step is safe to repeat.
+     */
+    protected function registerSeedSteps(): void
+    {
+        $this->app->make(BeamSeedManifest::class)
+            ->register('splicewire/calcucrypt-tutorial/realm-nav', RealmNavSeeder::class, order: 1)
+            ->register('splicewire/calcucrypt-tutorial/auth-pages', AuthPagesSeeder::class, order: 2)
+            ->register('splicewire/calcucrypt-tutorial/theme', ThemeSeeder::class, order: 3)
+            ->register('splicewire/calcucrypt-tutorial/demo-users', DemoUsersSeeder::class, order: 4, memberships: SeedStep::DEMO)
+            ->register('splicewire/calcucrypt-tutorial/catalogue', CryptSeeder::class);
     }
 
     /**

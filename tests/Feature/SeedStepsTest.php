@@ -8,11 +8,13 @@ use Database\Seeders\AuthPagesSeeder;
 use Database\Seeders\CryptSeeder;
 use Database\Seeders\DemoUsersSeeder;
 use Database\Seeders\RealmNavSeeder;
+use Illuminate\Database\Seeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Splicewire\Beam\Seed\BeamSeedManifest;
 use Splicewire\Beam\Seed\SeedStep;
 use Splicewire\Beam\Ux\Seeders\ThemeSeeder;
+use RuntimeException;
 use Tests\TestCase;
 
 /**
@@ -72,6 +74,17 @@ class SeedStepsTest extends TestCase
         $this->assertGreaterThan(0, DB::table('beam_ux_entries')->count());
     }
 
+    public function test_db_seed_fails_when_a_manifest_step_fails(): void
+    {
+        $this->app['env'] = 'local';
+        app(BeamSeedManifest::class)->register('splicewire/calcucrypt-tutorial/failing-probe', FailingSeedStep::class, order: 5);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('splicewire:beam:seed exited 1');
+
+        $this->artisan('db:seed')->run();
+    }
+
     /** @return array{entries: list<array<string, mixed>>, users: int} */
     private function snapshot(): array
     {
@@ -80,5 +93,14 @@ class SeedStepsTest extends TestCase
                 ->map(fn ($row): array => (array) $row)->all(),
             'users' => User::query()->count(),
         ];
+    }
+}
+
+/** A manifest step that always fails, for the exit-code case above. */
+final class FailingSeedStep extends Seeder
+{
+    public function run(): void
+    {
+        throw new RuntimeException('failing-probe always fails');
     }
 }

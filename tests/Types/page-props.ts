@@ -8,6 +8,9 @@ const profile: ProfilePageData = {
     entry: null,
     mustVerifyEmail: false,
     status: null,
+    // ProfilePageData's defaults: this app does not wire localization 36 yet (Train D finding 6).
+    preferredLocale: null,
+    supportedLocales: [],
 };
 const auth: AuthEntryPageData = {
     slug: 'confirm-password',

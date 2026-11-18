@@ -62,10 +62,14 @@ it('declares the complete profile props while preserving the rendered payload', 
 
     // `entry` carries `format` and `artifact` beside `{id, slug}` (G2-BEAM-AUTHOR-ENTRY); both null for
     // this fixture row, and null is the honest answer for each.
+    // `preferredLocale` and `supportedLocales` are ProfilePageData's defaults (beam-accounts localization 36, Train D
+    // finding 7): this app's ProfileController does not wire localization 36 yet, so it passes neither prop.
     expect($response->getData(true)['props'])->toBe([
         'entry' => $entry === null ? null : $entry + ['format' => null, 'artifact' => null],
         'mustVerifyEmail' => $verifiesEmail,
         'status' => $status,
+        'preferredLocale' => null,
+        'supportedLocales' => [],
     ]);
 })->with([
     'unseeded, no verification or status' => [false, false, null],
